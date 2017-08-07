@@ -2,7 +2,11 @@ package sfod;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,15 +15,23 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 public class FXMLDocumentController implements Initializable {
     
     @FXML
-    private Label label;
+    private Label loginTitle;
     
     @FXML
-    private Button btn1;
+    private TextField loginUser;
+    
+    @FXML
+    private PasswordField loginPswd;
+            
+    @FXML
+    private Button loginButton;
     
     @FXML
     private Button btn2;
@@ -28,20 +40,30 @@ public class FXMLDocumentController implements Initializable {
     private void handleButtonAction(ActionEvent event) throws IOException {
         Stage stage; 
         Parent root;
-        if(event.getSource()==btn1){
-            //get reference to the button's stage         
-            stage=(Stage) btn1.getScene().getWindow();
-            //load up OTHER FXML document
-            root = FXMLLoader.load(getClass().getResource("FXML2.fxml"));
+        if(event.getSource()==loginButton){
+            try {
+                //get reference to the button's stage
+                stage=(Stage) loginButton.getScene().getWindow();
+                Connection conexio= SQL.connectar(loginUser.getText(), loginPswd.getText());
+                //load up OTHER FXML document
+                root = FXMLLoader.load(getClass().getResource("FXML2.fxml"));
+                
+                //create a new scene with root and set the stage
+                Scene scene = new Scene(root);
+                stage.setScene(scene);
+                stage.show();
+            } catch (SQLException | ClassNotFoundException ex) {
+                
+            }
         }
         else{
             stage=(Stage) btn2.getScene().getWindow();
             root = FXMLLoader.load(getClass().getResource("FXMLLogin.fxml"));
+            //create a new scene with root and set the stage
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
         }
-        //create a new scene with root and set the stage
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
     }
     
     @Override

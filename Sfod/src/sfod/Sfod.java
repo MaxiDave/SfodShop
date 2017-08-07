@@ -15,6 +15,7 @@ public class Sfod extends Application {
         Scene scene = new Scene(root);
         
         stage.setScene(scene);
+        stage.setTitle("Sfod");
         stage.show();
     }
 

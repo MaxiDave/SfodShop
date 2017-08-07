@@ -9,12 +9,17 @@
 
 <AnchorPane id="LoginPane" prefHeight="300.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sfod.FXMLDocumentController">
     <children>
-        <Button fx:id="loginButton" layoutX="59.0" layoutY="209.0" onAction="#handleButtonAction" text="Iniciar Sessió" />
+        <Button fx:id="loginButton" defaultButton="true" layoutX="59.0" layoutY="209.0" onAction="#handleButtonAction" text="Iniciar Sessió" />
         <Label fx:id="loginTitle" layoutX="39.0" layoutY="42.0" minHeight="16" minWidth="69" text="Inicia Sessió" textAlignment="CENTER">
          <font>
             <Font size="23.0" />
          </font></Label>
       <TextField fx:id="loginUser" alignment="CENTER" layoutX="25.0" layoutY="102.0" prefHeight="25.0" prefWidth="151.0" promptText="Usuari" />
       <PasswordField fx:id="loginPswd" alignment="CENTER" layoutX="26.0" layoutY="138.0" promptText="Contrasenya" />
+      <Label fx:id="loginError" visible="false" alignment="CENTER" layoutX="19.0" layoutY="172.0" prefHeight="25.0" prefWidth="164.0" text="Usuari o contrasenya incorrectes" textFill="RED">
+         <font>
+            <Font size="11.0" />
+         </font>
+      </Label>
     </children>
 </AnchorPane>

@@ -5,8 +5,6 @@ import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,6 +21,9 @@ public class FXMLDocumentController implements Initializable {
     
     @FXML
     private Label loginTitle;
+    
+    @FXML
+    private Label loginError;
     
     @FXML
     private TextField loginUser;
@@ -53,7 +54,7 @@ public class FXMLDocumentController implements Initializable {
                 stage.setScene(scene);
                 stage.show();
             } catch (SQLException | ClassNotFoundException ex) {
-                
+                loginError.setVisible(true);
             }
         }
         else{

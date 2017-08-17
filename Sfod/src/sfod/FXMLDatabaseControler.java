@@ -1,7 +1,5 @@
 package sfod;
 
-import javafx.beans.property.*;
-import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -9,15 +7,10 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
@@ -25,18 +18,12 @@ import javafx.stage.Stage;
 public class FXMLDatabaseControler implements Initializable {
     
     @FXML
-    private Label sqlTitol;
-    
-    @FXML
     private Label sqlError;
     
     @FXML
     private TextArea sqlComanda;
-    
-    @FXML
-    private Button sqlExecutar;
 
-    private Connection conexio;
+    private final Connection conexio;
     
     public FXMLDatabaseControler(Connection con){
         conexio= con;

@@ -4,7 +4,10 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
@@ -15,7 +18,7 @@
             <AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0">
                <children>
                   <TextArea fx:id="sqlComanda" layoutX="158.0" layoutY="143.0" prefHeight="81.0" prefWidth="286.0" promptText="Escriure comanda aquí" />
-                  <Button fx:id="sqlExecutar" layoutX="271.0" layoutY="290.0" mnemonicParsing="false" onAction="#handleButtonAction" text="Executar" />
+                  <Button fx:id="sqlExecutar" layoutX="271.0" layoutY="290.0" mnemonicParsing="false" onAction="#executarComanda" text="Executar" />
                   <Label fx:id="sqlTitol" alignment="CENTER" layoutX="136.0" layoutY="36.0" text="MySQL Interaction Center" textAlignment="CENTER">
                      <font>
                         <Font name="System Bold" size="27.0" />
@@ -26,15 +29,21 @@
             </AnchorPane>
          </content>
       </Tab>
-      <Tab closable="false" text="MySQL A.C.">
+      <Tab closable="false" text="Productes">
         <content>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
-                  <Label alignment="CENTER" layoutX="151.0" layoutY="43.0" text="MySQL Auto Command" textAlignment="CENTER">
-                     <font>
-                        <Font name="System Bold" size="27.0" />
-                     </font>
-                  </Label>
+                  <TableView fx:id="taula" editable="true" layoutX="28.0" layoutY="18.0" prefHeight="315.0" prefWidth="540.0">
+                    <columns>
+                      <TableColumn fx:id="codi" prefWidth="69.0" text="Codi" />
+                      <TableColumn fx:id="EBAN" prefWidth="84.0" text="EBAN" />
+                        <TableColumn fx:id="descripcio" prefWidth="390.0" text="Descripció" />
+                    </columns>
+                  </TableView>
+                  <TextField fx:id="afegirCodi" layoutX="28.0" layoutY="349.0" prefHeight="25.0" prefWidth="59.0" promptText="Codi" />
+                  <TextField fx:id="afegirEBAN" layoutX="97.0" layoutY="349.0" prefHeight="25.0" prefWidth="87.0" promptText="EBAN" />
+                  <TextField fx:id="afegirDesc" layoutX="191.0" layoutY="349.0" prefHeight="25.0" prefWidth="293.0" promptText="Descripció" />
+                  <Button defaultButton="true" layoutX="516.0" layoutY="349.0" mnemonicParsing="false" onAction="#insertarProducte" text="Afegir" />
                </children>
             </AnchorPane>
         </content>

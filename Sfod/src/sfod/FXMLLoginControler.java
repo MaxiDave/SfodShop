@@ -28,9 +28,6 @@ public class FXMLLoginControler implements Initializable {
     private Label loginTitle;
     
     @FXML
-    private Label loginInfo;
-    
-    @FXML
     private Label loginError;
     
     @FXML
@@ -49,7 +46,6 @@ public class FXMLLoginControler implements Initializable {
         Stage stage; 
         Parent root;
         try {
-            loginInfo.setVisible(true);
             //get reference to the button's stage
             stage=(Stage) loginButton.getScene().getWindow();
             
@@ -73,7 +69,6 @@ public class FXMLLoginControler implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        loginInfo.setVisible(false);
         loginError.setVisible(false);
     }    
 }

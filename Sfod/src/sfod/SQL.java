@@ -2,6 +2,7 @@ package sfod;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
@@ -25,17 +26,44 @@ public abstract class SQL {
     private static String escriureCamp(Camp camp){
         String resultat= camp.obtNom()+" "+camp.obtTipus();
         if(camp.teEspai()) resultat+= "("+camp.obtEspai()+") ";
-        else resultat+=" ";
+        else resultat+= " ";
         if(!camp.potSerNull()) resultat+= "not NULL";
-        
+        resultat+= ", ";
+        return resultat;
     }
     
     public static void crearTaula(Connection conn, String nom, List<Camp> camps) throws SQLException{
         Statement stm= conn.createStatement();
-        String sql= "CREATE TABLE "+nom+" (";
-        Iterator it= camps.iterator();
+        String sql= "CREATE TABLE IF NOT EXISTS "+nom+" (";
+        Iterator<Camp> it= camps.iterator();
         while(it.hasNext()){
-            sql+= escriureCamp(it.next());
+            Camp aux= it.next();
+            sql+= escriureCamp(aux);
+            if(aux.isPrimaryKey()) sql+= "PRIMARY KEY ( "+aux.obtNom()+" ) , ";
+            if(aux.isForeignKey()) sql+= "FOREIGN KEY ( "+aux.obtNom()+" ) , ";
         }
+        sql= sql.substring(0, sql.length() - 2);
+        sql+= ")";
+        
+        stm.executeUpdate(sql);
+    }
+    
+    public static Boolean existeixTaula(Connection conn, String nom) throws SQLException{
+        Statement stm= conn.createStatement();
+	ResultSet rs1= stm.executeQuery("select * from "+nom);
+        if(rs1.next()) return true;
+        else return false;
+    }
+    
+    public static void eliminarTaula(Connection conn, String nom) throws SQLException{
+        Statement stm= conn.createStatement();
+        String sql= "DELETE TABLE "+nom;
+        stm.executeUpdate(sql);
+    }
+    
+    public static void afegir(Connection conn, Producte prod) throws SQLException{
+        Statement stm= conn.createStatement();
+        String sql= "INSERT INTO producte VALUES (\""+prod.getCodi()+"\", \""+prod.getDescripcio()+"\", "+prod.getEBAN()+")";
+        stm.executeUpdate(sql);
     }
 }

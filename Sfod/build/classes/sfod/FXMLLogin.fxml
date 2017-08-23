@@ -7,10 +7,10 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="LoginPane" prefHeight="300.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sfod.FXMLLoginControler">
+<AnchorPane id="LoginPane" prefHeight="300.0" prefWidth="200.0" style="-fx-background-image: url('file:src/sfod/login.jpg');" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sfod.FXMLLoginControler">
     <children>
         <Button fx:id="loginButton" defaultButton="true" layoutX="59.0" layoutY="209.0" onAction="#handleButtonAction" text="Iniciar Sessió" />
-        <Label fx:id="loginTitle" layoutX="39.0" layoutY="42.0" minHeight="16" minWidth="69" text="Inicia Sessió" textAlignment="CENTER">
+        <Label fx:id="loginTitle" layoutX="39.0" layoutY="14.0" minHeight="16" minWidth="69" text="Inicia Sessió" textAlignment="CENTER">
          <font>
             <Font size="23.0" />
          </font></Label>
@@ -19,6 +19,11 @@
       <Label fx:id="loginError" alignment="CENTER" layoutX="19.0" layoutY="172.0" prefHeight="25.0" prefWidth="164.0" text="Usuari o contrasenya incorrectes" textFill="RED">
          <font>
             <Font size="11.0" />
+         </font>
+      </Label>
+      <Label layoutX="83.0" layoutY="78.0" text="Usuari" textAlignment="CENTER" textFill="#272bf2">
+         <font>
+            <Font name="System Bold" size="12.0" />
          </font>
       </Label>
     </children>

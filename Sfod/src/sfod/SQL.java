@@ -23,6 +23,19 @@ public abstract class SQL {
         return conexion;
     }
     
+    public static Producte selecionaProducte(Connection conn, String codi) throws Exception{
+        String sql= "SELECT * FROM producte WHERE codi=\""+codi+"\"";
+        Statement stm= conn.createStatement();
+	ResultSet rs1= stm.executeQuery(sql);
+        if(rs1.next()){
+            codi= rs1.getString("codi");
+            String descripcio= rs1.getString("descripcio");
+            Integer eban= rs1.getInt("eban");
+            return new Producte(codi, eban, descripcio);
+        }
+        else throw new Exception();
+    }
+    
     private static String escriureCamp(Camp camp){
         String resultat= camp.obtNom()+" "+camp.obtTipus();
         if(camp.teEspai()) resultat+= "("+camp.obtEspai()+") ";

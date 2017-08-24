@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,7 +15,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -28,6 +32,7 @@ import javafx.stage.Stage;
 public class FXMLDatabaseControler implements Initializable {
     
     private ObservableList<Producte> data = FXCollections.observableArrayList();
+    private ObservableList<ItemProducteElectronic> dataElectronic= FXCollections.observableArrayList();
     
     @FXML
     private Label sqlError;
@@ -48,6 +53,15 @@ public class FXMLDatabaseControler implements Initializable {
     private TableColumn EBAN;
     
     @FXML
+    private TableView specs;
+    
+    @FXML
+    private TableColumn specTitol;
+    
+    @FXML
+    private TableColumn specInfo;
+    
+    @FXML
     private TextField afegirCodi;
     
     @FXML
@@ -60,13 +74,13 @@ public class FXMLDatabaseControler implements Initializable {
     private TextField codiBuscar;
     
     @FXML
-    private Label errorProducte;
-    
-    @FXML
     private TextField descBuscar;
     
     @FXML
     private TextField ebanBuscar;
+    
+    @FXML
+    private Button guardar;
     
     private final Connection conexio;
     
@@ -76,8 +90,8 @@ public class FXMLDatabaseControler implements Initializable {
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        errorProducte.setVisible(false);
         sqlError.setText("");
+        
         codi.setCellValueFactory(
             new PropertyValueFactory<Producte,String>("codi")
         );
@@ -86,6 +100,13 @@ public class FXMLDatabaseControler implements Initializable {
         );
         EBAN.setCellValueFactory(
             new PropertyValueFactory<Producte,Integer>("EBAN")
+        );
+        
+        specTitol.setCellValueFactory(
+            new PropertyValueFactory<ItemProducteElectronic,String>("titol")
+        );
+        specInfo.setCellValueFactory(
+            new PropertyValueFactory<ItemProducteElectronic,String>("info")
         );
         
         try {
@@ -107,34 +128,97 @@ public class FXMLDatabaseControler implements Initializable {
         taula.setItems(data);
         
     }
-
+    
+    private void desocultarCamps(Producte aux){
+        if(aux != null){
+            descBuscar.setText(aux.getDescripcio());
+            ebanBuscar.setText(aux.getEBAN().toString());
+        }
+        
+        descBuscar.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
+        descBuscar.setEditable(true);
+                
+        ebanBuscar.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
+        ebanBuscar.setEditable(true);
+                
+        codiBuscar.setEditable(false);
+        codiBuscar.setStyle("-fx-border-color: #CCC7BA; -fx-background-color: #CCC7BA; -fx-border-radius: 4");
+                
+        guardar.setDisable(false);
+    }
     @FXML
     private void buscarProducte(KeyEvent event){
         if(event.getCode() == KeyCode.ENTER){
+            String codi= codiBuscar.getText();
             try {
-                String codi= codiBuscar.getText();
                 Producte aux= SQL.selecionaProducte(conexio, codi);
-                
-                descBuscar.setText(aux.getDescripcio());
-                descBuscar.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
-                descBuscar.setEditable(true);
-                
-                ebanBuscar.setText(aux.getEBAN().toString());
-                ebanBuscar.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
-                ebanBuscar.setEditable(true);
-                
-                codiBuscar.setEditable(false);
-                codiBuscar.setStyle("-fx-border-color: #CCC7BA; -fx-background-color: #CCC7BA; -fx-border-radius: 4");
-                
-                errorProducte.setVisible(false);
+                desocultarCamps(aux);
             } catch (Exception ex) {
-                errorProducte.setVisible(true);
+                Alert alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Sfod");
+                alert.setHeaderText("Producte no trobat");
+                alert.setContentText("Vols donar d'alta la referència \""+codi+"\"?");
+               
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == ButtonType.OK){
+                    desocultarCamps(null);
+                } else {
+                    codiBuscar.clear();
+                }
             }
         }
     }
     
+    private void mostraAvis(){
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle("Sfod");
+        alert.setHeaderText("Error 404");
+        alert.setContentText("Descripció massa llarga, revisa-la");
+        alert.showAndWait();
+    }
+    
     @FXML
-    private void cancelar(ActionEvent event){
+    private void guardar(ActionEvent event){
+        try{
+            String novaDesc= descBuscar.getText();
+            String nouEban= ebanBuscar.getText();
+            if(novaDesc.length()>100) mostraAvis();
+            Integer intEban;
+            if(nouEban.isEmpty()) intEban= 0;
+            else intEban= Integer.parseInt(nouEban);
+            
+            Producte aux= new Producte(codiBuscar.getText(), intEban, novaDesc);
+            
+            Alert alert = new Alert(AlertType.CONFIRMATION);
+            alert.setTitle("Sfod");
+            alert.setHeaderText("Confirmar acció");
+            alert.setContentText("Vols salvar els canvis?");
+            
+            Optional<ButtonType> result = alert.showAndWait();
+            if (result.get() == ButtonType.OK){
+                SQL.actualitzar(conexio, aux);
+                cancelar();
+            } else {
+                
+            }
+        } catch(NumberFormatException e){
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Sfod");
+            alert.setHeaderText("Error 404");
+            alert.setContentText("Codi de barres invàlid, revisa'l");
+            alert.showAndWait();
+        } catch (SQLException ex) {
+            Alert alert = new Alert(AlertType.ERROR);
+            alert.setTitle("Sfod");
+            alert.setHeaderText("Error 404");
+            alert.setContentText("Sembla que hi ha un problema de connexió al servidor");
+            alert.showAndWait();
+        }
+    }
+    
+    private void cancelar(){
+        guardar.setDisable(true);
+        
         codiBuscar.clear();
         codiBuscar.setEditable(true);
         codiBuscar.setStyle("-fx-background-color: #FFFFFF; -fx-border-color: #BDBAB3; -fx-border-radius: 4");
@@ -146,6 +230,11 @@ public class FXMLDatabaseControler implements Initializable {
         ebanBuscar.clear();
         ebanBuscar.setEditable(false);
         ebanBuscar.setStyle("-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4");
+    }
+    
+    @FXML
+    private void cancelar(ActionEvent event){
+        cancelar();
     }
 
     @FXML

@@ -74,6 +74,7 @@ public class FXMLLoginControler implements Initializable {
             //create a new scene with root and set the stage
             Scene scene = new Scene(root);
             stage.setScene(scene);
+            
             stage.show();
         } catch (SQLException | ClassNotFoundException ex) {
             loginError.setVisible(true);

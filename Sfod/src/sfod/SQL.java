@@ -79,4 +79,10 @@ public abstract class SQL {
         String sql= "INSERT INTO producte VALUES (\""+prod.getCodi()+"\", \""+prod.getDescripcio()+"\", "+prod.getEBAN()+")";
         stm.executeUpdate(sql);
     }
+    
+    public static void actualitzar(Connection conn, Producte prod) throws SQLException{
+        Statement stm= conn.createStatement();
+        String sql= "UPDATE producte SET descripcio=\""+prod.getDescripcio()+"\", eban="+prod.getEBAN()+" WHERE codi=\""+prod.getCodi()+"\"";
+        stm.executeUpdate(sql);
+    }
 }

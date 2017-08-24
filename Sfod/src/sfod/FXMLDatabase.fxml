@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<TabPane xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<TabPane prefHeight="417.0" prefWidth="601.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <tabs>
       <Tab closable="false" text="Fitxa Producte">
         <content>
@@ -28,9 +28,9 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="ebanBuscar" editable="false" layoutX="59.0" layoutY="129.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
+                  <TextField fx:id="ebanBuscar" editable="false" layoutX="59.0" layoutY="129.0" prefHeight="27.0" prefWidth="135.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
                   <TextField fx:id="descBuscar" editable="false" layoutX="59.0" layoutY="55.0" prefHeight="25.0" prefWidth="486.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
-                  <Button alignment="CENTER" layoutX="188.0" layoutY="327.0" mnemonicParsing="false" style="-fx-background-color: #A6BBED;" text="Guardar" textAlignment="CENTER">
+                  <Button fx:id="guardar" alignment="CENTER" disable="true" layoutX="188.0" layoutY="327.0" mnemonicParsing="false" onAction="#guardar" style="-fx-background-color: #A6BBED;" text="Guardar" textAlignment="CENTER">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
@@ -40,14 +40,19 @@
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Button>
-                  <Label fx:id="errorProducte" layoutX="219.0" layoutY="16.0" text="Error: Producte Inexistent" textFill="RED" />
+                  <TableView fx:id="specs" editable="true" layoutX="219.0" layoutY="99.0" prefHeight="208.0" prefWidth="331.0">
+                    <columns>
+                      <TableColumn fx:id="specTitol" prefWidth="82.0" sortable="false" text="Especificació" />
+                      <TableColumn fx:id="specInfo" prefWidth="248.0" sortable="false" />
+                    </columns>
+                  </TableView>
                </children>
             </AnchorPane>
         </content>
       </Tab>
       <Tab closable="false" text="Productes">
         <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="588.0">
                <children>
                   <TableView fx:id="taula" editable="true" layoutX="28.0" layoutY="18.0" prefHeight="315.0" prefWidth="540.0">
                     <columns>

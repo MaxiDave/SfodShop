@@ -42,12 +42,10 @@ import java.util.*;
     cac[12]= any
 */
 public class ProducteElectronic extends Producte{
-    private List<String> cac= new ArrayList<>();
-    private String marca;
+    private List<ItemProducteElectronic> cac= new ArrayList<>();
     
-    public ProducteElectronic(Integer EBAN, String codi, String descripcio, List cac, String marca){
+    public ProducteElectronic(Integer EBAN, String codi, String descripcio, List<ItemProducteElectronic> cac){
         super(codi, EBAN, descripcio);
         this.cac= cac;
-        this.marca= marca;
     }
 }

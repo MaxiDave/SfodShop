@@ -85,4 +85,11 @@ public abstract class SQL {
         String sql= "UPDATE producte SET descripcio=\""+prod.getDescripcio()+"\", eban="+prod.getEBAN()+" WHERE codi=\""+prod.getCodi()+"\"";
         stm.executeUpdate(sql);
     }
+    
+    public static boolean existeixProducte(Connection conn, Producte prod) throws SQLException{
+        Statement stm= conn.createStatement();
+	ResultSet rs1= stm.executeQuery("SELECT * FROM producte WHERE codi=\""+prod.getCodi()+"\"");
+        if(rs1.next()) return true;
+        else return false;
+    }
 }

@@ -11,11 +11,11 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<TabPane prefHeight="417.0" prefWidth="601.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<TabPane prefHeight="597.0" prefWidth="624.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <tabs>
       <Tab closable="false" text="Fitxa Producte">
         <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="410.0" prefWidth="632.0">
                <children>
                   <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" text="Codi">
                      <font>
@@ -30,20 +30,20 @@
                   </Label>
                   <TextField fx:id="ebanBuscar" editable="false" layoutX="59.0" layoutY="129.0" prefHeight="27.0" prefWidth="135.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
                   <TextField fx:id="descBuscar" editable="false" layoutX="59.0" layoutY="55.0" prefHeight="25.0" prefWidth="486.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
-                  <Button fx:id="guardar" alignment="CENTER" disable="true" layoutX="188.0" layoutY="327.0" mnemonicParsing="false" onAction="#guardar" style="-fx-background-color: #A6BBED;" text="Guardar" textAlignment="CENTER">
+                  <Button fx:id="guardar" alignment="CENTER" disable="true" layoutX="188.0" layoutY="491.0" mnemonicParsing="false" onAction="#guardar" style="-fx-background-color: #A6BBED;" text="Guardar" textAlignment="CENTER">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Button>
-                  <Button layoutX="330.0" layoutY="327.0" mnemonicParsing="false" onAction="#cancelar" style="-fx-background-color: #A6BBED;" text="Cancelar">
+                  <Button layoutX="359.0" layoutY="491.0" mnemonicParsing="false" onAction="#cancelar" style="-fx-background-color: #A6BBED;" text="Cancelar">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Button>
-                  <TableView fx:id="specs" editable="true" layoutX="219.0" layoutY="99.0" prefHeight="208.0" prefWidth="331.0">
+                  <TableView fx:id="specs" editable="true" layoutX="60.0" layoutY="182.0" prefHeight="280.0" prefWidth="505.0">
                     <columns>
-                      <TableColumn fx:id="specTitol" prefWidth="82.0" sortable="false" text="Especificació" />
-                      <TableColumn fx:id="specInfo" prefWidth="248.0" sortable="false" />
+                      <TableColumn fx:id="specTitol" prefWidth="124.0" sortable="false" text="Especificació" />
+                      <TableColumn fx:id="specInfo" prefWidth="380.0" sortable="false" />
                     </columns>
                   </TableView>
                </children>

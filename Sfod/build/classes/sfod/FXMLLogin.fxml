@@ -16,11 +16,6 @@
          </font></Label>
       <TextField fx:id="loginUser" alignment="CENTER" layoutX="25.0" layoutY="102.0" prefHeight="25.0" prefWidth="151.0" promptText="Usuari" />
       <PasswordField fx:id="loginPswd" alignment="CENTER" layoutX="26.0" layoutY="138.0" promptText="Contrasenya" />
-      <Label fx:id="loginError" alignment="CENTER" layoutX="19.0" layoutY="172.0" prefHeight="25.0" prefWidth="164.0" text="Usuari o contrasenya incorrectes" textFill="RED">
-         <font>
-            <Font size="11.0" />
-         </font>
-      </Label>
       <Label layoutX="83.0" layoutY="78.0" text="Usuari" textAlignment="CENTER" textFill="#272bf2">
          <font>
             <Font name="System Bold" size="12.0" />

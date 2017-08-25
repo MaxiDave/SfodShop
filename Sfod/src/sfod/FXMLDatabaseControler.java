@@ -5,6 +5,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -12,6 +14,7 @@ import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
@@ -21,10 +24,12 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
@@ -91,6 +96,7 @@ public class FXMLDatabaseControler implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         sqlError.setText("");
+        specs.setVisible(false);
         
         codi.setCellValueFactory(
             new PropertyValueFactory<Producte,String>("codi")
@@ -102,11 +108,23 @@ public class FXMLDatabaseControler implements Initializable {
             new PropertyValueFactory<Producte,Integer>("EBAN")
         );
         
+        specTitol.setStyle("-fx-alignment: center; -fx-background-color: #b2cfff;");
         specTitol.setCellValueFactory(
             new PropertyValueFactory<ItemProducteElectronic,String>("titol")
         );
         specInfo.setCellValueFactory(
             new PropertyValueFactory<ItemProducteElectronic,String>("info")
+        );
+        specInfo.setCellFactory(TextFieldTableCell.forTableColumn());
+        specInfo.setOnEditCommit(
+            new EventHandler<CellEditEvent<ItemProducteElectronic, String>>() {
+                @Override
+                public void handle(CellEditEvent<ItemProducteElectronic, String> t) {
+                    ((ItemProducteElectronic) t.getTableView().getItems().get(
+                        t.getTablePosition().getRow())
+                        ).setInfo(t.getNewValue());
+                }
+            }
         );
         
         try {
@@ -129,12 +147,35 @@ public class FXMLDatabaseControler implements Initializable {
         
     }
     
+    private List<ItemProducteElectronic> carregaSpecs(){
+        List llistaAux= new ArrayList<>();
+        llistaAux.add(new ItemProducteElectronic("Marca",""));
+        llistaAux.add(new ItemProducteElectronic("Any",""));
+        llistaAux.add(new ItemProducteElectronic("Disseny",""));
+        llistaAux.add(new ItemProducteElectronic("CPU",""));
+        llistaAux.add(new ItemProducteElectronic("GPU",""));
+        llistaAux.add(new ItemProducteElectronic("Pantalla",""));
+        llistaAux.add(new ItemProducteElectronic("RAM",""));
+        llistaAux.add(new ItemProducteElectronic("ROM",""));
+        llistaAux.add(new ItemProducteElectronic("Càmara",""));
+        llistaAux.add(new ItemProducteElectronic("Bateria",""));
+        llistaAux.add(new ItemProducteElectronic("SIM",""));
+        llistaAux.add(new ItemProducteElectronic("NFC",""));
+        llistaAux.add(new ItemProducteElectronic("USB",""));
+        llistaAux.add(new ItemProducteElectronic("Sensors",""));
+        return llistaAux;
+    }
+    
     private void desocultarCamps(Producte aux){
         if(aux != null){
             descBuscar.setText(aux.getDescripcio());
             ebanBuscar.setText(aux.getEBAN().toString());
         }
-        
+        else{
+            dataElectronic.addAll(carregaSpecs());
+            specs.setItems(dataElectronic);
+            specs.setVisible(true);
+        }
         descBuscar.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
         descBuscar.setEditable(true);
                 
@@ -183,23 +224,24 @@ public class FXMLDatabaseControler implements Initializable {
             String novaDesc= descBuscar.getText();
             String nouEban= ebanBuscar.getText();
             if(novaDesc.length()>100) mostraAvis();
-            Integer intEban;
-            if(nouEban.isEmpty()) intEban= 0;
-            else intEban= Integer.parseInt(nouEban);
-            
-            Producte aux= new Producte(codiBuscar.getText(), intEban, novaDesc);
-            
-            Alert alert = new Alert(AlertType.CONFIRMATION);
-            alert.setTitle("Sfod");
-            alert.setHeaderText("Confirmar acció");
-            alert.setContentText("Vols salvar els canvis?");
-            
-            Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK){
-                SQL.actualitzar(conexio, aux);
-                cancelar();
-            } else {
-                
+            else{
+                Integer intEban;
+                if(nouEban.isEmpty()) intEban= 0;
+                else intEban= Integer.parseInt(nouEban);
+
+                Producte aux= new Producte(codiBuscar.getText(), intEban, novaDesc);
+
+                Alert alert = new Alert(AlertType.CONFIRMATION);
+                alert.setTitle("Sfod");
+                alert.setHeaderText("Confirmar acció");
+                alert.setContentText("Vols salvar els canvis?");
+
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.get() == ButtonType.OK){
+                    if(SQL.existeixProducte(conexio, aux)) SQL.actualitzar(conexio, aux);
+                    else SQL.afegir(conexio, aux);
+                    cancelar();
+                }
             }
         } catch(NumberFormatException e){
             Alert alert = new Alert(AlertType.ERROR);
@@ -218,6 +260,9 @@ public class FXMLDatabaseControler implements Initializable {
     
     private void cancelar(){
         guardar.setDisable(true);
+        specs.setVisible(false);
+        dataElectronic.addAll(carregaSpecs());
+        specs.setItems(dataElectronic);
         
         codiBuscar.clear();
         codiBuscar.setEditable(true);

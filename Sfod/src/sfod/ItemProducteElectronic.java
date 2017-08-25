@@ -16,4 +16,8 @@ public class ItemProducteElectronic {
     public String getInfo(){
         return info;
     }
+    
+    public void setInfo(String info){
+        this.info= info;
+    }
 }

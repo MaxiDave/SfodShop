@@ -1,7 +1,7 @@
 package sfod;
 
 public class ItemProducteElectronic {
-    private String titol;
+    private final String titol;
     private String info;
     
     public ItemProducteElectronic(String titol, String info){
@@ -19,5 +19,10 @@ public class ItemProducteElectronic {
     
     public void setInfo(String info){
         this.info= info;
+    }
+    
+    @Override
+    public String toString(){
+        return info;
     }
 }

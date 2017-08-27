@@ -12,18 +12,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 public class FXMLLoginControler implements Initializable {
-    
-    @FXML
-    private Label loginTitle;
     
     @FXML
     private TextField loginUser;
@@ -34,44 +29,42 @@ public class FXMLLoginControler implements Initializable {
     @FXML
     private Button loginButton;
     
-    @FXML
-    private ImageView fotoFons;
-    
     private Connection conexio;
     
     @FXML
-    private void handleButtonAction(ActionEvent event) throws IOException, SQLException {
+    private void accioIniciarSessio(ActionEvent event) throws IOException, SQLException {
         Stage stage; 
         Parent root;
         try {
-            //get reference to the button's stage
+            //Es carrega l'stage del botó
             stage=(Stage) loginButton.getScene().getWindow();
             
+            //Connexió amb la BDD
             conexio= SQL.connectar(loginUser.getText(), loginPswd.getText());
                 
-            //load up OTHER FXML document
+            //Càrrega del document FXML principal de l'aplicatiu
             FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLDatabase.fxml"));
-            FXMLDatabaseControler controler = new FXMLDatabaseControler(conexio);
-            loader.setController(controler);
+            FXMLDatabaseControler controlador = new FXMLDatabaseControler(conexio);
+            loader.setController(controlador);
             root = loader.load();
                 
-            //create a new scene with root and set the stage
+            //Crear i mostrar la nova escena amb el FXML carregat
             Scene scene = new Scene(root);
             stage.setScene(scene);
-            
             stage.show();
+            
         } catch (SQLException | ClassNotFoundException ex) {
+            //Contrasenya incorrecta o error de connexió
             loginPswd.clear();
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Sfod");
-            alert.setHeaderText("Error d'autenticació");
-            alert.setContentText("Usuari i/o contrasenya incorrectes");
-            alert.showAndWait();
+            
+            //Mostrar Error d'autenticació
+            PopupAlerta.mostraAlerta(AlertType.ERROR, "Error d'autenticació", "Usuari i/o contrasenya incorrectes");
         }
     }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        //Demanar focus al TextField loginUser
         Platform.runLater(()->loginUser.requestFocus());
     }    
 }

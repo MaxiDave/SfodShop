@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -15,14 +16,17 @@
    <tabs>
       <Tab closable="false" text="Fitxa Producte">
         <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="410.0" prefWidth="632.0">
+          <AnchorPane fx:id="panell" minHeight="0.0" minWidth="0.0" prefHeight="410.0" prefWidth="632.0">
                <children>
                   <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" text="Codi">
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="codiBuscar" layoutX="59.0" layoutY="12.0" onKeyPressed="#buscarProducte" prefHeight="25.0" prefWidth="129.0" style="-fx-border-color: #BDBAB3; -fx-border-radius: 4;" />
+                  <TextField fx:id="codiBuscar" layoutX="59.0" layoutY="12.0" onKeyPressed="#buscarProducte" prefHeight="25.0" prefWidth="129.0" style="-fx-border-color: #BDBAB3; -fx-border-radius: 4;">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font></TextField>
                   <Label layoutX="14.0" layoutY="132.0" text="EBAN">
                      <font>
                         <Font name="System Bold" size="14.0" />
@@ -30,12 +34,12 @@
                   </Label>
                   <TextField fx:id="ebanBuscar" editable="false" layoutX="59.0" layoutY="129.0" prefHeight="27.0" prefWidth="135.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
                   <TextField fx:id="descBuscar" editable="false" layoutX="59.0" layoutY="55.0" prefHeight="25.0" prefWidth="486.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
-                  <Button fx:id="guardar" alignment="CENTER" disable="true" layoutX="188.0" layoutY="491.0" mnemonicParsing="false" onAction="#guardar" style="-fx-background-color: #A6BBED;" text="Guardar" textAlignment="CENTER">
+                  <Button fx:id="guardar" alignment="CENTER" disable="true" layoutX="188.0" layoutY="491.0" mnemonicParsing="false" onAction="#accioGuardar" style="-fx-background-color: #A6BBED;" text="Guardar" textAlignment="CENTER">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Button>
-                  <Button layoutX="359.0" layoutY="491.0" mnemonicParsing="false" onAction="#cancelar" style="-fx-background-color: #A6BBED;" text="Cancelar">
+                  <Button layoutX="359.0" layoutY="491.0" mnemonicParsing="false" onAction="#accioCancelar" style="-fx-background-color: #A6BBED;" text="Cancelar">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
@@ -43,28 +47,70 @@
                   <TableView fx:id="specs" editable="true" layoutX="60.0" layoutY="182.0" prefHeight="280.0" prefWidth="505.0">
                     <columns>
                       <TableColumn fx:id="specTitol" prefWidth="124.0" sortable="false" text="Especificació" />
-                      <TableColumn fx:id="specInfo" prefWidth="380.0" sortable="false" />
+                      <TableColumn fx:id="specInfo" prefWidth="370.0" sortable="false" />
                     </columns>
                   </TableView>
+                  <ChoiceBox fx:id="tipusProducte" layoutX="408.0" layoutY="130.0" prefWidth="150.0" />
+                  <Label fx:id="labelTipus" layoutX="302.0" layoutY="133.0" text="Tipus Producte">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="infoTipusProducte" layoutX="408.0" layoutY="133.0" textFill="#8e00b0">
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font>
+                  </Label>
                </children>
             </AnchorPane>
         </content>
       </Tab>
-      <Tab closable="false" text="Productes">
+      <Tab closable="false" text="Venedors/Proveidors">
         <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="588.0">
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
-                  <TableView fx:id="taula" editable="true" layoutX="28.0" layoutY="18.0" prefHeight="315.0" prefWidth="540.0">
+                  <TableView fx:id="venedorsTaula" editable="true" layoutX="14.0" layoutY="44.0" prefHeight="202.0" prefWidth="596.0">
                     <columns>
-                      <TableColumn fx:id="codi" prefWidth="69.0" text="Codi" />
-                      <TableColumn fx:id="EBAN" prefWidth="84.0" text="EBAN" />
-                        <TableColumn fx:id="descripcio" prefWidth="390.0" text="Descripció" />
+                      <TableColumn fx:id="venedorsNum" prefWidth="27.0" text="Nº" />
+                      <TableColumn fx:id="venedorsNom" prefWidth="90.0" text="Nom" />
+                        <TableColumn fx:id="venedorsCognom1" prefWidth="102.0" text="1º Cognom" />
+                        <TableColumn fx:id="venedorsCognom2" prefWidth="98.0" text="2º Cognom" />
+                        <TableColumn fx:id="venedorsTelefon" prefWidth="88.0" text="Telèfon" />
+                        <TableColumn fx:id="venedorsEmail" prefWidth="189.0" text="Email" />
                     </columns>
                   </TableView>
-                  <TextField fx:id="afegirCodi" layoutX="28.0" layoutY="349.0" prefHeight="25.0" prefWidth="59.0" promptText="Codi" />
-                  <TextField fx:id="afegirEBAN" layoutX="97.0" layoutY="349.0" prefHeight="25.0" prefWidth="87.0" promptText="EBAN" />
-                  <TextField fx:id="afegirDesc" layoutX="191.0" layoutY="349.0" prefHeight="25.0" prefWidth="293.0" promptText="Descripció" />
-                  <Button defaultButton="true" layoutX="516.0" layoutY="349.0" mnemonicParsing="false" onAction="#insertarProducte" text="Afegir" />
+                  <Label layoutX="270.0" layoutY="14.0" text="VENEDORS" textFill="#6e0fae">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="262.0" layoutY="284.0" text="PROVEIDORS" textFill="#6e0fae">
+                     <font>
+                        <Font name="System Bold" size="16.0" />
+                     </font>
+                  </Label>
+                  <TableView fx:id="proveidorsTaula" editable="true" layoutX="16.0" layoutY="315.0" prefHeight="179.0" prefWidth="593.0">
+                    <columns>
+                      <TableColumn fx:id="proveidorsNum" prefWidth="23.0" text="Nº" />
+                      <TableColumn fx:id="proveidorsNom" prefWidth="128.0" text="Nom" />
+                        <TableColumn fx:id="proveidorsEspecialitat" prefWidth="141.0" text="Especialitat" />
+                        <TableColumn fx:id="proveidorsEmail" prefWidth="192.0" text="Email" />
+                        <TableColumn fx:id="proveidorsTempsEntrega" prefWidth="107.0" text="Temps d'entrega" />
+                    </columns>
+                  </TableView>
+                  <TextField fx:id="venedorsAfegirNum" layoutX="16.0" layoutY="252.0" prefHeight="25.0" prefWidth="25.0" promptText="Nº" />
+                  <TextField fx:id="venedorsAfegirNom" layoutX="41.0" layoutY="252.0" prefHeight="25.0" prefWidth="92.0" promptText="Nom" />
+                  <TextField fx:id="venedorsAfegirCognom1" layoutX="133.0" layoutY="252.0" prefHeight="25.0" prefWidth="102.0" promptText="1º Cognom" />
+                  <TextField fx:id="venedorsAfegirCognom2" layoutX="235.0" layoutY="252.0" prefHeight="25.0" prefWidth="100.0" promptText="2º Cognom" />
+                  <TextField fx:id="venedorsAfegirTelefon" layoutX="335.0" layoutY="252.0" prefHeight="25.0" prefWidth="92.0" promptText="Telèfon" />
+                  <TextField fx:id="venedorsAfegirEmail" layoutX="426.0" layoutY="252.0" prefHeight="25.0" prefWidth="182.0" promptText="Email" />
+                  <TextField fx:id="proveidorsAfegirNum" layoutX="17.0" layoutY="501.0" prefHeight="25.0" prefWidth="35.0" promptText="Nº" />
+                  <TextField fx:id="proveidorsAfegirNom" layoutX="52.0" layoutY="501.0" prefHeight="25.0" prefWidth="114.0" promptText="Nom" />
+                  <TextField fx:id="proveidorsAfegirEspecialitat" layoutX="166.0" layoutY="501.0" prefHeight="25.0" prefWidth="142.0" promptText="Especialitat" />
+                  <TextField fx:id="proveidorsAfegirEmail" layoutX="308.0" layoutY="501.0" prefHeight="25.0" prefWidth="190.0" promptText="Email" />
+                  <TextField fx:id="proveidorsAfegirTempsEntrega" layoutX="498.0" layoutY="501.0" prefHeight="25.0" prefWidth="108.0" promptText="Temps d'entrega" />
+                  <Button layoutX="552.0" layoutY="284.0" mnemonicParsing="false" onAction="#accioAfegirVenedor" style="-fx-background-color: #4286f4; -fx-border-color: #0026ff; -fx-background-radius: 5; -fx-border-radius: 6;" text="Afegir" />
+                  <Button layoutX="552.0" layoutY="529.0" mnemonicParsing="false" onAction="#accioAfegirProveidor" style="-fx-background-color: #4286f4; -fx-border-color: #0026ff; -fx-border-radius: 6; -fx-background-radius: 5;" text="Afegir" />
                </children>
             </AnchorPane>
         </content>
@@ -74,13 +120,12 @@
             <AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0">
                <children>
                   <TextArea fx:id="sqlComanda" layoutX="158.0" layoutY="143.0" prefHeight="81.0" prefWidth="286.0" promptText="Escriure comanda aquí" />
-                  <Button fx:id="sqlExecutar" layoutX="271.0" layoutY="290.0" mnemonicParsing="false" onAction="#executarComanda" text="Executar" />
+                  <Button fx:id="sqlExecutar" layoutX="271.0" layoutY="290.0" mnemonicParsing="false" onAction="#accioExecutar" text="Executar" />
                   <Label fx:id="sqlTitol" alignment="CENTER" layoutX="136.0" layoutY="36.0" text="MySQL Interaction Center" textAlignment="CENTER">
                      <font>
                         <Font name="System Bold" size="27.0" />
                      </font>
                   </Label>
-                  <Label fx:id="sqlError" alignment="CENTER" layoutX="70.0" layoutY="234.0" prefHeight="47.0" prefWidth="461.0" text="Error" textAlignment="CENTER" textFill="RED" />
                </children>
             </AnchorPane>
          </content>

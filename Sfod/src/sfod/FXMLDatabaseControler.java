@@ -1,27 +1,30 @@
 package sfod;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.control.Alert;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellEditEvent;
@@ -32,30 +35,18 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class FXMLDatabaseControler implements Initializable {
     
-    private ObservableList<Producte> data = FXCollections.observableArrayList();
     private ObservableList<ItemProducteElectronic> dataElectronic= FXCollections.observableArrayList();
-    
-    @FXML
-    private Label sqlError;
+    private ObservableList<String> opcionsTipus= FXCollections.observableArrayList();
+    private ObservableList<Venedor> venedorsLlista;
+    private ObservableList<Proveidor> proveidorsLlista;
     
     @FXML
     private TextArea sqlComanda;
-    
-    @FXML
-    private TableView taula;
-
-    @FXML
-    private TableColumn codi;
-    
-    @FXML
-    private TableColumn descripcio;
-    
-    @FXML
-    private TableColumn EBAN;
     
     @FXML
     private TableView specs;
@@ -67,13 +58,43 @@ public class FXMLDatabaseControler implements Initializable {
     private TableColumn specInfo;
     
     @FXML
-    private TextField afegirCodi;
+    private TableView venedorsTaula;
     
     @FXML
-    private TextField afegirEBAN;
+    private TableColumn venedorsNum;
     
     @FXML
-    private TextField afegirDesc;
+    private TableColumn venedorsNom;
+    
+    @FXML 
+    private TableColumn venedorsCognom1;
+    
+    @FXML
+    private TableColumn venedorsCognom2;
+    
+    @FXML
+    private TableColumn venedorsTelefon;
+    
+    @FXML
+    private TableColumn venedorsEmail;
+    
+    @FXML
+    private TableView proveidorsTaula;
+    
+    @FXML
+    private TableColumn proveidorsNum;
+    
+    @FXML
+    private TableColumn proveidorsNom;
+    
+    @FXML
+    private TableColumn proveidorsEspecialitat;
+    
+    @FXML
+    private TableColumn proveidorsEmail;
+    
+    @FXML
+    private TableColumn proveidorsTempsEntrega;
     
     @FXML
     private TextField codiBuscar;
@@ -87,64 +108,235 @@ public class FXMLDatabaseControler implements Initializable {
     @FXML
     private Button guardar;
     
+    @FXML
+    private Label labelTipus;
+    
+    @FXML
+    private ChoiceBox tipusProducte;
+    
+    @FXML
+    private Label infoTipusProducte;
+    
+    @FXML
+    private TextField venedorsAfegirNum;
+    
+    @FXML
+    private TextField venedorsAfegirNom;
+    
+    @FXML
+    private TextField venedorsAfegirCognom1;
+    
+    @FXML
+    private TextField venedorsAfegirCognom2;
+    
+    @FXML
+    private TextField venedorsAfegirTelefon;
+    
+    @FXML
+    private TextField venedorsAfegirEmail;
+    
+    @FXML
+    private TextField proveidorsAfegirNum;
+    
+    @FXML
+    private TextField proveidorsAfegirNom;
+    
+    @FXML
+    private TextField proveidorsAfegirEspecialitat;
+    
+    @FXML
+    private TextField proveidorsAfegirEmail;
+    
+    @FXML
+    private TextField proveidorsAfegirTempsEntrega;
+    
     private final Connection conexio;
     
     public FXMLDatabaseControler(Connection con){
         conexio= con;
     }
-    
+     
     @Override
-    public void initialize(URL url, ResourceBundle rb) {
-        sqlError.setText("");
-        specs.setVisible(false);
-        
-        codi.setCellValueFactory(
-            new PropertyValueFactory<Producte,String>("codi")
-        );
-        descripcio.setCellValueFactory(
-            new PropertyValueFactory<Producte,String>("descripcio")
-        );
-        EBAN.setCellValueFactory(
-            new PropertyValueFactory<Producte,Integer>("EBAN")
-        );
-        
-        specTitol.setStyle("-fx-alignment: center; -fx-background-color: #b2cfff;");
-        specTitol.setCellValueFactory(
-            new PropertyValueFactory<ItemProducteElectronic,String>("titol")
-        );
-        specInfo.setCellValueFactory(
-            new PropertyValueFactory<ItemProducteElectronic,String>("info")
-        );
-        specInfo.setCellFactory(TextFieldTableCell.forTableColumn());
-        specInfo.setOnEditCommit(
-            new EventHandler<CellEditEvent<ItemProducteElectronic, String>>() {
-                @Override
-                public void handle(CellEditEvent<ItemProducteElectronic, String> t) {
-                    ((ItemProducteElectronic) t.getTableView().getItems().get(
-                        t.getTablePosition().getRow())
-                        ).setInfo(t.getNewValue());
-                }
-            }
-        );
-        
+    public void initialize(URL url, ResourceBundle rb){
         try {
-            Statement stmt = conexio.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM producte");
+            tipusProducte.getSelectionModel().selectedIndexProperty().addListener(new
+                    ChangeListener<Number>(){
+                        public void changed(ObservableValue ov,
+                                Number value, Number new_value){
+                            if(new_value.intValue() == 0){
+                                dataElectronic.addAll(carregaSpecs());
+                                specs.setItems(dataElectronic);
+                                specs.setVisible(true);
+                            }
+                            else specs.setVisible(false);
+                        }
+                    }
+            );
             
-            while(rs.next()){
-                String code= rs.getString("codi");
-                String des= rs.getString("descripcio");
-                Integer barres= rs.getInt("EBAN");
-                
-                Producte aux= new Producte(code, barres, des);
-                data.add(aux);
-            }
+            infoTipusProducte.setVisible(false);
+            tipusProducte.setVisible(false);
+            labelTipus.setVisible(false);
+            opcionsTipus.add("Electrònic");
+            opcionsTipus.add("Servei");
+            tipusProducte.setItems(opcionsTipus);
+            specs.setVisible(false);
+            
+            specTitol.setStyle("-fx-alignment: center; -fx-background-color: #b2cfff;");
+            specTitol.setCellValueFactory(
+                    new PropertyValueFactory<ItemProducteElectronic,String>("titol")
+            );
+            specInfo.setCellValueFactory(
+                    new PropertyValueFactory<ItemProducteElectronic,String>("info")
+            );
+            specInfo.setCellFactory(TextFieldTableCell.forTableColumn());
+            specInfo.setOnEditCommit(
+                    new EventHandler<CellEditEvent<ItemProducteElectronic, String>>() {
+                        @Override
+                        public void handle(CellEditEvent<ItemProducteElectronic, String> t) {
+                            ((ItemProducteElectronic) t.getTableView().getItems().get(
+                                    t.getTablePosition().getRow())
+                                    ).setInfo(t.getNewValue());
+                        }
+                    }
+            );
+            
+            venedorsNum.setStyle("-fx-background-color: #b2cfff;");
+            venedorsNum.setCellValueFactory(
+                    new PropertyValueFactory<Venedor,String>("num")
+            );
+            
+            venedorsNom.setCellValueFactory(
+                    new PropertyValueFactory<Venedor,String>("nom")
+            );
+            
+            venedorsCognom1.setCellValueFactory(
+                    new PropertyValueFactory<Venedor,String>("cognom1")
+            );
+            
+            venedorsCognom2.setCellValueFactory(
+                    new PropertyValueFactory<Venedor,String>("cognom2")
+            );
+            
+            venedorsTelefon.setCellValueFactory(
+                    new PropertyValueFactory<Venedor,String>("telefon")
+            );
+            venedorsTelefon.setCellFactory(TextFieldTableCell.forTableColumn());
+            venedorsTelefon.setOnEditCommit(
+                    new EventHandler<CellEditEvent<Venedor, String>>() {
+                        @Override
+                        public void handle(CellEditEvent<Venedor, String> t) {
+                            Venedor aux= ((Venedor) t.getTableView().getItems().get(
+                                    t.getTablePosition().getRow())
+                                    );
+                            aux.setTelefon(t.getNewValue());
+                            try {
+                                SQL.actualitzarTelefonVenedor(conexio,aux);
+                            } catch (SQLException ex) {
+                                
+                            }
+                        }
+                    }
+            );
+            
+            venedorsEmail.setCellValueFactory(
+                    new PropertyValueFactory<Venedor,String>("email")
+            );
+            venedorsEmail.setCellFactory(TextFieldTableCell.forTableColumn());
+            venedorsEmail.setOnEditCommit(
+                    new EventHandler<CellEditEvent<Venedor, String>>() {
+                        @Override
+                        public void handle(CellEditEvent<Venedor, String> t) {
+                            Venedor aux= ((Venedor) t.getTableView().getItems().get(
+                                    t.getTablePosition().getRow())
+                                    );
+                            aux.setEmail(t.getNewValue());
+                            try {
+                                SQL.actualitzarEmailVenedor(conexio,aux);
+                            } catch (SQLException ex) {
+                                
+                            }
+                        }
+                    }
+            );
+            
+            proveidorsNum.setStyle("-fx-background-color: #b2cfff;");
+            proveidorsNum.setCellValueFactory(
+                    new PropertyValueFactory<Proveidor,String>("num")
+            );
+            
+            proveidorsNom.setCellValueFactory(
+                    new PropertyValueFactory<Proveidor,String>("nom")
+            );
+            
+            proveidorsEspecialitat.setCellValueFactory(
+                    new PropertyValueFactory<Proveidor,String>("especialitat")
+            );
+            proveidorsEspecialitat.setCellFactory(TextFieldTableCell.forTableColumn());
+            proveidorsEspecialitat.setOnEditCommit(
+                    new EventHandler<CellEditEvent<Proveidor, String>>() {
+                        @Override
+                        public void handle(CellEditEvent<Proveidor, String> t) {
+                            Proveidor aux= ((Proveidor) t.getTableView().getItems().get(
+                                    t.getTablePosition().getRow())
+                                    );
+                            aux.setEspecialitat(t.getNewValue());
+                            try {
+                                SQL.actualitzarEspecialitatProveidor(conexio,aux);
+                            } catch (SQLException ex) {
+                                
+                            }
+                        }
+                    }
+            );
+            
+            proveidorsEmail.setCellValueFactory(
+                    new PropertyValueFactory<Proveidor,String>("email")
+            );
+            proveidorsEmail.setCellFactory(TextFieldTableCell.forTableColumn());
+            proveidorsEmail.setOnEditCommit(
+                    new EventHandler<CellEditEvent<Proveidor, String>>() {
+                        @Override
+                        public void handle(CellEditEvent<Proveidor, String> t) {
+                            Proveidor aux= ((Proveidor) t.getTableView().getItems().get(
+                                    t.getTablePosition().getRow())
+                                    );
+                            aux.setEmail(t.getNewValue());
+                            try {
+                                SQL.actualitzarEmailProveidor(conexio,aux);
+                            } catch (SQLException ex) {
+                                
+                            }
+                        }
+                    }
+            );
+            
+            proveidorsTempsEntrega.setCellValueFactory(
+                    new PropertyValueFactory<Proveidor,String>("tempsEntrega")
+            );
+            proveidorsTempsEntrega.setCellFactory(TextFieldTableCell.forTableColumn());
+            proveidorsTempsEntrega.setOnEditCommit(
+                    new EventHandler<CellEditEvent<Proveidor, String>>() {
+                        @Override
+                        public void handle(CellEditEvent<Proveidor, String> t) {
+                            Proveidor aux= ((Proveidor) t.getTableView().getItems().get(
+                                    t.getTablePosition().getRow())
+                                    );
+                            aux.setTempsEntrega(t.getNewValue());
+                            try {
+                                SQL.actualitzarTempsEntregaProveidor(conexio,aux);
+                            } catch (SQLException ex) {
+                                
+                            }
+                        }
+                    }
+            );
+            venedorsLlista= SQL.carregarVenedors(conexio);
+            proveidorsLlista= SQL.carregarProveidors(conexio);
+            venedorsTaula.setItems(venedorsLlista);
+            proveidorsTaula.setItems(proveidorsLlista);
         } catch (SQLException ex) {
-            
+            PopupAlerta.mostraAlerta(AlertType.ERROR, "Error 404", "Format incorrecte");
         }
-        
-        taula.setItems(data);
-        
     }
     
     private List<ItemProducteElectronic> carregaSpecs(){
@@ -172,9 +364,8 @@ public class FXMLDatabaseControler implements Initializable {
             ebanBuscar.setText(aux.getEBAN().toString());
         }
         else{
-            dataElectronic.addAll(carregaSpecs());
-            specs.setItems(dataElectronic);
-            specs.setVisible(true);
+            labelTipus.setVisible(true);
+            tipusProducte.setVisible(true);
         }
         descBuscar.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
         descBuscar.setEditable(true);
@@ -187,80 +378,109 @@ public class FXMLDatabaseControler implements Initializable {
                 
         guardar.setDisable(false);
     }
+    
+    private Producte mostraPopup(List<Producte> list) throws IOException{
+        ObservableList<Producte> listObs= FXCollections.observableArrayList();
+        listObs.addAll(list);
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLPopup.fxml"));
+        FXMLPopupControler controler= new FXMLPopupControler(listObs);
+        loader.setController(controler);
+        Parent newScene;
+        newScene = loader.load();
+
+        Stage inputStage = new Stage();
+        inputStage.initModality(Modality.WINDOW_MODAL);
+        inputStage.initOwner(codiBuscar.getScene().getWindow());
+        inputStage.setScene(new Scene(newScene));
+        inputStage.showAndWait();
+        return controler.getProducte();
+    }
+    
     @FXML
     private void buscarProducte(KeyEvent event){
+        dataElectronic.clear();
         if(event.getCode() == KeyCode.ENTER){
             String codi= codiBuscar.getText();
             try {
-                Producte aux= SQL.selecionaProducte(conexio, codi);
+                List<Producte> list= SQL.selecionaProducte(conexio, codi);
+                Producte aux;
+                if(list.isEmpty()){
+                    if(codi.startsWith("?") || codi.endsWith("?")) throw new Exception("no");
+                    else throw new Exception("si");
+                }
+                else if(list.size() > 1) aux= mostraPopup(list);
+                else aux= list.get(0);
+                codiBuscar.setText(aux.getCodi());
                 desocultarCamps(aux);
+                if(aux instanceof ProducteElectronic){
+                    infoTipusProducte.setText("PRODUCTE ELECTRONIC");
+                    ProducteElectronic auxElect=(ProducteElectronic)aux;
+                    Iterator<ItemProducteElectronic> it= auxElect.getItemsIterator();
+                    while(it.hasNext()) dataElectronic.add(it.next());
+                    specs.setItems(dataElectronic);
+                    specs.setVisible(true);
+                }
+                else infoTipusProducte.setText("SERVEI");
+                infoTipusProducte.setVisible(true);
             } catch (Exception ex) {
-                Alert alert = new Alert(AlertType.CONFIRMATION);
-                alert.setTitle("Sfod");
-                alert.setHeaderText("Producte no trobat");
-                alert.setContentText("Vols donar d'alta la referència \""+codi+"\"?");
-               
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.get() == ButtonType.OK){
-                    desocultarCamps(null);
-                } else {
+                if(ex.getMessage().equals("si")){
+                    if(PopupAlerta.mostrarConfirmacio("Producte no trobat", "Vols donar d'alta la referència \""+codi+"\"?")) desocultarCamps(null);
+                    else codiBuscar.clear();
+                }
+                else{
+                    PopupAlerta.mostraAlerta(AlertType.WARNING, "Producte no trobat", "No s'ha trobat cap referència");
                     codiBuscar.clear();
                 }
             }
         }
     }
     
-    private void mostraAvis(){
-        Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle("Sfod");
-        alert.setHeaderText("Error 404");
-        alert.setContentText("Descripció massa llarga, revisa-la");
-        alert.showAndWait();
-    }
-    
     @FXML
-    private void guardar(ActionEvent event){
+    private void accioGuardar(ActionEvent event){
         try{
             String novaDesc= descBuscar.getText();
             String nouEban= ebanBuscar.getText();
-            if(novaDesc.length()>100) mostraAvis();
+            if(novaDesc.length()>100) PopupAlerta.mostraAlerta(AlertType.ERROR, "Error 404", "Descripció massa llarga, revisa-la");
             else{
                 Integer intEban;
                 if(nouEban.isEmpty()) intEban= 0;
                 else intEban= Integer.parseInt(nouEban);
-
-                Producte aux= new Producte(codiBuscar.getText(), intEban, novaDesc);
-
-                Alert alert = new Alert(AlertType.CONFIRMATION);
-                alert.setTitle("Sfod");
-                alert.setHeaderText("Confirmar acció");
-                alert.setContentText("Vols salvar els canvis?");
-
-                Optional<ButtonType> result = alert.showAndWait();
-                if (result.get() == ButtonType.OK){
-                    if(SQL.existeixProducte(conexio, aux)) SQL.actualitzar(conexio, aux);
+                Producte aux;
+                if(SQL.existeixProducte(conexio, codiBuscar.getText())){
+                    if(infoTipusProducte.getText().equals("SERVEI")){
+                        aux= new Producte(codiBuscar.getText(), intEban, novaDesc);
+                    }
+                    else aux= new ProducteElectronic(codiBuscar.getText(), intEban, novaDesc, dataElectronic);
+                }
+                else{
+                    if(tipusProducte.getSelectionModel().getSelectedItem().equals("Electrònic")){
+                        aux= new ProducteElectronic(codiBuscar.getText(), intEban, novaDesc, dataElectronic);
+                    }
+                    else aux= new Producte(codiBuscar.getText(), intEban, novaDesc);
+                }
+                if(PopupAlerta.mostrarConfirmacio("Confirmar acció", "Vols salvar els canvis?")){
+                    if(SQL.existeixProducte(conexio, aux.getCodi())) SQL.actualitzar(conexio, aux);
                     else SQL.afegir(conexio, aux);
                     cancelar();
                 }
             }
         } catch(NumberFormatException e){
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle("Sfod");
-            alert.setHeaderText("Error 404");
-            alert.setContentText("Codi de barres invàlid, revisa'l");
-            alert.showAndWait();
+            PopupAlerta.mostraAlerta(AlertType.ERROR, "Error 404", "Codi de barres invàlid, revisa'l");
         } catch (SQLException ex) {
-            Alert alert = new Alert(AlertType.ERROR);
-            alert.setTitle("Sfod");
-            alert.setHeaderText("Error 404");
-            alert.setContentText("Sembla que hi ha un problema de connexió al servidor");
-            alert.showAndWait();
+            PopupAlerta.mostraAlerta(AlertType.ERROR, "Error de Servidor 404", ex.getMessage());
+        } catch(NullPointerException ex){
+            PopupAlerta.mostraAlerta(AlertType.ERROR, "Error 404", "Tipus de Producte invàlid");
         }
     }
     
     private void cancelar(){
+        infoTipusProducte.setVisible(false);
+        labelTipus.setVisible(false);
+        tipusProducte.setVisible(false);
+        tipusProducte.getSelectionModel().clearSelection();
         guardar.setDisable(true);
         specs.setVisible(false);
+        dataElectronic.clear();
         dataElectronic.addAll(carregaSpecs());
         specs.setItems(dataElectronic);
         
@@ -278,32 +498,60 @@ public class FXMLDatabaseControler implements Initializable {
     }
     
     @FXML
-    private void cancelar(ActionEvent event){
+    private void accioCancelar(ActionEvent event){
         cancelar();
-    }
-
-    @FXML
-    private void insertarProducte(ActionEvent event) throws SQLException{
-        Producte aux= new Producte(afegirCodi.getText(), Integer.parseInt(afegirEBAN.getText()), afegirDesc.getText());
-        data.add(aux);
-        afegirCodi.clear();
-        afegirEBAN.clear();
-        afegirDesc.clear();
-        
-        SQL.afegir(conexio, aux);
     }
     
     @FXML
-    private void executarComanda(ActionEvent event){
+    private void accioExecutar(ActionEvent event){
         try {
-            Stage stage;
-            Parent root;
             Statement stmt = conexio.createStatement();
             stmt.executeUpdate(sqlComanda.getText());
-            sqlError.setText("Comanda executada correctament");
+            PopupAlerta.mostraAlerta(AlertType.CONFIRMATION, "Comanda Executada Correctament", "");
         } catch (SQLException ex) {
-            sqlError.setText(ex.getMessage());
+            PopupAlerta.mostraAlerta(AlertType.ERROR, "ERROR 404", ex.getMessage());
         }
-        sqlError.setVisible(true);
+    }
+    
+    @FXML
+    private void accioAfegirVenedor(ActionEvent event) throws SQLException{
+        String num= venedorsAfegirNum.getText();
+        String nom= venedorsAfegirNom.getText(); 
+        String cognom1= venedorsAfegirCognom1.getText(); 
+        String cognom2= venedorsAfegirCognom2.getText(); 
+        String telefon= venedorsAfegirTelefon.getText(); 
+        String email= venedorsAfegirEmail.getText();
+        Venedor aux= new Venedor(num, nom, cognom1, cognom2, telefon, email);
+        venedorsLlista.add(aux);
+        venedorsTaula.setItems(venedorsLlista);
+        
+        SQL.afegir(conexio, aux);
+        venedorsAfegirNum.clear();
+        venedorsAfegirNom.clear();
+        venedorsAfegirCognom1.clear();
+        venedorsAfegirCognom2.clear();
+        venedorsAfegirTelefon.clear();
+        venedorsAfegirEmail.clear();
+    }
+    
+        @FXML
+    private void accioAfegirProveidor(ActionEvent event) throws SQLException{
+        String num= proveidorsAfegirNum.getText();
+        String nom= proveidorsAfegirNom.getText(); 
+        String especialitat= proveidorsAfegirEspecialitat.getText(); 
+        String email= proveidorsAfegirEmail.getText(); 
+        String tempsEntrega= proveidorsAfegirTempsEntrega.getText(); 
+        Proveidor aux= new Proveidor(num, nom, especialitat, email, tempsEntrega);
+        
+        if(aux.proveidorValid()){
+            proveidorsLlista.add(aux);
+            proveidorsTaula.setItems(proveidorsLlista);
+            SQL.afegir(conexio, aux);
+            proveidorsAfegirNum.clear();
+            proveidorsAfegirNom.clear();
+            proveidorsAfegirEspecialitat.clear();
+            proveidorsAfegirEmail.clear();
+            proveidorsAfegirTempsEntrega.clear();
+        }
     }
 }

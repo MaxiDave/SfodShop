@@ -6,16 +6,17 @@ package sfod;
     CREATE TABLE producte (
             codi varchar(10) not null, 
             descripcio varchar(100), 
-            eban int, 
+            eban int,
+            esElectronic varchar(1),
             PRIMARY KEY ( codi ) 
     )
 
 */
 
 public class Producte {
-    private Integer EBAN;
-    private String codi;
-    private String descripcio;
+    private final Integer EBAN;
+    private final String codi;
+    private final String descripcio;
     
     public Producte(String codi, Integer EBAN, String descripcio) {
         this.EBAN= EBAN;

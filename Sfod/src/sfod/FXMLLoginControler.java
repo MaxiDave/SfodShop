@@ -16,9 +16,19 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundImage;
+import javafx.scene.layout.BackgroundPosition;
+import javafx.scene.layout.BackgroundRepeat;
+import javafx.scene.layout.BackgroundSize;
 import javafx.stage.Stage;
 
 public class FXMLLoginControler implements Initializable {
+    
+    @FXML
+    private AnchorPane panell;
     
     @FXML
     private TextField loginUser;
@@ -43,14 +53,15 @@ public class FXMLLoginControler implements Initializable {
             conexio= SQL.connectar(loginUser.getText(), loginPswd.getText());
                 
             //Càrrega del document FXML principal de l'aplicatiu
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLDatabase.fxml"));
-            FXMLDatabaseControler controlador = new FXMLDatabaseControler(conexio);
-            loader.setController(controlador);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLPrincipal.fxml"));
+            //FXMLDatabaseControler controlador = new FXMLDatabaseControler(conexio);
+            //loader.setController(controlador);
             root = loader.load();
                 
             //Crear i mostrar la nova escena amb el FXML carregat
             Scene scene = new Scene(root);
             stage.setScene(scene);
+            stage.setMaximized(true);
             stage.show();
             
         } catch (SQLException | ClassNotFoundException ex) {
@@ -66,5 +77,11 @@ public class FXMLLoginControler implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         //Demanar focus al TextField loginUser
         Platform.runLater(()->loginUser.requestFocus());
+        
+        Image fons= new Image(getClass().getResourceAsStream("login.jpg"));
+        BackgroundSize backgroundSize = new BackgroundSize(200, 300, true, true, true, false);
+        BackgroundImage backgroundImage = new BackgroundImage(fons, BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.CENTER, backgroundSize);
+        Background background = new Background(backgroundImage);
+        panell.setBackground(background);
     }    
 }

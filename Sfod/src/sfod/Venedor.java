@@ -79,7 +79,12 @@ public class Venedor {
         this.email= email;
     }
     
+    public boolean valid(String camp, Integer espai){
+        return !camp.isEmpty() && camp.length() <= espai;
+    }
+    
     public boolean venedorValid(){
-        return(num.length() <= 3 && nom.length() <= 15 && cognom1.length() <= 15 && cognom2.length() <= 15 && email.length() <= 35 && telefon.length() <= 15);
+        return(valid(num,3) && valid(nom,15) && valid(cognom1,15) && valid(cognom2,15) && email.length() <= 35 && telefon.length() <= 15);
     }
 }
+    

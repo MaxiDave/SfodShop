@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="LoginPane" prefHeight="300.0" prefWidth="200.0" style="-fx-background-image: url('file:src/sfod/login.jpg');" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sfod.FXMLLoginControler">
+<AnchorPane id="LoginPane" fx:id="panell" prefHeight="300.0" prefWidth="200.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sfod.FXMLLoginControler">
     <children>
         <Button fx:id="loginButton" defaultButton="true" layoutX="59.0" layoutY="209.0" onAction="#accioIniciarSessio" text="Iniciar Sessió" />
         <Label fx:id="loginTitle" layoutX="39.0" layoutY="14.0" minHeight="16" minWidth="69" text="Inicia Sessió" textAlignment="CENTER">

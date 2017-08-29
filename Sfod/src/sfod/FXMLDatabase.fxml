@@ -23,7 +23,7 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="codiBuscar" layoutX="59.0" layoutY="12.0" onKeyPressed="#buscarProducte" prefHeight="25.0" prefWidth="129.0" style="-fx-border-color: #BDBAB3; -fx-border-radius: 4;">
+                  <TextField fx:id="codiBuscar" layoutX="59.0" layoutY="12.0" onKeyPressed="#accioBuscarCodiProducte" prefHeight="25.0" prefWidth="129.0" style="-fx-border-color: #BDBAB3; -fx-border-radius: 4;">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font></TextField>
@@ -32,14 +32,15 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
+                  <TextField fx:id="descBuscar" layoutX="59.0" layoutY="55.0" onKeyPressed="#accioBuscarDescripcioProducte" prefHeight="25.0" prefWidth="486.0" />
                   <TextField fx:id="ebanBuscar" editable="false" layoutX="59.0" layoutY="129.0" prefHeight="27.0" prefWidth="135.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
-                  <TextField fx:id="descBuscar" editable="false" layoutX="59.0" layoutY="55.0" prefHeight="25.0" prefWidth="486.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
+                  <ChoiceBox fx:id="tipusProducte" layoutX="408.0" layoutY="130.0" prefWidth="150.0" />
                   <Button fx:id="guardar" alignment="CENTER" disable="true" layoutX="188.0" layoutY="491.0" mnemonicParsing="false" onAction="#accioGuardar" style="-fx-background-color: #A6BBED;" text="Guardar" textAlignment="CENTER">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Button>
-                  <Button layoutX="359.0" layoutY="491.0" mnemonicParsing="false" onAction="#accioCancelar" style="-fx-background-color: #A6BBED;" text="Cancelar">
+                  <Button fx:id="cancelar" layoutX="359.0" layoutY="491.0" mnemonicParsing="false" onAction="#accioCancelar" style="-fx-background-color: #A6BBED;" text="Cancelar">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
@@ -50,7 +51,6 @@
                       <TableColumn fx:id="specInfo" prefWidth="370.0" sortable="false" />
                     </columns>
                   </TableView>
-                  <ChoiceBox fx:id="tipusProducte" layoutX="408.0" layoutY="130.0" prefWidth="150.0" />
                   <Label fx:id="labelTipus" layoutX="302.0" layoutY="133.0" text="Tipus Producte">
                      <font>
                         <Font name="System Bold" size="14.0" />
@@ -64,6 +64,11 @@
                </children>
             </AnchorPane>
         </content>
+      </Tab>
+      <Tab closable="false" text="Compres">
+         <content>
+            <AnchorPane prefHeight="200.0" prefWidth="200.0" />
+         </content>
       </Tab>
       <Tab closable="false" text="Venedors/Proveidors">
         <content>
@@ -119,7 +124,7 @@
          <content>
             <AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0">
                <children>
-                  <TextArea fx:id="sqlComanda" layoutX="158.0" layoutY="143.0" prefHeight="81.0" prefWidth="286.0" promptText="Escriure comanda aquí" />
+                  <TextArea fx:id="sqlComanda" layoutX="158.0" layoutY="143.0" prefHeight="81.0" prefWidth="286.0" promptText="Escriure comanda SQL aquí" />
                   <Button fx:id="sqlExecutar" layoutX="271.0" layoutY="290.0" mnemonicParsing="false" onAction="#accioExecutar" text="Executar" />
                   <Label fx:id="sqlTitol" alignment="CENTER" layoutX="136.0" layoutY="36.0" text="MySQL Interaction Center" textAlignment="CENTER">
                      <font>

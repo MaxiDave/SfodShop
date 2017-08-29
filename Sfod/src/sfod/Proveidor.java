@@ -69,8 +69,12 @@ public class Proveidor {
         this.tempsEntrega= tempsEntrega;
     }
     
+    public boolean valid(String camp, Integer espai){
+        return !camp.isEmpty() && camp.length() <= espai;
+    }
+    
     public boolean proveidorValid(){
-        return(num.length() <= 3 && nom.length() <= 20 && especialitat.length() <= 15 && email.length() <= 35 && tempsEntrega.length() <= 15);
+        return(valid(num,3) && valid(nom,20) && especialitat.length() <= 15 && email.length() <= 35 && tempsEntrega.length() <= 15);
     }
 }
 

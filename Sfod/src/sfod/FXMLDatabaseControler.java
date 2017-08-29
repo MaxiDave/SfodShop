@@ -33,6 +33,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
@@ -109,6 +111,9 @@ public class FXMLDatabaseControler implements Initializable {
     private Button guardar;
     
     @FXML
+    private Button cancelar;
+    
+    @FXML
     private Label labelTipus;
     
     @FXML
@@ -158,6 +163,10 @@ public class FXMLDatabaseControler implements Initializable {
      
     @Override
     public void initialize(URL url, ResourceBundle rb){
+        Image cancelButon = new Image(getClass().getResourceAsStream("cancelar.png"));
+        cancelar.setGraphic(new ImageView(cancelButon));
+        Image guardarButon = new Image(getClass().getResourceAsStream("guardar.png"));
+        guardar.setGraphic(new ImageView(guardarButon));
         try {
             tipusProducte.getSelectionModel().selectedIndexProperty().addListener(new
                     ChangeListener<Number>(){
@@ -397,12 +406,47 @@ public class FXMLDatabaseControler implements Initializable {
     }
     
     @FXML
-    private void buscarProducte(KeyEvent event){
+    private void accioBuscarDescripcioProducte(KeyEvent event){
+        if(codiBuscar.isEditable()){
+            dataElectronic.clear();
+            if(event.getCode() == KeyCode.ENTER){
+                String desc= descBuscar.getText();
+                try{
+                    List<Producte> list= SQL.selecionaProducte(conexio, "descripcio", desc);
+                    Producte aux;
+                    if(list.isEmpty()) throw new Exception();
+                    else if(list.size() > 1) aux= mostraPopup(list);
+                    else aux= list.get(0);
+                    if(aux != null){
+                        codiBuscar.setText(aux.getCodi());
+                        desocultarCamps(aux);
+                        if(aux instanceof ProducteElectronic){
+                            infoTipusProducte.setText("PRODUCTE ELECTRONIC");
+                            ProducteElectronic auxElect=(ProducteElectronic)aux;
+                            Iterator<ItemProducteElectronic> it= auxElect.getItemsIterator();
+                            while(it.hasNext()) dataElectronic.add(it.next());
+                            specs.setItems(dataElectronic);
+                            specs.setVisible(true);
+                        }
+                        else infoTipusProducte.setText("SERVEI");
+                        infoTipusProducte.setVisible(true);
+                    }
+                    else descBuscar.clear();
+                } catch (Exception ex) {
+                    PopupAlerta.mostraAlerta(AlertType.WARNING, "Producte no trobat", "No s'ha trobat cap referència");
+                    descBuscar.clear();
+                }
+            }
+        }
+    }
+    
+    @FXML
+    private void accioBuscarCodiProducte(KeyEvent event){
         dataElectronic.clear();
         if(event.getCode() == KeyCode.ENTER){
             String codi= codiBuscar.getText();
             try {
-                List<Producte> list= SQL.selecionaProducte(conexio, codi);
+                List<Producte> list= SQL.selecionaProducte(conexio, "codi", codi);
                 Producte aux;
                 if(list.isEmpty()){
                     if(codi.startsWith("?") || codi.endsWith("?")) throw new Exception("no");
@@ -410,18 +454,21 @@ public class FXMLDatabaseControler implements Initializable {
                 }
                 else if(list.size() > 1) aux= mostraPopup(list);
                 else aux= list.get(0);
-                codiBuscar.setText(aux.getCodi());
-                desocultarCamps(aux);
-                if(aux instanceof ProducteElectronic){
-                    infoTipusProducte.setText("PRODUCTE ELECTRONIC");
-                    ProducteElectronic auxElect=(ProducteElectronic)aux;
-                    Iterator<ItemProducteElectronic> it= auxElect.getItemsIterator();
-                    while(it.hasNext()) dataElectronic.add(it.next());
-                    specs.setItems(dataElectronic);
-                    specs.setVisible(true);
+                if(aux != null){
+                    codiBuscar.setText(aux.getCodi());
+                    desocultarCamps(aux);
+                    if(aux instanceof ProducteElectronic){
+                        infoTipusProducte.setText("PRODUCTE ELECTRONIC");
+                        ProducteElectronic auxElect=(ProducteElectronic)aux;
+                        Iterator<ItemProducteElectronic> it= auxElect.getItemsIterator();
+                        while(it.hasNext()) dataElectronic.add(it.next());
+                        specs.setItems(dataElectronic);
+                        specs.setVisible(true);
+                    }
+                    else infoTipusProducte.setText("SERVEI");
+                    infoTipusProducte.setVisible(true);
                 }
-                else infoTipusProducte.setText("SERVEI");
-                infoTipusProducte.setVisible(true);
+                else codiBuscar.clear();
             } catch (Exception ex) {
                 if(ex.getMessage().equals("si")){
                     if(PopupAlerta.mostrarConfirmacio("Producte no trobat", "Vols donar d'alta la referència \""+codi+"\"?")) desocultarCamps(null);
@@ -489,12 +536,14 @@ public class FXMLDatabaseControler implements Initializable {
         codiBuscar.setStyle("-fx-background-color: #FFFFFF; -fx-border-color: #BDBAB3; -fx-border-radius: 4");
         
         descBuscar.clear();
-        descBuscar.setEditable(false);
-        descBuscar.setStyle("-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4");
+        descBuscar.setEditable(true);
+        descBuscar.setStyle("-fx-background-color: #FFFFFF; -fx-border-color: #BDBAB3; -fx-border-radius: 4");
         
         ebanBuscar.clear();
         ebanBuscar.setEditable(false);
         ebanBuscar.setStyle("-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4");
+        
+        codiBuscar.requestFocus();
     }
     
     @FXML
@@ -514,36 +563,39 @@ public class FXMLDatabaseControler implements Initializable {
     }
     
     @FXML
-    private void accioAfegirVenedor(ActionEvent event) throws SQLException{
-        String num= venedorsAfegirNum.getText();
-        String nom= venedorsAfegirNom.getText(); 
-        String cognom1= venedorsAfegirCognom1.getText(); 
-        String cognom2= venedorsAfegirCognom2.getText(); 
-        String telefon= venedorsAfegirTelefon.getText(); 
-        String email= venedorsAfegirEmail.getText();
-        Venedor aux= new Venedor(num, nom, cognom1, cognom2, telefon, email);
-        venedorsLlista.add(aux);
-        venedorsTaula.setItems(venedorsLlista);
-        
-        SQL.afegir(conexio, aux);
-        venedorsAfegirNum.clear();
-        venedorsAfegirNom.clear();
-        venedorsAfegirCognom1.clear();
-        venedorsAfegirCognom2.clear();
-        venedorsAfegirTelefon.clear();
-        venedorsAfegirEmail.clear();
+    private void accioAfegirVenedor(ActionEvent event){
+        try {
+            String num= venedorsAfegirNum.getText();
+            String nom= venedorsAfegirNom.getText();
+            String cognom1= venedorsAfegirCognom1.getText();
+            String cognom2= venedorsAfegirCognom2.getText();
+            String telefon= venedorsAfegirTelefon.getText();
+            String email= venedorsAfegirEmail.getText();
+            Venedor aux= new Venedor(num, nom, cognom1, cognom2, telefon, email);
+            venedorsLlista.add(aux);
+            venedorsTaula.setItems(venedorsLlista);
+            
+            SQL.afegir(conexio, aux);
+            venedorsAfegirNum.clear();
+            venedorsAfegirNom.clear();
+            venedorsAfegirCognom1.clear();
+            venedorsAfegirCognom2.clear();
+            venedorsAfegirTelefon.clear();
+            venedorsAfegirEmail.clear();
+        } catch (SQLException ex) {
+            PopupAlerta.mostraAlerta(AlertType.ERROR, "ERROR 404", "Error de format en els camps d'entrada");
+        }
     }
     
         @FXML
-    private void accioAfegirProveidor(ActionEvent event) throws SQLException{
-        String num= proveidorsAfegirNum.getText();
-        String nom= proveidorsAfegirNom.getText(); 
-        String especialitat= proveidorsAfegirEspecialitat.getText(); 
-        String email= proveidorsAfegirEmail.getText(); 
-        String tempsEntrega= proveidorsAfegirTempsEntrega.getText(); 
-        Proveidor aux= new Proveidor(num, nom, especialitat, email, tempsEntrega);
-        
-        if(aux.proveidorValid()){
+    private void accioAfegirProveidor(ActionEvent event){
+        try {
+            String num= proveidorsAfegirNum.getText();
+            String nom= proveidorsAfegirNom.getText();
+            String especialitat= proveidorsAfegirEspecialitat.getText();
+            String email= proveidorsAfegirEmail.getText();
+            String tempsEntrega= proveidorsAfegirTempsEntrega.getText();
+            Proveidor aux= new Proveidor(num, nom, especialitat, email, tempsEntrega);
             proveidorsLlista.add(aux);
             proveidorsTaula.setItems(proveidorsLlista);
             SQL.afegir(conexio, aux);
@@ -552,6 +604,8 @@ public class FXMLDatabaseControler implements Initializable {
             proveidorsAfegirEspecialitat.clear();
             proveidorsAfegirEmail.clear();
             proveidorsAfegirTempsEntrega.clear();
+        } catch (SQLException ex) {
+            PopupAlerta.mostraAlerta(AlertType.ERROR, "ERROR 404", "Error de format en els camps d'entrada");
         }
     }
 }

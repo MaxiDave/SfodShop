@@ -43,14 +43,17 @@ public abstract class SQL {
         return llista;
     }
     
-    public static List<Producte> selecionaProducte(Connection conn, String codi) throws SQLException{
+    public static List<Producte> selecionaProducte(Connection conn, String camp, String codi) throws SQLException{
         List<Producte> list= new ArrayList<>();
         Statement stm= conn.createStatement();
         String sql;
-        if(codi.endsWith("?") && codi.startsWith("?")) sql= "SELECT * FROM producte WHERE codi LIKE '%"+codi.substring(1, codi.length()-1)+"%'";
-        else if(codi.endsWith("?")) sql= "SELECT * FROM producte WHERE codi LIKE '"+codi.substring(0, codi.length()-1)+"%'";
-        else if(codi.startsWith("?")) sql= "SELECT * FROM producte WHERE codi LIKE '%"+codi.substring(1, codi.length())+"'";
-        else sql= "SELECT * FROM producte WHERE codi=\""+codi+"\"";
+        if(camp.equals("codi")){
+            if(codi.endsWith("?") && codi.startsWith("?")) sql= "SELECT * FROM producte WHERE "+camp+" LIKE '%"+codi.substring(1, codi.length()-1)+"%'";
+            else if(codi.endsWith("?")) sql= "SELECT * FROM producte WHERE "+camp+" LIKE '"+codi.substring(0, codi.length()-1)+"%'";
+            else if(codi.startsWith("?")) sql= "SELECT * FROM producte WHERE "+camp+" LIKE '%"+codi.substring(1, codi.length())+"'";
+            else sql= "SELECT * FROM producte WHERE codi=\""+codi+"\"";
+        }
+        else sql= "SELECT * FROM producte WHERE "+camp+" LIKE '%"+codi+"%'";
 	ResultSet rs1= stm.executeQuery(sql);
         while(rs1.next()){
             codi= rs1.getString("codi");

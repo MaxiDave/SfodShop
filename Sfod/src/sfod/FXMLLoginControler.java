@@ -54,8 +54,8 @@ public class FXMLLoginControler implements Initializable {
                 
             //Càrrega del document FXML principal de l'aplicatiu
             FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLPrincipal.fxml"));
-            //FXMLDatabaseControler controlador = new FXMLDatabaseControler(conexio);
-            //loader.setController(controlador);
+            FXMLPrincipalController controlador = new FXMLPrincipalController(conexio);
+            loader.setController(controlador);
             root = loader.load();
                 
             //Crear i mostrar la nova escena amb el FXML carregat

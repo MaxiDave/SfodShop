@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class Sfod extends Application {
@@ -16,6 +17,7 @@ public class Sfod extends Application {
         
         stage.setScene(scene);
         stage.setTitle("Sfod");
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("logo.png")));
         stage.show();
     }
 

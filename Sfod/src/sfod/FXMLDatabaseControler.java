@@ -386,11 +386,11 @@ public class FXMLDatabaseControler implements Initializable {
         guardar.setDisable(false);
     }
     
-    private Producte mostraPopup(List<Producte> list) throws IOException{
-        ObservableList<Producte> listObs= FXCollections.observableArrayList();
+    private ElementCercable mostraPopup(List<ElementCercable> list) throws IOException{
+        ObservableList<ElementCercable> listObs= FXCollections.observableArrayList();
         listObs.addAll(list);
         FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLPopup.fxml"));
-        FXMLPopupControler controler= new FXMLPopupControler(listObs);
+        FXMLPopupControler controler= new FXMLPopupControler(listObs, "Codi", "Descripció");
         loader.setController(controler);
         Parent newScene;
         newScene = loader.load();
@@ -400,7 +400,7 @@ public class FXMLDatabaseControler implements Initializable {
         inputStage.initOwner(codiBuscar.getScene().getWindow());
         inputStage.setScene(new Scene(newScene));
         inputStage.showAndWait();
-        return controler.getProducte();
+        return controler.getElementCercable();
     }
     
     @FXML
@@ -410,11 +410,12 @@ public class FXMLDatabaseControler implements Initializable {
             if(event.getCode() == KeyCode.ENTER){
                 String desc= descBuscar.getText();
                 try{
-                    List<Producte> list= SQL.selecionaProducte(conexio, "descripcio", desc);
-                    Producte aux;
+                    List<ElementCercable> list= SQL.seleccionaProductesCercables(conexio, "descripcio", desc);
+                    ElementCercable aux;
                     if(list.isEmpty()) throw new Exception();
                     else if(list.size() > 1) aux= mostraPopup(list);
                     else aux= list.get(0);
+                    /*
                     if(aux != null){
                         codiBuscar.setText(aux.getCodi());
                         desocultarCamps(aux);
@@ -430,6 +431,7 @@ public class FXMLDatabaseControler implements Initializable {
                         infoTipusProducte.setVisible(true);
                     }
                     else descBuscar.clear();
+                */
                 } catch (Exception ex) {
                     PopupAlerta.mostraAlerta(AlertType.WARNING, "Producte no trobat", "No s'ha trobat cap referència");
                     descBuscar.clear();
@@ -443,8 +445,9 @@ public class FXMLDatabaseControler implements Initializable {
         dataElectronic.clear();
         if(event.getCode() == KeyCode.ENTER){
             String codi= codiBuscar.getText();
+            /*
             try {
-                List<Producte> list= SQL.selecionaProducte(conexio, "codi", codi);
+                List<Producte> list= SQL.seleccionaProductes(conexio, "codi", codi);
                 Producte aux;
                 if(list.isEmpty()){
                     if(codi.startsWith("?") || codi.endsWith("?")) throw new Exception("no");
@@ -477,6 +480,7 @@ public class FXMLDatabaseControler implements Initializable {
                     codiBuscar.clear();
                 }
             }
+            */
         }
     }
     
@@ -569,7 +573,7 @@ public class FXMLDatabaseControler implements Initializable {
             String cognom2= venedorsAfegirCognom2.getText();
             String telefon= venedorsAfegirTelefon.getText();
             String email= venedorsAfegirEmail.getText();
-            Venedor aux= new Venedor(num, nom, cognom1, cognom2, telefon, email);
+            Venedor aux= new Venedor(num, nom, cognom1, cognom2, telefon, email, null, null, null, null, null);
             venedorsLlista.add(aux);
             venedorsTaula.setItems(venedorsLlista);
             

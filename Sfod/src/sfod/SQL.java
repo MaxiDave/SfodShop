@@ -61,8 +61,8 @@ public abstract class SQL {
         else throw new SQLException();
     }
     
-    public static List<Producte> seleccionaProductes(Connection conn, String camp, String codi) throws SQLException{
-        List<Producte> list= new ArrayList<>();
+    public static List<ElementCercable> seleccionaProductesCercables(Connection conn, String camp, String codi) throws SQLException{
+        List<ElementCercable> list= new ArrayList<>();
         Statement stm= conn.createStatement();
         String sql;
         if(camp.equals("codi")){
@@ -76,15 +76,7 @@ public abstract class SQL {
         while(rs1.next()){
             codi= rs1.getString("codi");
             String descripcio= rs1.getString("descripcio");
-            /*
-            String esElectronic= rs1.getString("esElectronic");
-            if(esElectronic.equals("s")){
-                List<ItemProducteElectronic> llista= obtenirItemsProducteElectronic(conn, codi);
-                list.add(new ProducteElectronic(codi, eban, descripcio, llista));
-            }
-            else list.add(new Producte(codi, eban, descripcio));
-            */
-            list.add(new Producte(codi, null, descripcio));
+            list.add(new ElementCercable(codi, descripcio));
         }
         return list;
     }
@@ -216,7 +208,7 @@ public abstract class SQL {
             String cognom2= rs1.getString("cognom2");
             String telefon= rs1.getString("telefon");
             String email= rs1.getString("email");
-            Venedor aux= new Venedor(num, nom, cognom1, cognom2, telefon, email);
+            Venedor aux= new Venedor(num, nom, cognom1, cognom2, telefon, email, null, null, null, null, null);
             llista.add(aux);
         }
         return llista;

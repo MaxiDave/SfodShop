@@ -21,14 +21,24 @@ public class Venedor {
     private String cognom2;
     private String telefon;
     private String email;
+    private String direccio;
+    private String provincia;
+    private String codiPais;
+    private String nomPais;
+    private String informacioAddicional;
     
-    public Venedor(String num, String nom, String cognom1, String cognom2, String telefon, String email){
+    public Venedor(String num, String nom, String cognom1, String cognom2, String telefon, String email, String direccio, String provincia, String codiPais, String nomPais, String informacioAddicional){
         this.num= num;
         this.nom= nom;
         this.cognom1= cognom1;
         this.cognom2= cognom2;
         this.telefon= telefon;
         this.email= email;
+        this.direccio= direccio;
+        this.provincia= provincia;
+        this.codiPais= codiPais;
+        this.nomPais= nomPais;
+        this.informacioAddicional= informacioAddicional;
     }
     
     public String getNum(){
@@ -55,28 +65,24 @@ public class Venedor {
         return email;
     }
     
-    public void setNum(String num){
-        this.num= num;
+    public String getDireccio(){
+        return direccio;
     }
     
-    public void setNom(String nom){
-        this.nom= nom;
+    public String getProvincia(){
+        return provincia;
     }
     
-    public void setCognom1(String cognom1){
-        this.cognom1= cognom1;
+    public String getCodiPais(){
+        return codiPais;
     }
     
-    public void setCognom2(String cognom2){
-        this.cognom2= cognom2;
+    public String getNomPais(){
+        return nomPais;
     }
     
-    public void setTelefon(String telefon){
-        this.telefon= telefon;
-    }
-    
-    public void setEmail(String email){
-        this.email= email;
+    public String getInformacioAddicional(){
+        return informacioAddicional;
     }
     
     public boolean valid(String camp, Integer espai){

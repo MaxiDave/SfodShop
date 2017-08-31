@@ -16,35 +16,40 @@ import javafx.stage.Stage;
 
 public class FXMLPopupControler implements Initializable {
     
-    private final ObservableList<Producte> productes;
-    private Producte seleccionat;
+    private final ObservableList<ElementCercable> elements;
+    private final String nomPrincipal;
+    private final String nomSecundari;
+    private ElementCercable seleccionat;
 
     @FXML
-    private TableView cerca;
+    private TableView resultatCerca;
     
     @FXML
-    private TableColumn cercaCodi;
+    private TableColumn cercaPrincipal;
     
     @FXML
-    private TableColumn cercaDesc;
+    private TableColumn cercaSecundari;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        Platform.runLater(()->cerca.getSelectionModel().select(0));
-        cercaCodi.setCellValueFactory(
-            new PropertyValueFactory<Producte,String>("codi")
-        );
-        cercaDesc.setCellValueFactory(
-            new PropertyValueFactory<Producte,String>("descripcio")
-        );
-        cerca.setItems(productes);
+        cercaPrincipal.setText(nomPrincipal);
+        cercaSecundari.setText(nomSecundari);
         
-        cerca.setRowFactory( tv -> {
-            TableRow<Producte> row = new TableRow<>();
+        Platform.runLater(()->resultatCerca.getSelectionModel().select(0));
+        cercaPrincipal.setCellValueFactory(
+            new PropertyValueFactory<ElementCercable,String>("principal")
+        );
+        cercaSecundari.setCellValueFactory(
+            new PropertyValueFactory<ElementCercable,String>("secundari")
+        );
+        resultatCerca.setItems(elements);
+        
+        resultatCerca.setRowFactory( tv -> {
+            TableRow<ElementCercable> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && (! row.isEmpty()) ) {
                     seleccionat= row.getItem();
-                    Stage stage = (Stage) cerca.getScene().getWindow();
+                    Stage stage = (Stage) resultatCerca.getScene().getWindow();
                     stage.close();
                 }
             });
@@ -54,18 +59,20 @@ public class FXMLPopupControler implements Initializable {
 
     @FXML
     public void eventKeyEnter(KeyEvent event){
-        if (!cerca.getSelectionModel().isEmpty() && event.getCode() == KeyCode.ENTER) {
-            seleccionat= (Producte) cerca.getSelectionModel().getSelectedItem();
-            Stage stage = (Stage) cerca.getScene().getWindow();
+        if (!resultatCerca.getSelectionModel().isEmpty() && event.getCode() == KeyCode.ENTER) {
+            seleccionat= (ElementCercable) resultatCerca.getSelectionModel().getSelectedItem();
+            Stage stage = (Stage) resultatCerca.getScene().getWindow();
             stage.close();
         }
     }
     
-    public FXMLPopupControler(ObservableList<Producte> llista){
-        productes= llista;
+    public FXMLPopupControler(ObservableList<ElementCercable> llista, String nomPrincipal, String nomSecundari){
+        elements= llista;
+        this.nomPrincipal= nomPrincipal;
+        this.nomSecundari= nomSecundari;
     }
     
-    public Producte getProducte(){
+    public ElementCercable getElementCercable(){
         return seleccionat;
     }
 }

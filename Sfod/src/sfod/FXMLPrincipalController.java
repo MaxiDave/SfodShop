@@ -13,6 +13,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
@@ -41,6 +42,8 @@ public class FXMLPrincipalController implements Initializable {
         inputStage.initModality(Modality.NONE);
         inputStage.initOwner(panell.getScene().getWindow());
         inputStage.setScene(new Scene(newScene));
+        inputStage.getIcons().add(new Image(getClass().getResourceAsStream("logo.png")));
+        inputStage.setTitle("Manteniment de Productes");
         inputStage.showAndWait();
     }
     

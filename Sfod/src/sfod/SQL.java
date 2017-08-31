@@ -43,28 +43,48 @@ public abstract class SQL {
         return llista;
     }
     
-    public static List<Producte> selecionaProducte(Connection conn, String camp, String codi) throws SQLException{
-        List<Producte> list= new ArrayList<>();
+    public static Producte seleccionaProducte(Connection conn, String codi) throws SQLException{
         Statement stm= conn.createStatement();
-        String sql;
-        if(camp.equals("codi")){
-            if(codi.endsWith("?") && codi.startsWith("?")) sql= "SELECT * FROM producte WHERE "+camp+" LIKE '%"+codi.substring(1, codi.length()-1)+"%'";
-            else if(codi.endsWith("?")) sql= "SELECT * FROM producte WHERE "+camp+" LIKE '"+codi.substring(0, codi.length()-1)+"%'";
-            else if(codi.startsWith("?")) sql= "SELECT * FROM producte WHERE "+camp+" LIKE '%"+codi.substring(1, codi.length())+"'";
-            else sql= "SELECT * FROM producte WHERE codi=\""+codi+"\"";
-        }
-        else sql= "SELECT * FROM producte WHERE "+camp+" LIKE '%"+codi+"%'";
-	ResultSet rs1= stm.executeQuery(sql);
-        while(rs1.next()){
+        String sql= "SELECT * FROM producte WHERE codi=\""+codi+"\"";
+        ResultSet rs1= stm.executeQuery(sql);
+        if(rs1.next()){
             codi= rs1.getString("codi");
             String descripcio= rs1.getString("descripcio");
             Integer eban= rs1.getInt("eban");
             String esElectronic= rs1.getString("esElectronic");
             if(esElectronic.equals("s")){
                 List<ItemProducteElectronic> llista= obtenirItemsProducteElectronic(conn, codi);
+                return new ProducteElectronic(codi, eban, descripcio, llista);
+            }
+            else return new Producte(codi, eban, descripcio);
+        }
+        else throw new SQLException();
+    }
+    
+    public static List<Producte> seleccionaProductes(Connection conn, String camp, String codi) throws SQLException{
+        List<Producte> list= new ArrayList<>();
+        Statement stm= conn.createStatement();
+        String sql;
+        if(camp.equals("codi")){
+            if(codi.endsWith("?") && codi.startsWith("?")) sql= "SELECT codi, descripcio FROM producte WHERE "+camp+" LIKE '%"+codi.substring(1, codi.length()-1)+"%'";
+            else if(codi.endsWith("?")) sql= "SELECT codi, descripcio FROM producte WHERE "+camp+" LIKE '"+codi.substring(0, codi.length()-1)+"%'";
+            else if(codi.startsWith("?")) sql= "SELECT codi, descripcio FROM producte WHERE "+camp+" LIKE '%"+codi.substring(1, codi.length())+"'";
+            else sql= "SELECT codi, descripcio FROM producte WHERE codi=\""+codi+"\"";
+        }
+        else sql= "SELECT codi, descripcio FROM producte WHERE "+camp+" LIKE '%"+codi+"%'";
+	ResultSet rs1= stm.executeQuery(sql);
+        while(rs1.next()){
+            codi= rs1.getString("codi");
+            String descripcio= rs1.getString("descripcio");
+            /*
+            String esElectronic= rs1.getString("esElectronic");
+            if(esElectronic.equals("s")){
+                List<ItemProducteElectronic> llista= obtenirItemsProducteElectronic(conn, codi);
                 list.add(new ProducteElectronic(codi, eban, descripcio, llista));
             }
             else list.add(new Producte(codi, eban, descripcio));
+            */
+            list.add(new Producte(codi, null, descripcio));
         }
         return list;
     }

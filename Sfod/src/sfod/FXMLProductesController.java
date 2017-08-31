@@ -198,41 +198,51 @@ public class FXMLProductesController implements Initializable {
         inputStage.initModality(Modality.WINDOW_MODAL);
         inputStage.initOwner(codiBuscar.getScene().getWindow());
         inputStage.setScene(new Scene(newScene));
+        inputStage.getIcons().add(new Image(getClass().getResourceAsStream("logo.png")));
+        inputStage.setTitle("Buscador");
         inputStage.showAndWait();
         return controler.getProducte();
     }
     
     @FXML
     private void accioBuscarDescripcioProducte(KeyEvent event){
-        if(codiBuscar.isEditable()){
+        if(codiBuscar.isEditable() && event.getCode() == KeyCode.ENTER){
             dataElectronic.clear();
-            if(event.getCode() == KeyCode.ENTER){
-                String desc= descBuscar.getText();
-                try{
-                    List<Producte> list= SQL.selecionaProducte(conexio, "descripcio", desc);
-                    Producte aux;
-                    if(list.isEmpty()) throw new Exception();
-                    else if(list.size() > 1) aux= mostraPopup(list);
-                    else aux= list.get(0);
-                    if(aux != null){
-                        codiBuscar.setText(aux.getCodi());
-                        desocultarCamps(aux);
-                        if(aux instanceof ProducteElectronic){
-                            infoTipusProducte.setText("PRODUCTE ELECTRONIC");
-                            ProducteElectronic auxElect=(ProducteElectronic)aux;
-                            Iterator<ItemProducteElectronic> it= auxElect.getItemsIterator();
-                            while(it.hasNext()) dataElectronic.add(it.next());
-                            taulaSpecs.setItems(dataElectronic);
-                            taulaSpecs.setVisible(true);
-                        }
-                        else infoTipusProducte.setText("PRODUCTE VARIS");
-                        infoTipusProducte.setVisible(true);
+            String desc= descBuscar.getText();
+            try{
+                List<Producte> list= SQL.seleccionaProductes(conexio, "descripcio", desc);
+                Producte aux;
+                if(list.isEmpty()) throw new Exception();
+                else if(list.size() > 1) aux= mostraPopup(list);
+                else aux= list.get(0);
+                if(aux != null){
+                    codiBuscar.setText(aux.getCodi());
+                    desocultarCamps(aux);
+                    if(aux instanceof ProducteElectronic){
+                        infoTipusProducte.setText("PRODUCTE ELECTRONIC");
+                        ProducteElectronic auxElect=(ProducteElectronic)aux;
+                        Iterator<ItemProducteElectronic> it= auxElect.getItemsIterator();
+                        while(it.hasNext()) dataElectronic.add(it.next());
+                        taulaSpecs.setItems(dataElectronic);
+                        taulaSpecs.setVisible(true);
                     }
-                    else descBuscar.clear();
-                } catch (Exception ex) {
-                    PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "Producte no trobat", "No s'ha trobat cap referència");
-                    descBuscar.clear();
+                    else infoTipusProducte.setText("PRODUCTE VARIS");
+                    infoTipusProducte.setVisible(true);
                 }
+                else descBuscar.clear();
+            } catch (Exception ex) {
+                PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "Producte no trobat", "No s'ha trobat cap referència");
+                descBuscar.clear();
+            }
+        }
+        else if(event.getCode() == KeyCode.TAB){
+            if(ebanBuscar.isEditable()){
+                ebanBuscar.requestFocus();
+                descBuscar.setText(descBuscar.getText().substring(0, descBuscar.getText().length()));
+            }
+            else if(codiBuscar.isEditable()){
+                codiBuscar.requestFocus();
+                descBuscar.setText(descBuscar.getText().substring(0, descBuscar.getText().length()));
             }
         }
     }
@@ -243,7 +253,7 @@ public class FXMLProductesController implements Initializable {
         if(event.getCode() == KeyCode.ENTER){
             String codi= codiBuscar.getText();
             try {
-                List<Producte> list= SQL.selecionaProducte(conexio, "codi", codi);
+                List<Producte> list= SQL.seleccionaProductes(conexio, "codi", codi);
                 Producte aux;
                 if(list.isEmpty()){
                     if(codi.startsWith("?") || codi.endsWith("?")) throw new Exception("no");
@@ -252,6 +262,7 @@ public class FXMLProductesController implements Initializable {
                 else if(list.size() > 1) aux= mostraPopup(list);
                 else aux= list.get(0);
                 if(aux != null){
+                    aux= SQL.seleccionaProducte(conexio, aux.getCodi());
                     codiBuscar.setText(aux.getCodi());
                     desocultarCamps(aux);
                     if(aux instanceof ProducteElectronic){

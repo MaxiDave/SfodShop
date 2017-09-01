@@ -62,6 +62,7 @@ public class FXMLLoginControler implements Initializable {
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setMaximized(true);
+            stage.setTitle("Sfod - Business Management V1.0 Alpha");
             stage.show();
             
         } catch (SQLException | ClassNotFoundException ex) {

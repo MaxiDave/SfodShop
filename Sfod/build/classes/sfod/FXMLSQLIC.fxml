@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label alignment="CENTER" layoutX="136.0" layoutY="20.0" text="MySQL Interaction Center" textAlignment="CENTER">
+         <font>
+            <Font name="System Bold" size="27.0" />
+         </font>
+      </Label>
+      <TextArea fx:id="sqlComanda" layoutX="158.0" layoutY="131.0" prefHeight="81.0" prefWidth="286.0" promptText="Escriure comanda SQL aquí" />
+      <Button layoutX="270.0" layoutY="263.0" mnemonicParsing="false" onAction="#accioExecutar" text="Executar" />
+   </children>
+</AnchorPane>

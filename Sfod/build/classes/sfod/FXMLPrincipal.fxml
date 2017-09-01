@@ -23,11 +23,12 @@
           <Menu mnemonicParsing="false" text="Manteniment">
             <items>
               <MenuItem mnemonicParsing="false" onAction="#accioObrirProductes" text="Productes" />
+                  <MenuItem mnemonicParsing="false" onAction="#accioObrirVenedorsProveidors" text="Venedors &amp; Proveïdors" />
             </items>
           </Menu>
-          <Menu disable="true" mnemonicParsing="false" text="Edit">
+          <Menu mnemonicParsing="false" text="Servidor">
             <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
+                  <MenuItem mnemonicParsing="false" onAction="#accioObrirSQLIC" text="SQL I.C." />
             </items>
           </Menu>
           <Menu disable="true" mnemonicParsing="false" text="Help">

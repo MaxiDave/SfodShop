@@ -18,6 +18,7 @@ public class Sfod extends Application {
         stage.setScene(scene);
         stage.setTitle("Sfod");
         stage.getIcons().add(new Image(getClass().getResourceAsStream("logo.png")));
+        stage.setResizable(false);
         stage.show();
     }
 

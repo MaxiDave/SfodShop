@@ -81,64 +81,79 @@ public abstract class SQL {
         return list;
     }
     
+    public static Venedor seleccionaVenedor(Connection conn, String codi) throws SQLException{
+        Statement stm= conn.createStatement();
+        String sql= "SELECT * FROM venedor WHERE num="+Integer.parseInt(codi);
+        ResultSet rs1= stm.executeQuery(sql);
+        if(rs1.next()){
+            Integer numVenedor= rs1.getInt("num");
+            String nomComplet= rs1.getString("nomComplet");
+            String tractament= rs1.getString("tractament");
+            Integer telefon= rs1.getInt("telefon");
+            String email= rs1.getString("email");
+            String direccio= rs1.getString("direccio");
+            Integer codiPostal= rs1.getInt("codiPostal");
+            String poblacio= rs1.getString("poblacio");
+            String provincia= rs1.getString("provincia");
+            String codiPais= rs1.getString("codiPais");
+            String nomPais= rs1.getString("nomPais");
+            String informacioAddicional= rs1.getString("informacioAddicional");
+            return new Venedor(numVenedor, nomComplet, tractament, telefon, email, direccio, codiPostal, poblacio, provincia, codiPais, nomPais, informacioAddicional);
+        }
+        else throw new SQLException();
+    }
+    
+    public static List<ElementCercable> seleccionaVenedorsCercables(Connection conn, String stringVenedor) throws SQLException{
+        List<ElementCercable> list= new ArrayList<>();
+        Statement stm= conn.createStatement();
+        String sql;
+        if(stringVenedor.equals("*")){
+            sql= "SELECT num, nomComplet FROM venedor";
+        }
+        else{
+            Integer numVenedor= Integer.parseInt(stringVenedor);
+            sql= "SELECT num, nomComplet FROM venedor WHERE num="+numVenedor;
+        }
+	ResultSet rs1= stm.executeQuery(sql);
+        while(rs1.next()){
+            Integer num= rs1.getInt("num");
+            String nomComplet= rs1.getString("nomComplet");
+            list.add(new ElementCercable(num.toString(), nomComplet));
+        }
+        return list;
+    }
+    
     public static void afegir(Connection conn, Venedor ven) throws SQLException{
         if(ven.venedorValid()){
             Statement stm= conn.createStatement();
-            String sql= "INSERT INTO venedor VALUES(\""+ven.getNum()+"\",\""+ven.getNom()+"\",\""+ven.getCognom1()+"\",\""+ven.getCognom2()+"\",\""+ven.getTelefon()+"\",\""+ven.getEmail()+"\")";
+            String sql= "INSERT INTO venedor VALUES("+ven.getNum()+",\""+ven.getNomComplet()+"\",\""+ven.getTractament()+"\","+ven.getTelefon()+",\""+ven.getEmail()+"\",\""+ven.getDireccio()
+                    +"\","+ven.getCodiPostal().toString()+",\""+ven.getPoblacio()+"\",\""+ven.getProvincia()+"\",\""+ven.getCodiPais()+"\",\""+ven.getNomPais()+"\",\""+ven.getInformacioAddicional()+"\")";
             stm.executeUpdate(sql);
         }
         else throw new SQLException();
+    }
+    
+    public static void actualitzar(Connection conn, Venedor ven) throws SQLException{
+        if(ven.venedorValid()){
+            Statement stm= conn.createStatement();
+            String sql= "UPDATE venedor SET nomComplet=\""+ven.getNomComplet()+"\", tractament=\""+ven.getTractament()+"\", telefon="+ven.getTelefon().toString()+", email=\""+ven.getEmail()+"\", direccio=\""+ven.getDireccio()
+                    +"\", codiPostal="+ven.getCodiPostal().toString()+", poblacio=\""+ven.getPoblacio()+"\", provincia=\""+ven.getProvincia()+"\", codiPais=\""+ven.getCodiPais()+"\", nomPais=\""+ven.getNomPais()
+                    +"\", informacioAddicional=\""+ven.getInformacioAddicional()+"\" WHERE num="+ven.getNum().toString();
+            stm.executeUpdate(sql);
+        }
+        else throw new SQLException();
+    }
+    
+    public static void eliminarVenedor(Connection conn, Integer numVenedor) throws SQLException{
+        Statement stm= conn.createStatement();
+        String sql= "DELETE FROM venedor WHERE num="+numVenedor;
+        stm.executeUpdate(sql);
     }
     
     public static void afegir(Connection conn, Proveidor prov) throws SQLException{
         if(prov.proveidorValid()){
             Statement stm= conn.createStatement();
             String sql= "INSERT INTO proveidor VALUES(\""+prov.getNum()+"\",\""+prov.getNom()+"\",\""+prov.getEspecialitat()+"\",\""+prov.getEmail()+"\",\""+prov.getTempsEntrega()+"\")";
-            stm.executeUpdate(sql);
-        }
-        else throw new SQLException();
-    }
-    
-    public static void actualitzarTelefonVenedor(Connection conn, Venedor ven) throws SQLException{
-        if(ven.venedorValid()){
-            Statement stm= conn.createStatement();
-            String sql= "UPDATE venedor SET telefon=\""+ven.getTelefon()+"\" WHERE num=\""+ven.getNum()+"\"";
-            stm.executeUpdate(sql);
-        }
-        else throw new SQLException();
-    }
-    
-    public static void actualitzarEmailVenedor(Connection conn, Venedor ven) throws SQLException{
-        if(ven.venedorValid()){
-            Statement stm= conn.createStatement();
-            String sql= "UPDATE venedor SET email=\""+ven.getEmail()+"\" WHERE num=\""+ven.getNum()+"\"";
-            stm.executeUpdate(sql);
-        }
-        else throw new SQLException();
-    }
-    
-    public static void actualitzarEspecialitatProveidor(Connection conn, Proveidor prov) throws SQLException{
-        if(prov.proveidorValid()){
-            Statement stm= conn.createStatement();
-            String sql= "UPDATE proveidor SET especialitat=\""+prov.getEspecialitat()+"\" WHERE num=\""+prov.getNum()+"\"";
-            stm.executeUpdate(sql);
-        }
-        else throw new SQLException();
-    }
-    
-    public static void actualitzarEmailProveidor(Connection conn, Proveidor prov) throws SQLException{
-        if(prov.proveidorValid()){
-            Statement stm= conn.createStatement();
-            String sql= "UPDATE proveidor SET email=\""+prov.getEmail()+"\" WHERE num=\""+prov.getNum()+"\"";
-            stm.executeUpdate(sql);
-        }
-        else throw new SQLException();
-    }
-    
-    public static void actualitzarTempsEntregaProveidor(Connection conn, Proveidor prov) throws SQLException{
-        if(prov.proveidorValid()){
-            Statement stm= conn.createStatement();
-            String sql= "UPDATE proveidor SET tempsENtrega=\""+prov.getTempsEntrega()+"\" WHERE num=\""+prov.getNum()+"\"";
             stm.executeUpdate(sql);
         }
         else throw new SQLException();
@@ -197,36 +212,10 @@ public abstract class SQL {
         else return false;
     }
     
-    public static ObservableList<Venedor> carregarVenedors(Connection conn) throws SQLException{
-        ObservableList<Venedor> llista= FXCollections.observableArrayList();
+    public static boolean existeixVenedor(Connection conn, Integer num) throws SQLException{
         Statement stm= conn.createStatement();
-        ResultSet rs1= stm.executeQuery("SELECT * FROM venedor");
-        while(rs1.next()){
-            String num= rs1.getString("num");
-            String nom= rs1.getString("nom");
-            String cognom1= rs1.getString("cognom1");
-            String cognom2= rs1.getString("cognom2");
-            String telefon= rs1.getString("telefon");
-            String email= rs1.getString("email");
-            Venedor aux= new Venedor(num, nom, cognom1, cognom2, telefon, email, null, null, null, null, null);
-            llista.add(aux);
-        }
-        return llista;
-    }
-    
-    public static ObservableList<Proveidor> carregarProveidors(Connection conn) throws SQLException{
-        ObservableList<Proveidor> llista= FXCollections.observableArrayList();
-        Statement stm= conn.createStatement();
-        ResultSet rs1= stm.executeQuery("SELECT * FROM proveidor");
-        while(rs1.next()){
-            String num= rs1.getString("num");
-            String nom= rs1.getString("nom");
-            String especialitat= rs1.getString("especialitat");
-            String email= rs1.getString("email");
-            String tempsEntrega= rs1.getString("tempsEntrega");
-            Proveidor aux= new Proveidor(num, nom, especialitat, email, tempsEntrega);
-            llista.add(aux);
-        }
-        return llista;
+	ResultSet rs1= stm.executeQuery("SELECT * FROM venedor WHERE num="+num);
+        if(rs1.next()) return true;
+        else return false;
     }
 }

@@ -20,11 +20,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.PieChart.Data;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TablePosition;
+import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -33,9 +37,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 
 public class FXMLProductesController implements Initializable {
 
@@ -120,6 +126,8 @@ public class FXMLProductesController implements Initializable {
         taulaSpecs.setVisible(false);
         
         specTitol.setStyle("-fx-alignment: center; -fx-background-color: #b2cfff;");
+        specInfo.setStyle("-fx-background-color: #abe6fc;");
+        
         specTitol.setCellValueFactory(
                 new PropertyValueFactory<ItemProducteElectronic,String>("titol")
         );
@@ -134,10 +142,18 @@ public class FXMLProductesController implements Initializable {
                         ((ItemProducteElectronic) t.getTableView().getItems().get(
                                 t.getTablePosition().getRow())
                                 ).setInfo(t.getNewValue());
+                        TablePosition pos = t.getTablePosition();
+                        if(pos.getRow() < (taulaSpecs.getItems().size()-1)) {
+                            t.getTableView().requestFocus();
+                            t.getTableView().getSelectionModel().select(pos.getRow()+1, pos.getTableColumn());
+                            TablePosition tp= t.getTableView().getFocusModel().getFocusedCell();
+                            Platform.runLater(()->t.getTableView().edit(tp.getRow(), tp.getTableColumn()));
+                        }
+                        else codiBuscar.requestFocus();
                     }
                 }
         );
-    }    
+    }   
     
     FXMLProductesController(AnchorPane pare, Connection conn){
         panellPare= pare;

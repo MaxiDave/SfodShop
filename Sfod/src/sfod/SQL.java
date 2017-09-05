@@ -8,8 +8,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 public abstract class SQL {
     private static final String server= "jdbc:mysql://sql11.freemysqlhosting.net/sql11186567";

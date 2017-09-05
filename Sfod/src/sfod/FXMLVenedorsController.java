@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 import javafx.application.Platform;

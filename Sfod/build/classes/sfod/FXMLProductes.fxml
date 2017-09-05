@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" fx:id="panell" prefHeight="695.0" prefWidth="1180.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="AnchorPane" fx:id="panell" prefHeight="695.0" prefWidth="1180.0" style="-fx-background-color: #f7db88;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Label alignment="CENTER" layoutX="51.0" layoutY="36.0" text="Codi">
          <font>

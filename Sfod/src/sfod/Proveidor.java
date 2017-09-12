@@ -4,32 +4,35 @@ package sfod;
     ESTRUCTURA SQL
 
     CREATE TABLE proveidor (
-            num varchar(3) not null, 
+            num int(3) not null, 
             nom varchar(20), 
-            especialitat varchar(15),
+            especialitat varchar(50),
             email varchar(35),
-            tempsEntrega varchar(15),
+            tempsEntrega varchar(25),
+            informacioAddicional varchar(100),
             PRIMARY KEY ( num ) 
     )
 
 */
 
 public class Proveidor {
-    private String num;
-    private String nom;
-    private String especialitat;
-    private String email;
-    private String tempsEntrega;
+    private final Integer num;
+    private final String nom;
+    private final String especialitat;
+    private final String email;
+    private final String tempsEntrega;
+    private final String informacioAddicional;
     
-    public Proveidor(String num, String nom, String especialitat, String email, String tempsEntrega){
+    public Proveidor(Integer num, String nom, String especialitat, String email, String tempsEntrega, String informacioAddicional){
         this.num= num;
         this.nom= nom;
         this.especialitat= especialitat;
         this.email= email;
         this.tempsEntrega= tempsEntrega;
+        this.informacioAddicional= informacioAddicional;
     }
     
-    public String getNum(){
+    public Integer getNum(){
         return num;
     }
     
@@ -49,32 +52,28 @@ public class Proveidor {
         return tempsEntrega;
     }
     
-    public void setNum(String num){
-        this.num= num;
-    }
-    
-    public void setNom(String nom){
-        this.nom= nom;
-    }
-    
-    public void setEspecialitat(String especialitat){
-        this.especialitat= especialitat;
-    }
-    
-    public void setEmail(String email){
-        this.email= email;
-    }
-    
-    public void setTempsEntrega(String tempsEntrega){
-        this.tempsEntrega= tempsEntrega;
+    public String getInformacioAddicional(){
+        return informacioAddicional;
     }
     
     public boolean valid(String camp, Integer espai){
         return !camp.isEmpty() && camp.length() <= espai;
     }
     
+    public boolean valid(Integer camp, Integer espai){
+        long valor= 1;
+        Boolean continuar= true;
+        Integer i=0;
+        while(continuar && i<espai){
+            valor*= 10;
+            i++;
+            continuar= camp >= valor;
+        }
+        return !continuar;
+    }
+    
     public boolean proveidorValid(){
-        return(valid(num,3) && valid(nom,20) && especialitat.length() <= 15 && email.length() <= 35 && tempsEntrega.length() <= 15);
+        return(valid(num,3) && valid(nom,20) && especialitat.length() <= 50 && email.length() <= 35 && tempsEntrega.length() <= 25 && informacioAddicional.length() <= 100);
     }
 }
 

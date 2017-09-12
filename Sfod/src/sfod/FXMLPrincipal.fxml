@@ -31,6 +31,11 @@
                   <MenuItem mnemonicParsing="false" onAction="#accioObrirSQLIC" text="SQL I.C." />
             </items>
           </Menu>
+            <Menu mnemonicParsing="false" text="Compres">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#accioObrirVeureCompres" text="Historial de Compres" />
+                  <MenuItem mnemonicParsing="false" onAction="#accioObrirEntrarCompra" text="Entrar Compra" />
+               </items></Menu>
           <Menu disable="true" mnemonicParsing="false" text="Help">
             <items>
               <MenuItem mnemonicParsing="false" text="About" />

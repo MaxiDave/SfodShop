@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" fx:id="panell" prefHeight="695.0" prefWidth="1180.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="AnchorPane" fx:id="panell" prefHeight="695.0" prefWidth="1180.0" style="-fx-background-color: #f7db88;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Label layoutX="216.0" layoutY="14.0" text="GESTIÓ DE VENEDORS" textFill="#a800ff">
          <font>
@@ -43,7 +43,7 @@
          </font>
       </Label>
       <TextField fx:id="telefonVenedor" editable="false" layoutX="141.0" layoutY="190.0" prefHeight="27.0" prefWidth="103.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
-      <Label alignment="CENTER" layoutX="63.0" layoutY="244.0" text="Email">
+      <Label alignment="CENTER" layoutX="62.0" layoutY="234.0" text="Email">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
@@ -75,13 +75,18 @@
       </Label>
       <TextField fx:id="codiPaisVenedor" editable="false" layoutX="140.0" layoutY="405.0" prefHeight="27.0" prefWidth="36.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
       <TextField fx:id="nomPaisVenedor" editable="false" layoutX="188.0" layoutY="405.0" prefHeight="27.0" prefWidth="154.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
-      <Label alignment="CENTER" layoutX="242.0" layoutY="447.0" text="Informació Adicional">
+      <Label alignment="CENTER" layoutX="231.0" layoutY="448.0" text="Informació Addicional">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
       </Label>
-      <TextArea fx:id="informacioAddicionalVenedor" layoutX="140.0" layoutY="473.0" prefHeight="150.0" prefWidth="341.0" />
+      <TextArea fx:id="informacioAddicionalVenedor" editable="false" layoutX="140.0" layoutY="473.0" prefHeight="150.0" prefWidth="341.0" />
       <Button fx:id="guardarVenedor" alignment="CENTER" disable="true" layoutX="143.0" layoutY="635.0" mnemonicParsing="false" onAction="#accioGuardarVenedor" style="-fx-background-color: #A6BBED;" text="Guardar" textAlignment="CENTER">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <Button fx:id="eliminarVenedor" disable="true" layoutX="265.0" layoutY="635.0" mnemonicParsing="false" onAction="#accioEliminarVenedor" style="-fx-background-color: #A6BBED;" text="Eliminar">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
@@ -91,7 +96,67 @@
             <Font name="System Bold" size="12.0" />
          </font>
       </Button>
-      <Button fx:id="eliminarVenedor" disable="true" layoutX="265.0" layoutY="635.0" mnemonicParsing="false" onAction="#accioEliminarVenedor" style="-fx-background-color: #A6BBED;" text="Eliminar">
+      <Label layoutX="784.0" layoutY="12.0" text="GESTIÓ DE PROVEÏDORS" textFill="#a800ff">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER" layoutX="668.0" layoutY="59.0" text="Número">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="buscarProveidor" layoutX="771.0" layoutY="56.0" onKeyPressed="#accioBuscarProveidor" prefHeight="27.0" prefWidth="36.0" style="-fx-border-color: #BDBAB3; -fx-border-radius: 4;">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </TextField>
+      <Label alignment="CENTER" layoutX="680.0" layoutY="117.0" text="Nom">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="nomProveidor" editable="false" layoutX="770.0" layoutY="112.0" prefHeight="27.0" prefWidth="341.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
+      <Label alignment="CENTER" layoutX="662.0" layoutY="163.0" text="Especialitat">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="especialitatProveidor" editable="false" layoutX="769.0" layoutY="159.0" prefHeight="27.0" prefWidth="341.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
+      <Label alignment="CENTER" layoutX="678.0" layoutY="222.0" text="Email">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="emailProveidor" editable="false" layoutX="768.0" layoutY="218.0" prefHeight="27.0" prefWidth="341.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
+      <Label alignment="CENTER" layoutX="648.0" layoutY="262.0" text="Temps Entrega">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER" layoutX="656.0" layoutY="282.0" text="(Aproximat)">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="tempsEntregaProveidor" editable="false" layoutX="768.0" layoutY="267.0" prefHeight="27.0" prefWidth="341.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
+      <Label alignment="CENTER" layoutX="826.0" layoutY="373.0" text="Informació Addicional">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <TextArea fx:id="informacioAddicionalProveidor" editable="false" layoutX="722.0" layoutY="401.0" prefHeight="150.0" prefWidth="341.0" />
+      <Button fx:id="guardarProveidor" alignment="CENTER" disable="true" layoutX="725.0" layoutY="570.0" mnemonicParsing="false" onAction="#accioGuardarProveidor" style="-fx-background-color: #A6BBED;" text="Guardar" textAlignment="CENTER">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <Button fx:id="eliminarProveidor" disable="true" layoutX="848.0" layoutY="569.0" mnemonicParsing="false" onAction="#accioEliminarProveidor" style="-fx-background-color: #A6BBED;" text="Eliminar">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <Button fx:id="cancelarProveidor" layoutX="960.0" layoutY="570.0" mnemonicParsing="false" onAction="#accioCancelarProveidor" style="-fx-background-color: #A6BBED;" text="Cancelar">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>

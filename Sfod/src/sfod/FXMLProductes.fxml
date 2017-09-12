@@ -55,7 +55,12 @@
             <Font name="System Bold" size="12.0" />
          </font>
       </Button>
-      <Button fx:id="cancelar" layoutX="879.0" layoutY="430.0" mnemonicParsing="false" onAction="#accioCancelar" style="-fx-background-color: #A6BBED;" text="Cancelar">
+      <Button fx:id="cancelar" layoutX="881.0" layoutY="471.0" mnemonicParsing="false" onAction="#accioCancelar" style="-fx-background-color: #A6BBED;" text="Cancelar">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <Button fx:id="eliminar" disable="true" layoutX="882.0" layoutY="403.0" mnemonicParsing="false" onAction="#accioEliminar" style="-fx-background-color: #A6BBED;" text="Eliminar">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>

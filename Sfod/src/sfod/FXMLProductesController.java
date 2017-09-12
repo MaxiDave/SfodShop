@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -73,6 +75,9 @@ public class FXMLProductesController implements Initializable {
     private Button cancelar;
     
     @FXML
+    private Button eliminar;
+    
+    @FXML
     private Label labelTipus;
     
     @FXML
@@ -102,6 +107,8 @@ public class FXMLProductesController implements Initializable {
         cancelar.setGraphic(new ImageView(cancelButon));
         Image guardarButon = new Image(getClass().getResourceAsStream("guardar.png"));
         guardar.setGraphic(new ImageView(guardarButon));
+        Image eliminarButon = new Image(getClass().getResourceAsStream("eliminar.png"));
+        eliminar.setGraphic(new ImageView(eliminarButon));
         
         tipusProducte.getSelectionModel().selectedIndexProperty().addListener(new
                 ChangeListener<Number>(){
@@ -149,7 +156,7 @@ public class FXMLProductesController implements Initializable {
                             TablePosition tp= t.getTableView().getFocusModel().getFocusedCell();
                             Platform.runLater(()->t.getTableView().edit(tp.getRow(), tp.getTableColumn()));
                         }
-                        else codiBuscar.requestFocus();
+                        else descBuscar.requestFocus();
                     }
                 }
         );
@@ -198,6 +205,7 @@ public class FXMLProductesController implements Initializable {
         codiBuscar.setStyle("-fx-border-color: #CCC7BA; -fx-background-color: #CCC7BA; -fx-border-radius: 4");
                 
         guardar.setDisable(false);
+        eliminar.setDisable(false);
     }
     
     private ElementCercable mostraPopup(List<ElementCercable> list) throws IOException{
@@ -342,6 +350,7 @@ public class FXMLProductesController implements Initializable {
         tipusProducte.setVisible(false);
         tipusProducte.getSelectionModel().clearSelection();
         guardar.setDisable(true);
+        eliminar.setDisable(true);
         taulaSpecs.setVisible(false);
         dataElectronic.clear();
         dataElectronic.addAll(carregaSpecs());
@@ -365,5 +374,18 @@ public class FXMLProductesController implements Initializable {
     @FXML
     private void accioCancelar(ActionEvent event){
         cancelar();
+    }
+    
+    @FXML
+    private void accioEliminar(ActionEvent event){
+        if(PopupAlerta.mostrarConfirmacio("Eliminar Producte", "Segur que vols eliminar el producte '"+codiBuscar.getText()+"' ?")){
+            try {
+                SQL.eliminarProducte(conexio, codiBuscar.getText());
+                cancelar();
+                PopupAlerta.mostrarConfirmacio("Eliminar Producte", "S'ha eliminat el producte correctament");
+            } catch (SQLException ex) {
+                PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error de Servidor 404", ex.getMessage());
+            }
+        }
     }
 }

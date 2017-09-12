@@ -1,13 +1,19 @@
 package sfod;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 public abstract class SQL {
     private static final String server= "jdbc:mysql://sql11.freemysqlhosting.net/sql11186567";
@@ -121,6 +127,42 @@ public abstract class SQL {
         return list;
     }
     
+    public static Proveidor seleccionaProveidor(Connection conn, String codi) throws SQLException{
+        Statement stm= conn.createStatement();
+        String sql= "SELECT * FROM proveidor WHERE num="+Integer.parseInt(codi);
+        ResultSet rs1= stm.executeQuery(sql);
+        if(rs1.next()){
+            Integer numProveidor= rs1.getInt("num");
+            String nom= rs1.getString("nom");
+            String especialitat= rs1.getString("especialitat");
+            String email= rs1.getString("email");
+            String tempsEntrega= rs1.getString("tempsEntrega");
+            String informacioAddicional= rs1.getString("informacioAddicional");
+            return new Proveidor(numProveidor, nom, especialitat, email, tempsEntrega, informacioAddicional);
+        }
+        else throw new SQLException();
+    }
+    
+    public static List<ElementCercable> seleccionaProveidorsCercables(Connection conn, String stringProveidor) throws SQLException{
+        List<ElementCercable> list= new ArrayList<>();
+        Statement stm= conn.createStatement();
+        String sql;
+        if(stringProveidor.equals("*")){
+            sql= "SELECT num, nom FROM proveidor";
+        }
+        else{
+            Integer numProveidor= Integer.parseInt(stringProveidor);
+            sql= "SELECT num, nom FROM proveidor WHERE num="+numProveidor;
+        }
+	ResultSet rs1= stm.executeQuery(sql);
+        while(rs1.next()){
+            Integer num= rs1.getInt("num");
+            String nom= rs1.getString("nom");
+            list.add(new ElementCercable(num.toString(), nom));
+        }
+        return list;
+    }
+    
     public static void afegir(Connection conn, Venedor ven) throws SQLException{
         if(ven.venedorValid()){
             Statement stm= conn.createStatement();
@@ -151,10 +193,27 @@ public abstract class SQL {
     public static void afegir(Connection conn, Proveidor prov) throws SQLException{
         if(prov.proveidorValid()){
             Statement stm= conn.createStatement();
-            String sql= "INSERT INTO proveidor VALUES(\""+prov.getNum()+"\",\""+prov.getNom()+"\",\""+prov.getEspecialitat()+"\",\""+prov.getEmail()+"\",\""+prov.getTempsEntrega()+"\")";
+            String sql= "INSERT INTO proveidor VALUES(\""+prov.getNum()+"\",\""+prov.getNom()+"\",\""+prov.getEspecialitat()+"\",\""+prov.getEmail()+"\",\""+prov.getTempsEntrega()+"\",\""+prov.getInformacioAddicional()+"\")";
             stm.executeUpdate(sql);
         }
         else throw new SQLException();
+    }
+    
+    public static void actualitzar(Connection conn, Proveidor prov) throws SQLException{
+        if(prov.proveidorValid()){
+            Statement stm= conn.createStatement();
+            String sql= "UPDATE proveidor SET nom=\""+prov.getNom()+"\", especialitat=\""+prov.getEspecialitat()
+                    +"\", email=\""+prov.getEmail()+"\", tempsEntrega=\""+prov.getTempsEntrega()
+                    +"\", informacioAddicional=\""+prov.getInformacioAddicional()+"\" WHERE num="+prov.getNum().toString();
+            stm.executeUpdate(sql);
+        }
+        else throw new SQLException();
+    }
+    
+    public static void eliminarProveidor(Connection conn, Integer numProveidor) throws SQLException{
+        Statement stm= conn.createStatement();
+        String sql= "DELETE FROM proveidor WHERE num="+numProveidor;
+        stm.executeUpdate(sql);
     }
     
     public static void afegir(Connection conn, Producte prod) throws SQLException{
@@ -215,5 +274,60 @@ public abstract class SQL {
 	ResultSet rs1= stm.executeQuery("SELECT * FROM venedor WHERE num="+num);
         if(rs1.next()) return true;
         else return false;
+    }
+    
+    public static boolean existeixProveidor(Connection conn, Integer num) throws SQLException{
+        Statement stm= conn.createStatement();
+	ResultSet rs1= stm.executeQuery("SELECT * FROM proveidor WHERE num="+num);
+        if(rs1.next()) return true;
+        else return false;
+    }
+    
+    public static Map<Integer, String> carregarProveidors(Connection conn) throws SQLException{
+        Statement stm= conn.createStatement();
+        ResultSet rs1= stm.executeQuery("SELECT num, nom FROM proveidor");
+        Map<Integer, String> proveidors= new HashMap<>();
+        while(rs1.next()){
+            Integer num= rs1.getInt("num");
+            String nom= rs1.getString("nom");
+            proveidors.put(num, nom);
+        }
+        return proveidors;
+    }
+    
+    public static Map<Integer, String> carregarVenedors(Connection conn) throws SQLException{
+        Statement stm= conn.createStatement();
+        ResultSet rs1= stm.executeQuery("SELECT num, nomComplet FROM venedor");
+        Map<Integer, String> venedors= new HashMap<>();
+        while(rs1.next()){
+            Integer num= rs1.getInt("num");
+            String nom= rs1.getString("nomComplet");
+            venedors.put(num, nom);
+        }
+        return venedors;
+    }
+    
+    public static ObservableList<Compra> obtenirCompres(Connection conn, String infoVenedor, String infoProveidor, LocalDate inici, LocalDate fi) throws SQLException{
+        ObservableList<Compra> contingut= FXCollections.observableArrayList();
+        Statement stm= conn.createStatement();
+        Date dataInici= Date.valueOf(inici);
+        Date dataFi= Date.valueOf(fi);
+        String sql;
+        if(infoVenedor == null && infoProveidor == null) sql= "SELECT * FROM compra WHERE data >= "+dataInici+" AND data <= "+dataFi;
+        else if(infoVenedor == null) sql= "SELECT * FROM compra WHERE proveidor = \""+infoProveidor+"\" AND data >= "+dataInici+" AND data <= "+dataFi;
+        else sql= "SELECT * FROM compra WHERE venedor = \""+infoVenedor+"\" AND data >= "+dataInici+" AND data <= "+dataFi;
+        ResultSet rs1= stm.executeQuery(sql);
+        while(rs1.next()){
+            Integer num= rs1.getInt("num");
+            String proveidor= rs1.getString("proveidor");
+            String venedor= rs1.getString("venedor");
+            Double importTotal= rs1.getDouble("importTotal");
+            Date data= rs1.getDate("data");
+            Compra aux= new Compra(proveidor, venedor, data.toLocalDate());
+            aux.setNum(num);
+            aux.setImportTotal(importTotal);
+            contingut.add(aux);
+        }
+        return contingut;
     }
 }

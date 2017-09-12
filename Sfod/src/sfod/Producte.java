@@ -11,6 +11,12 @@ package sfod;
             PRIMARY KEY ( codi ) 
     )
 
+    CREATE TABLE stock (
+            codiProducte varchar(10) not null,
+            quantitat int(4) not null,
+            PRIMARY KEY ( codiProducte )
+    )
+
 */
 
 public class Producte {

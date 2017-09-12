@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" fx:id="panell" prefHeight="695.0" prefWidth="1180.0" style="-fx-background-color: #f7db88;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label layoutX="112.0" layoutY="42.0" text="Venedor">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="106.0" layoutY="75.0" text="Proveidor">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label layoutX="74.0" layoutY="116.0" text="A partir de">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <DatePicker fx:id="dataInici" editable="false" layoutX="183.0" layoutY="117.0" prefHeight="25.0" prefWidth="126.0" promptText="Data inici" />
+      <Label layoutX="320.0" layoutY="116.0" text="fins">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <DatePicker fx:id="dataFi" editable="false" layoutX="366.0" layoutY="117.0" prefHeight="25.0" prefWidth="126.0" promptText="Data fi" />
+      <Button fx:id="cercar" layoutX="230.0" layoutY="164.0" mnemonicParsing="false" onAction="#accioBuscarCompres" text="Cercar">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <TableView fx:id="taulaCompres" layoutX="38.0" layoutY="237.0" prefHeight="426.0" prefWidth="1096.0">
+        <columns>
+          <TableColumn fx:id="columnaFactura" prefWidth="86.00003051757812" text="Nº Compra" />
+          <TableColumn fx:id="columnaProveidor" minWidth="0.0" prefWidth="239.0" text="Proveïdor" />
+            <TableColumn fx:id="columnaVenedor" minWidth="0.0" prefWidth="339.0" text="Venedor" />
+            <TableColumn fx:id="columnaImport" prefWidth="120.0" text="Import" />
+            <TableColumn fx:id="columnaDataCompra" prefWidth="287.0" text="Data Compra" />
+        </columns>
+      </TableView>
+      <ComboBox fx:id="venedor" layoutX="245.0" layoutY="43.0" prefWidth="150.0" />
+      <ComboBox fx:id="proveidor" layoutX="245.0" layoutY="76.0" prefWidth="150.0" />
+   </children>
+</AnchorPane>

@@ -28,7 +28,34 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-public class FXMLVenedorsController implements Initializable {
+public class FXMLVenedorsProveidorsController implements Initializable {
+    
+    @FXML
+    private TextField buscarProveidor;
+    
+    @FXML
+    private TextField nomProveidor;
+    
+    @FXML
+    private TextField especialitatProveidor;
+    
+    @FXML
+    private TextField tempsEntregaProveidor;
+    
+    @FXML
+    private TextField emailProveidor;
+    
+    @FXML
+    private TextArea informacioAddicionalProveidor;
+    
+    @FXML
+    private Button guardarProveidor;
+    
+    @FXML
+    private Button cancelarProveidor;
+    
+    @FXML
+    private Button eliminarProveidor;
 
     @FXML
     private TextField buscarVenedor;
@@ -94,22 +121,25 @@ public class FXMLVenedorsController implements Initializable {
         //Es carregen les imatges
         Image cancelButon = new Image(getClass().getResourceAsStream("cancelar.png"));
         cancelarVenedor.setGraphic(new ImageView(cancelButon));
+        cancelarProveidor.setGraphic(new ImageView(cancelButon));
         Image guardarButon = new Image(getClass().getResourceAsStream("guardar.png"));
         guardarVenedor.setGraphic(new ImageView(guardarButon));
+        guardarProveidor.setGraphic(new ImageView(guardarButon));
         Image eliminarButon = new Image(getClass().getResourceAsStream("eliminar.png"));
         eliminarVenedor.setGraphic(new ImageView(eliminarButon));
+        eliminarProveidor.setGraphic(new ImageView(eliminarButon));
         
         opcionsTractamentVenedor.add("Sr.");
         opcionsTractamentVenedor.add("Sra.");
         tractamentVenedor.setItems(opcionsTractamentVenedor);
     }    
     
-    public FXMLVenedorsController(Connection conn, AnchorPane pare){
+    public FXMLVenedorsProveidorsController(Connection conn, AnchorPane pare){
         conexio= conn;
         panellPare= pare;
     }
     
-    private void desocultarCamps(){
+    private void desocultarCampsVenedor(){
         nomCompletVenedor.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
         nomCompletVenedor.setEditable(true);
         tractamentVenedor.setDisable(false);
@@ -139,7 +169,26 @@ public class FXMLVenedorsController implements Initializable {
         guardarVenedor.setDisable(false);
     }
     
-    private void desocultarCamps(Venedor aux){
+    private void desocultarCampsProveidor(){
+        nomProveidor.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
+        nomProveidor.setEditable(true);
+        especialitatProveidor.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
+        especialitatProveidor.setEditable(true);
+        emailProveidor.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
+        emailProveidor.setEditable(true);
+        tempsEntregaProveidor.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
+        tempsEntregaProveidor.setEditable(true);
+        informacioAddicionalProveidor.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
+        informacioAddicionalProveidor.setEditable(true);
+                
+        buscarProveidor.setEditable(false);
+        buscarProveidor.setStyle("-fx-border-color: #CCC7BA; -fx-background-color: #CCC7BA; -fx-border-radius: 4");
+        
+        nomProveidor.requestFocus();
+        guardarProveidor.setDisable(false);
+    }
+    
+    private void desocultarCampsVenedor(Venedor aux){
         nomCompletVenedor.setText(aux.getNomComplet());
         if(aux.getTractament().equals("Sr.")) tractamentVenedor.getSelectionModel().select(0);
         else tractamentVenedor.getSelectionModel().select(1);
@@ -153,14 +202,27 @@ public class FXMLVenedorsController implements Initializable {
         nomPaisVenedor.setText(aux.getNomPais());
         informacioAddicionalVenedor.setText(aux.getInformacioAddicional());
         eliminarVenedor.setDisable(false);
-        desocultarCamps();
+        desocultarCampsVenedor();
     }
     
-    private ElementCercable mostraPopup(List<ElementCercable> list) throws IOException{
+    private void desocultarCampsProveidor(Proveidor aux){
+        nomProveidor.setText(aux.getNom());
+        especialitatProveidor.setText(aux.getEspecialitat());
+        emailProveidor.setText(aux.getEmail());
+        tempsEntregaProveidor.setText(aux.getTempsEntrega());
+        informacioAddicionalProveidor.setText(aux.getInformacioAddicional());
+
+        eliminarProveidor.setDisable(false);
+        desocultarCampsProveidor();
+    }
+    
+    private ElementCercable mostraPopup(List<ElementCercable> list, String opt) throws IOException{
         ObservableList<ElementCercable> listObs= FXCollections.observableArrayList();
         listObs.addAll(list);
         FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLPopup.fxml"));
-        FXMLPopupControler controler= new FXMLPopupControler(listObs, "Número", "Nom Complet");
+        FXMLPopupControler controler;
+        if(opt.equals("v")) controler= new FXMLPopupControler(listObs, "Número", "Nom Complet");
+        else controler= new FXMLPopupControler(listObs, "Número", "Nom");
         loader.setController(controler);
         Parent newScene;
         newScene = loader.load();
@@ -176,7 +238,41 @@ public class FXMLVenedorsController implements Initializable {
     }
     
     @FXML
-    public void accioBuscarVenedor(KeyEvent event){
+    private void accioBuscarProveidor(KeyEvent event){
+        try{
+            if(event.getCode() == KeyCode.ENTER){
+                String codi= buscarProveidor.getText();
+                List<ElementCercable> list= SQL.seleccionaProveidorsCercables(conexio, codi);
+                ElementCercable aux;
+                if(list.isEmpty()){
+                    if(codi.equals("*")) throw new Exception("no");
+                    else throw new Exception("si");
+                }
+                else if(list.size() > 1) aux= mostraPopup(list, "p");
+                else aux= list.get(0);
+                if(aux != null){
+                    Proveidor prov= SQL.seleccionaProveidor(conexio, aux.getPrincipal());
+                    buscarProveidor.setText(prov.getNum().toString());
+                    desocultarCampsProveidor(prov);
+                }
+                else buscarProveidor.clear();
+            }
+        } catch(NumberFormatException ex){
+            PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error al cercar Proveïdor", "Introdueixi un nombre vàlid");
+        } catch (Exception ex) {
+                if(ex.getMessage().equals("si")){
+                    if(PopupAlerta.mostrarConfirmacio("Proveïdor no trobat", "Vols donar d'alta al proveïdor número \""+buscarProveidor.getText()+"\"?")) desocultarCampsProveidor();
+                    else buscarProveidor.clear();
+                }
+                else{
+                    PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "No hi ha proveïdors", "No s'ha trobat cap referència");
+                    buscarProveidor.clear();
+                }
+        }
+    }
+    
+    @FXML
+    private void accioBuscarVenedor(KeyEvent event){
         try{
             if(event.getCode() == KeyCode.ENTER){
                 String codi= buscarVenedor.getText();
@@ -186,12 +282,12 @@ public class FXMLVenedorsController implements Initializable {
                     if(codi.equals("*")) throw new Exception("no");
                     else throw new Exception("si");
                 }
-                else if(list.size() > 1) aux= mostraPopup(list);
+                else if(list.size() > 1) aux= mostraPopup(list, "v");
                 else aux= list.get(0);
                 if(aux != null){
                     Venedor ven= SQL.seleccionaVenedor(conexio, aux.getPrincipal());
                     buscarVenedor.setText(ven.getNum().toString());
-                    desocultarCamps(ven);
+                    desocultarCampsVenedor(ven);
                 }
                 else buscarVenedor.clear();
             }
@@ -199,13 +295,33 @@ public class FXMLVenedorsController implements Initializable {
             PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error al cercar Venedor", "Introdueixi un nombre vàlid");
         } catch (Exception ex) {
                 if(ex.getMessage().equals("si")){
-                    if(PopupAlerta.mostrarConfirmacio("Venedor no trobat", "Vols donar d'alta al venedor número \""+buscarVenedor.getText()+"\"?")) desocultarCamps();
+                    if(PopupAlerta.mostrarConfirmacio("Venedor no trobat", "Vols donar d'alta al venedor número \""+buscarVenedor.getText()+"\"?")) desocultarCampsVenedor();
                     else buscarVenedor.clear();
                 }
                 else{
                     PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "No hi ha venedors", "No s'ha trobat cap referència");
                     buscarVenedor.clear();
                 }
+        }
+    }
+    
+    @FXML
+    private void accioGuardarProveidor(ActionEvent event){
+        try{
+            Proveidor prov= new Proveidor(Integer.parseInt(buscarProveidor.getText()), nomProveidor.getText(),                 
+                especialitatProveidor.getText(), emailProveidor.getText(), 
+                tempsEntregaProveidor.getText(), informacioAddicionalVenedor.getText());
+            if(PopupAlerta.mostrarConfirmacio("Confirmar acció", "Vols salvar els canvis?")){
+                if(SQL.existeixProveidor(conexio, prov.getNum())) SQL.actualitzar(conexio, prov);
+                else SQL.afegir(conexio, prov);
+                cancelarProveidor();
+            }
+        } catch(NumberFormatException e){
+            PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error 404", "Alguns camps està omplerts incorrectament, si us plau revisa'ls");
+        } catch (SQLException ex) {
+            PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error de Servidor 404", ex.getMessage());
+        } catch(Exception ex){
+            PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error 404", "Algún dels camps introduits és massa llarg");
         }
     }
     
@@ -284,13 +400,49 @@ public class FXMLVenedorsController implements Initializable {
         buscarVenedor.requestFocus();
     }
     
+    private void cancelarProveidor(){
+        guardarProveidor.setDisable(true);
+        eliminarProveidor.setDisable(true);
+        
+        buscarProveidor.clear();
+        buscarProveidor.setEditable(true);
+        buscarProveidor.setStyle("-fx-background-color: #FFFFFF; -fx-border-color: #BDBAB3; -fx-border-radius: 4");
+        
+        nomProveidor.clear();
+        nomProveidor.setEditable(false);
+        nomProveidor.setStyle("-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4");
+        
+        especialitatProveidor.clear();
+        especialitatProveidor.setEditable(false);
+        especialitatProveidor.setStyle("-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4");
+        
+        emailProveidor.clear();
+        emailProveidor.setEditable(false);
+        emailProveidor.setStyle("-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4");
+        
+        tempsEntregaProveidor.clear();
+        tempsEntregaProveidor.setEditable(false);
+        tempsEntregaProveidor.setStyle("-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4");
+        
+        informacioAddicionalProveidor.clear();
+        informacioAddicionalProveidor.setEditable(false);
+        informacioAddicionalProveidor.setStyle("-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4");
+        
+        buscarProveidor.requestFocus();
+    }
+    
     @FXML
-    public void accioCancelarVenedor(ActionEvent event){
+    private void accioCancelarVenedor(ActionEvent event){
         cancelarVenedor();
     }
     
     @FXML
-    public void accioEliminarVenedor(ActionEvent event){
+    private void accioCancelarProveidor(ActionEvent event){
+        cancelarProveidor();
+    }
+    
+    @FXML
+    private void accioEliminarVenedor(ActionEvent event){
         try{
             String sexeArticle;
             String sexeVenedor;
@@ -306,6 +458,20 @@ public class FXMLVenedorsController implements Initializable {
                 SQL.eliminarVenedor(conexio, Integer.parseInt(buscarVenedor.getText()));
                 cancelarVenedor();
                 PopupAlerta.mostrarConfirmacio("Eliminar Venedor/a", "S'ha eliminat "+sexeArticle+" "+sexeVenedor+" correctament");
+            }
+        }
+        catch(SQLException ex){
+            PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error de Servidor 404", ex.getMessage());
+        }
+    }
+    
+    @FXML
+    private void accioEliminarProveidor(ActionEvent event){
+        try{
+            if(PopupAlerta.mostrarConfirmacio("Eliminar Proveïdor", "Segur que vols eliminar el proveïdor "+buscarProveidor.getText()+": "+nomProveidor.getText()+"\" ?")){
+                SQL.eliminarProveidor(conexio, Integer.parseInt(buscarProveidor.getText()));
+                cancelarProveidor();
+                PopupAlerta.mostrarConfirmacio("Eliminar Proveïdor", "S'ha eliminat el proveïdor correctament");
             }
         }
         catch(SQLException ex){

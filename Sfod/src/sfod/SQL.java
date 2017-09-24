@@ -190,12 +190,6 @@ public abstract class SQL {
         stm.executeUpdate(sql);
     }
     
-    public static void eliminarProducte(Connection conn, String codiProducte) throws SQLException{
-        Statement stm= conn.createStatement();
-        String sql= "DELETE FROM producte WHERE codi=\""+codiProducte+"\"";
-        stm.executeUpdate(sql);
-    }
-    
     public static void afegir(Connection conn, Proveidor prov) throws SQLException{
         if(prov.proveidorValid()){
             Statement stm= conn.createStatement();

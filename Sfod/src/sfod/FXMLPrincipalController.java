@@ -121,6 +121,22 @@ public class FXMLPrincipalController implements Initializable {
         inputStage.showAndWait();
     }
     
+    @FXML
+    public void accioObrirEmailSender(ActionEvent event) throws IOException{
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLEmailSender.fxml"));
+
+        Parent newScene;
+        newScene = loader.load();
+        Stage inputStage = new Stage();
+        inputStage.initModality(Modality.NONE);
+        inputStage.initOwner(panell.getScene().getWindow());
+        inputStage.setScene(new Scene(newScene));
+        inputStage.getIcons().add(new Image(getClass().getResourceAsStream("logo.png")));
+        inputStage.setTitle("Email Sender");
+        inputStage.setResizable(false);
+        inputStage.showAndWait();
+    }
+    
     public FXMLPrincipalController(Connection conn){
         conexio= conn;
     }

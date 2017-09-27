@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #f7db88;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="850.0" style="-fx-background-color: #f7db88;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Label layoutX="46.0" layoutY="14.0" text="Venedor">
          <font>
@@ -30,14 +30,15 @@
          </font>
       </Label>
       <TextField fx:id="numCompra" layoutX="451.0" layoutY="12.0" prefHeight="25.0" prefWidth="112.0" />
-      <TableView fx:id="taulaLiniesCompra" layoutX="11.0" layoutY="72.0" prefHeight="240.0" prefWidth="579.0">
+      <TableView fx:id="taulaLiniesCompra" editable="true" layoutX="11.0" layoutY="72.0" prefHeight="240.0" prefWidth="822.0">
         <columns>
-          <TableColumn fx:id="columnaProducte" prefWidth="121.0" text="Producte" />
-          <TableColumn fx:id="columnaPVC" prefWidth="117.0" text="Preu Base" />
-            <TableColumn fx:id="columnaDescompte" prefWidth="48.0" text="\% dte." />
-            <TableColumn fx:id="columnaPFVC" prefWidth="113.0" text="Preu Compra" />
-            <TableColumn fx:id="columnaUnitats" prefWidth="49.0" text="Unitats" />
-            <TableColumn fx:id="columnaPF" prefWidth="112.0" text="Preu Línia" />
+          <TableColumn fx:id="columnaProducte" prefWidth="83.0" text="Producte" />
+            <TableColumn fx:id="columnaDescripcio" prefWidth="377.0" text="Descripció" />
+          <TableColumn fx:id="columnaPVC" prefWidth="87.0" text="Preu Base" />
+            <TableColumn fx:id="columnaDescompte" prefWidth="44.0" text="\% dte." />
+            <TableColumn fx:id="columnaPFVC" prefWidth="86.0" text="Preu Compra" />
+            <TableColumn fx:id="columnaUnitats" prefWidth="52.0" text="Unitats" />
+            <TableColumn fx:id="columnaPF" prefWidth="89.0" text="Preu Línia" />
         </columns>
       </TableView>
       <Label layoutX="24.0" layoutY="356.0" text="Nº Referències">

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.web.HTMLEditor?>
 
 <AnchorPane id="AnchorPane" prefHeight="550.0" prefWidth="750.0" style="-fx-background-color: #f7db88;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sfod.FXMLEmailSenderController">
    <children>
@@ -14,12 +15,12 @@
             <Font name="System Bold" size="38.0" />
          </font>
       </Label>
+      <ComboBox fx:id="receptor" editable="true" layoutX="149.0" layoutY="70.0" prefHeight="25.0" prefWidth="546.0" />
       <Label layoutX="89.0" layoutY="72.0" text="Per A:">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
       </Label>
-      <TextField fx:id="receptor" layoutX="149.0" layoutY="70.0" prefHeight="25.0" prefWidth="546.0" />
       <Label layoutX="60.0" layoutY="107.0" text="Assumpte:">
          <font>
             <Font name="System Bold" size="14.0" />
@@ -31,8 +32,13 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </Label>
-      <TextField fx:id="adjunts" layoutX="149.0" layoutY="138.0" prefHeight="25.0" prefWidth="546.0" />
-      <TextArea fx:id="cos" layoutX="30.0" layoutY="184.0" prefHeight="312.0" prefWidth="689.0" style="-fx-border-radius: 10; -fx-background-radius: 10;" />
-      <Button fx:id="enviar" layoutX="351.0" layoutY="504.0" mnemonicParsing="false" onAction="#accioEnviar" text="Enviar" />
+      <TextField fx:id="adjunts" editable="false" layoutX="149.0" layoutY="138.0" prefHeight="25.0" prefWidth="269.0" />
+      <Button fx:id="navega" layoutX="426.0" layoutY="138.0" mnemonicParsing="false" onAction="#accioNavegar" text="Navega..." />
+      <Button fx:id="esborra" layoutX="499.0" layoutY="138.0" mnemonicParsing="false" onAction="#accioEsborrar" text="Esborra" />
+      <Button fx:id="enviar" layoutX="351.0" layoutY="504.0" mnemonicParsing="false" onAction="#accioEnviar" text="Enviar">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font></Button>
+      <HTMLEditor fx:id="cos" htmlText="&lt;html&gt;&lt;head&gt;&lt;/head&gt;&lt;body contenteditable=&quot;true&quot;&gt;&lt;/body&gt;&lt;/html&gt;" layoutX="31.0" layoutY="172.0" prefHeight="318.0" prefWidth="689.0" />
    </children>
 </AnchorPane>

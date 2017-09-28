@@ -23,7 +23,7 @@
       </Label>
       <ComboBox fx:id="venedor" layoutX="131.0" layoutY="12.0" onAction="#accioDesbloquejarCamps" prefHeight="25.0" prefWidth="199.0" />
       <ComboBox fx:id="proveidor" layoutX="131.0" layoutY="40.0" onAction="#accioDesbloquejarCamps" prefHeight="25.0" prefWidth="199.0" />
-      <Button fx:id="confirmar" layoutX="231.0" layoutY="320.0" mnemonicParsing="false" onAction="#accioConfirmarCompra" text="Confirmar Compra" />
+      <Button fx:id="confirmar" layoutX="315.0" layoutY="321.0" mnemonicParsing="false" onAction="#accioConfirmarCompra" text="Confirmar" />
       <Label layoutX="354.0" layoutY="14.0" text="Nº Compra">
          <font>
             <Font name="System Bold" size="15.0" />
@@ -41,17 +41,18 @@
             <TableColumn fx:id="columnaPF" prefWidth="89.0" text="Preu Línia" />
         </columns>
       </TableView>
-      <Label layoutX="24.0" layoutY="356.0" text="Nº Referències">
+      <Label layoutX="24.0" layoutY="367.0" text="Nº Referències">
          <font>
             <Font name="System Bold" size="15.0" />
          </font>
       </Label>
-      <Label layoutX="349.0" layoutY="356.0" text="Import Total">
+      <Label layoutX="349.0" layoutY="367.0" text="Import Total">
          <font>
             <Font name="System Bold" size="15.0" />
          </font>
       </Label>
-      <TextField fx:id="referenciesTotals" layoutX="147.0" layoutY="354.0" prefHeight="25.0" prefWidth="39.0" />
-      <TextField fx:id="importTotal" layoutX="459.0" layoutY="354.0" prefHeight="25.0" prefWidth="90.0" />
+      <TextField fx:id="referenciesTotals" layoutX="144.0" layoutY="365.0" prefHeight="25.0" prefWidth="39.0" />
+      <TextField fx:id="importTotal" layoutX="451.0" layoutY="365.0" prefHeight="25.0" prefWidth="90.0" />
+      <Button fx:id="cancelar" layoutX="507.0" layoutY="321.0" mnemonicParsing="false" onAction="#accioCancelarCompra" text="Cancelar" />
    </children>
 </AnchorPane>

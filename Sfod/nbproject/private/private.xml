@@ -3,14 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/David/Desktop/SfodShop/Sfod/src/sfod/Sfod.java</file>
-            <file>file:/C:/Users/David/Desktop/SfodShop/Sfod/src/sfod/FXMLEmailSenderController.java</file>
-            <file>file:/C:/Users/David/Desktop/SfodShop/Sfod/src/sfod/FXMLEntrarCompraController.java</file>
-            <file>file:/C:/Users/David/Desktop/SfodShop/Sfod/src/sfod/SQL.java</file>
-            <file>file:/C:/Users/David/Desktop/SfodShop/Sfod/src/sfod/FXMLProductesController.java</file>
-            <file>file:/C:/Users/David/Desktop/SfodShop/Sfod/src/sfod/FXMLLoginControler.java</file>
-            <file>file:/C:/Users/David/Desktop/SfodShop/Sfod/src/sfod/LiniaCompra.java</file>
-            <file>file:/C:/Users/David/Desktop/SfodShop/Sfod/src/sfod/FXMLSQLICController.java</file>
+            <file>file:/C:/Users/david/Desktop/SfodShop/Sfod/src/sfod/FXMLEmailSenderController.java</file>
+            <file>file:/C:/Users/david/Desktop/SfodShop/Sfod/src/sfod/PopupAlerta.java</file>
+            <file>file:/C:/Users/david/Desktop/SfodShop/Sfod/src/sfod/FXMLEntrarCompraController.java</file>
+            <file>file:/C:/Users/david/Desktop/SfodShop/Sfod/src/sfod/FXMLProductesController.java</file>
         </group>
     </open-files>
 </project-private>

@@ -27,6 +27,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -50,6 +51,9 @@ public class FXMLEntrarCompraController implements Initializable {
     
     @FXML
     private Button confirmar;
+    
+    @FXML
+    private Button cancelar;
     
     @FXML
     private TableView taulaLiniesCompra;
@@ -164,6 +168,12 @@ public class FXMLEntrarCompraController implements Initializable {
         referenciesTotals.setText(novesRefs.toString());
     }
     
+    void actualitzaImportTotal(){
+        Double total= 0.00;
+        for(LiniaCompra aux : contingut) total+= aux.getPT();
+        importTotal.setText(total.toString());
+    }
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
@@ -173,6 +183,15 @@ public class FXMLEntrarCompraController implements Initializable {
             configuraComboProveidors();
             configuraComboVenedors();
             
+            //Es carregen les imatges
+            Image cancelButon = new Image(getClass().getResourceAsStream("cancelar.png"));
+            cancelar.setGraphic(new ImageView(cancelButon));
+            Image guardarButon = new Image(getClass().getResourceAsStream("guardar.png"));
+            confirmar.setGraphic(new ImageView(guardarButon));
+            
+            cancelar.setVisible(false);
+            confirmar.setVisible(false);
+        
             taulaLiniesCompra.setVisible(false);
             columnaProducte.setStyle("-fx-alignment: center; -fx-background-color: #b2cfff;");
             columnaDescripcio.setStyle("-fx-background-color: #abe6fc;");
@@ -195,6 +214,7 @@ public class FXMLEntrarCompraController implements Initializable {
                             if(!liniaActual.isEmpty()){
                                 decRef();
                                 clearLine(t.getTableView(), t.getTablePosition(), liniaActual);
+                                actualitzaImportTotal();
                             }
                             requestFocus(t.getTableView(), t.getTablePosition(), columnaDescripcio);
                         }
@@ -205,7 +225,6 @@ public class FXMLEntrarCompraController implements Initializable {
                                 if(list.isEmpty()) throw new Exception();
                                 else if(list.size() > 1) aux= mostraPopup(list);
                                 else aux= list.get(0);
-                                clearLine(t.getTableView(), t.getTablePosition(), liniaActual);
                                 if(aux != null){
                                     if(aux.getPrincipal().equals(liniaActual.getCodiProducte())){
                                         requestFocus(t.getTableView(), t.getTablePosition(), columnaProducte);
@@ -223,6 +242,7 @@ public class FXMLEntrarCompraController implements Initializable {
                                         requestSelect(t.getTableView(), t.getTablePosition(), columnaPF);
                                         requestSelect(t.getTableView(), t.getTablePosition(), columnaProducte);
                                         requestFocus(t.getTableView(), t.getTablePosition(), columnaDescripcio);
+                                        actualitzaImportTotal();
                                     }
                                 }
                                 else throw new Exception();
@@ -231,6 +251,7 @@ public class FXMLEntrarCompraController implements Initializable {
                                 PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "Producte no trobat", "No s'ha trobat cap referència");
                                 clearLine(t.getTableView(), t.getTablePosition(), liniaActual);
                                 requestFocus(t.getTableView(), t.getTablePosition(), columnaProducte);
+                                actualitzaImportTotal();
                             }
                         }
                         else requestFocus(t.getTableView(), t.getTablePosition(), columnaDescripcio);
@@ -251,6 +272,7 @@ public class FXMLEntrarCompraController implements Initializable {
                             if(!liniaActual.isEmpty()){
                                 decRef();
                                 clearLine(t.getTableView(), t.getTablePosition(), liniaActual);
+                                actualitzaImportTotal();
                             }
                             requestFocus(t.getTableView(), t.getTablePosition(), columnaPVC);
                         }
@@ -279,6 +301,7 @@ public class FXMLEntrarCompraController implements Initializable {
                                         requestSelect(t.getTableView(), t.getTablePosition(), columnaPF);
                                         requestSelect(t.getTableView(), t.getTablePosition(), columnaProducte);
                                         requestFocus(t.getTableView(), t.getTablePosition(), columnaPVC);
+                                        actualitzaImportTotal();
                                     }
                                 }
                                 else throw new Exception();
@@ -293,6 +316,7 @@ public class FXMLEntrarCompraController implements Initializable {
                                     requestSelect(t.getTableView(), t.getTablePosition(), columnaUnitats);
                                     requestSelect(t.getTableView(), t.getTablePosition(), columnaPF);
                                     requestSelect(t.getTableView(), t.getTablePosition(), columnaProducte);
+                                    actualitzaImportTotal();
                                 }
                                 requestFocus(t.getTableView(), t.getTablePosition(), columnaDescripcio);
                             }
@@ -342,6 +366,7 @@ public class FXMLEntrarCompraController implements Initializable {
                                 requestSelect(t.getTableView(), t.getTablePosition(), columnaPFVC);
                                 requestSelect(t.getTableView(), t.getTablePosition(), columnaPF);
                                 requestFocus(t.getTableView(), t.getTablePosition(), columnaDescompte);
+                                actualitzaImportTotal();
                             }
                         } catch (NullPointerException ex) {
                             PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "Error 404", "Nombre introduït invàlid");
@@ -390,6 +415,7 @@ public class FXMLEntrarCompraController implements Initializable {
                             requestSelect(t.getTableView(), t.getTablePosition(), columnaPFVC);
                             requestSelect(t.getTableView(), t.getTablePosition(), columnaPF);
                             requestFocus(t.getTableView(), t.getTablePosition(), columnaUnitats);
+                            actualitzaImportTotal();
                         } catch (NullPointerException | NumberFormatException ex) {
                             PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "Error 404", "Nombre introduït invàlid");
                             requestFocus(t.getTableView(), t.getTablePosition(), columnaDescompte);
@@ -447,10 +473,9 @@ public class FXMLEntrarCompraController implements Initializable {
                                     liniaActual.setUnitats(novesUnitats);
                                     requestSelect(t.getTableView(), t.getTablePosition(), columnaPF);
                                     
-                                    if(contingut.size() == (t.getTablePosition().getRow()+1)){
-                                        contingut.add(new LiniaCompra());
-                                    }
+                                    if(contingut.size() == (t.getTablePosition().getRow()+1)) contingut.add(new LiniaCompra());
                                     requestFocusSeguent(t.getTableView(), t.getTablePosition(), columnaProducte);
+                                    actualitzaImportTotal();
                                 }
                             }
                         } catch (NullPointerException ex) {
@@ -469,7 +494,6 @@ public class FXMLEntrarCompraController implements Initializable {
             proveidor.setVisibleRowCount(5);
             
             numCompra.setEditable(false);
-            confirmar.setVisible(false);
             referenciesTotals.setEditable(false);
             importTotal.setEditable(false);
             
@@ -486,7 +510,22 @@ public class FXMLEntrarCompraController implements Initializable {
         
     }
     
+    @FXML
+    private void accioCancelarCompra(ActionEvent event) {
+        cancelar.setVisible(false);
+        confirmar.setVisible(false);
+        taulaLiniesCompra.setVisible(false);
+        contingut.clear();
+        contingut.add(new LiniaCompra());
+        venedor.getSelectionModel().clearSelection();
+        proveidor.getSelectionModel().clearSelection();
+        referenciesTotals.setText("0");
+        importTotal.setText("0.00");
+    }
+    
     private void desbloquejarCamps(){
+        cancelar.setVisible(true);
+        confirmar.setVisible(true);
         taulaLiniesCompra.setVisible(true);
         taulaLiniesCompra.requestFocus();
         taulaLiniesCompra.getSelectionModel().select(0);

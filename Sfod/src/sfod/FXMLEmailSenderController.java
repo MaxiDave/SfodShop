@@ -29,6 +29,36 @@ import javax.mail.internet.MimeMultipart;
 
 public class FXMLEmailSenderController implements Initializable {
     
+    Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    Multipart multiPart= new MimeMultipart();
+                    MimeMessage missatge = new MimeMessage(sessio);
+
+                    missatge.setFrom(new InternetAddress("sfodshop@gmail.com"));
+                    missatge.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+                    missatge.setSubject(assumpte.getText());
+
+                    BodyPart text= new MimeBodyPart();
+                    text.setContent(cos.getHtmlText()+signatura, "text/html; charset=UTF-8");
+                    multiPart.addBodyPart(text);
+                    missatge.setContent(multiPart);
+                    afegirAdjunts(multiPart);
+                    Transport.send(missatge);
+
+                    PopupAlerta.mostraAlerta(Alert.AlertType.INFORMATION, "Acció completada", "Email enviat correctament");
+
+                    Stage actual= (Stage)esborra.getScene().getWindow();
+                    actual.close();
+                }catch (MessagingException me){
+                    PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error 404", me.getMessage());
+                }
+            }
+    });
+    
+    private String to;
+    
     private final String signatura= "<html>------------------ <p><b>Sfod SL.</b></p><i><p>sfodshop@gmail.com</p><p>maxidave13@gmail.com - David</p></i></html>";
 
     @FXML
@@ -65,7 +95,7 @@ public class FXMLEmailSenderController implements Initializable {
         
         prop.put("mail.smtp.host", "smtp.gmail.com");
 	prop.put("mail.smtp.starttls.enable", "true");		
-        prop.put("mail.smtp.port", "25");
+        prop.put("mail.smtp.port", "587");
 	prop.put("mail.smtp.auth", "true");
         prop.put("mail.smtp.ssl.trust", "smtp.gmail.com");
  
@@ -115,16 +145,16 @@ public class FXMLEmailSenderController implements Initializable {
 
     @FXML
     private void accioEnviar(ActionEvent event) {
-        String to= (String)receptor.getSelectionModel().getSelectedItem();
+        to= (String)receptor.getSelectionModel().getSelectedItem();
         if(to.isEmpty()) PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error 404: Camp invàlid", "Si us plau, introdueix un receptor");
         else{
             if(assumpte.getText().isEmpty() && PopupAlerta.mostrarConfirmacio("Atenció", "Vols enviar un missatge sense assumpte?")){
-                enviarMissatge(to);
+                t.start();
             }
             else if(cos.getHtmlText().isEmpty() && PopupAlerta.mostrarConfirmacio("Atenció", "Vols enviar un missatge sense cos?")){
-                enviarMissatge(to);
+                t.start();
             }
-            else enviarMissatge(to);
+            else t.start();
         }
     }
     

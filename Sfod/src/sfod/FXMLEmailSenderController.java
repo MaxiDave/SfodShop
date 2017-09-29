@@ -6,12 +6,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -22,43 +24,19 @@ import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.mail.*;
+import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+
 public class FXMLEmailSenderController implements Initializable {
     
-    Thread t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try{
-                    Multipart multiPart= new MimeMultipart();
-                    MimeMessage missatge = new MimeMessage(sessio);
-
-                    missatge.setFrom(new InternetAddress("sfodshop@gmail.com"));
-                    missatge.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
-                    missatge.setSubject(assumpte.getText());
-
-                    BodyPart text= new MimeBodyPart();
-                    text.setContent(cos.getHtmlText()+signatura, "text/html; charset=UTF-8");
-                    multiPart.addBodyPart(text);
-                    missatge.setContent(multiPart);
-                    afegirAdjunts(multiPart);
-                    Transport.send(missatge);
-
-                    PopupAlerta.mostraAlerta(Alert.AlertType.INFORMATION, "Acció completada", "Email enviat correctament");
-
-                    Stage actual= (Stage)esborra.getScene().getWindow();
-                    actual.close();
-                }catch (MessagingException me){
-                    PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error 404", me.getMessage());
-                }
-            }
-    });
-    
     private String to;
-    
+    private final javafx.concurrent.Service serveiEmail= new procesEnviarEmail();
+    private Boolean taskSuceed;
+    private MimeMessage missatge;
     private final String signatura= "<html>------------------ <p><b>Sfod SL.</b></p><i><p>sfodshop@gmail.com</p><p>maxidave13@gmail.com - David</p></i></html>";
 
     @FXML
@@ -74,6 +52,9 @@ public class FXMLEmailSenderController implements Initializable {
     private HTMLEditor cos;
     
     @FXML
+    private ProgressIndicator progressBar;
+    
+    @FXML
     private Button enviar;
     
     @FXML 
@@ -86,9 +67,22 @@ public class FXMLEmailSenderController implements Initializable {
     private Session sessio;
     private String textAdjunts= new String();
     private List<File> llistaAdjunts= new ArrayList<>();
-
+        
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        
+        serveiEmail.setOnSucceeded(e -> {
+            progressBar.setVisible(false);
+            enviar.setVisible(true);
+            if(taskSuceed){
+                PopupAlerta.mostraAlerta(Alert.AlertType.INFORMATION, "Acció completada", "Email enviat correctament");
+                Stage actual= (Stage)esborra.getScene().getWindow();
+                actual.close();
+            }
+            else PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "No s'ha pogut enviar", "Comprovi la seva connexió a internet");
+            //reset service
+            serveiEmail.reset();
+        });
         
         Image enviarButton = new Image(getClass().getResourceAsStream("enviar.png"));
         enviar.setGraphic(new ImageView(enviarButton));
@@ -118,10 +112,10 @@ public class FXMLEmailSenderController implements Initializable {
         for(File aux : llistaAdjunts) afegirAdjunt(multiPart, aux);
     }
     
-    private void enviarMissatge(String to){
+    private void enviarMissatge(){
         try{
             Multipart multiPart= new MimeMultipart();
-            MimeMessage missatge = new MimeMessage(sessio);
+            missatge = new MimeMessage(sessio);
             
             missatge.setFrom(new InternetAddress("sfodshop@gmail.com"));
             missatge.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
@@ -132,29 +126,29 @@ public class FXMLEmailSenderController implements Initializable {
             multiPart.addBodyPart(text);
             missatge.setContent(multiPart);
             afegirAdjunts(multiPart);
-            Transport.send(missatge);
-
-            PopupAlerta.mostraAlerta(Alert.AlertType.INFORMATION, "Acció completada", "Email enviat correctament");
             
-            Stage actual= (Stage)esborra.getScene().getWindow();
-            actual.close();
-        }catch (MessagingException me){
-            PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error 404", me.getMessage());
-	}
+            progressBar.setVisible(true);
+            enviar.setVisible(false);
+            if(!serveiEmail.isRunning()) serveiEmail.start();
+        } catch(AddressException aEx){
+            PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "No s'ha pogut enviar", "Direcció d'email invàlida");
+        } catch(MessagingException mEx){
+            PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "No s'ha pogut enviar", "Comprovi la seva connexió a internet");
+        }
     }
 
     @FXML
-    private void accioEnviar(ActionEvent event) {
-        to= (String)receptor.getSelectionModel().getSelectedItem();
-        if(to.isEmpty()) PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error 404: Camp invàlid", "Si us plau, introdueix un receptor");
-        else{
-            if(assumpte.getText().isEmpty() && PopupAlerta.mostrarConfirmacio("Atenció", "Vols enviar un missatge sense assumpte?")){
-                t.start();
+    private void accioEnviar(ActionEvent event){
+        if(!serveiEmail.isRunning()){
+            to= (String)receptor.getSelectionModel().getSelectedItem();
+            if(to.isEmpty()) PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error 404: Camp invàlid", "Si us plau, introdueix un receptor");
+            else{
+                if((assumpte.getText().isEmpty() && PopupAlerta.mostrarConfirmacio("Atenció", "Vols enviar un missatge sense assumpte?")) ||
+                        (cos.getHtmlText().isEmpty() && PopupAlerta.mostrarConfirmacio("Atenció", "Vols enviar un missatge sense cos?")) ||
+                        true){
+                    enviarMissatge();
+                }
             }
-            else if(cos.getHtmlText().isEmpty() && PopupAlerta.mostrarConfirmacio("Atenció", "Vols enviar un missatge sense cos?")){
-                t.start();
-            }
-            else t.start();
         }
     }
     
@@ -179,5 +173,30 @@ public class FXMLEmailSenderController implements Initializable {
         llistaAdjunts.clear();
         textAdjunts= "";
         adjunts.clear();
+    }
+    
+    private class procesEnviarEmail extends javafx.concurrent.Service<Void> {
+        @Override
+        protected Task<Void> createTask() {
+            return new Task<Void>() {
+                @Override
+                protected Void call() throws Exception {
+                    Runnable runner = new Runnable() {
+                        public void run(){
+                            try {
+                                Transport.send(missatge);
+                                taskSuceed= true;
+                            } catch (MessagingException ex) {
+                                taskSuceed= false;
+                            }
+                        }
+                    };
+                    Thread t = new Thread(runner, "Execució d'enviament");
+                    t.start();
+                    t.join();
+                    return null;
+                }
+            };
+        }
     }
 }

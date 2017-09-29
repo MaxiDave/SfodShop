@@ -189,7 +189,7 @@ public class FXMLVenedorsProveidorsController implements Initializable {
     }
     
     private void desocultarCampsVenedor(Venedor aux){
-        nomCompletVenedor.setText(aux.getNomComplet());
+        //nomCompletVenedor.setText(aux.getNomComplet());
         if(aux.getTractament().equals("Sr.")) tractamentVenedor.getSelectionModel().select(0);
         else tractamentVenedor.getSelectionModel().select(1);
         telefonVenedor.setText(aux.getTelefon().toString());
@@ -308,12 +308,13 @@ public class FXMLVenedorsProveidorsController implements Initializable {
     @FXML
     private void accioGuardarProveidor(ActionEvent event){
         try{
-            Proveidor prov= new Proveidor(Integer.parseInt(buscarProveidor.getText()), nomProveidor.getText(),                 
-                especialitatProveidor.getText(), emailProveidor.getText(), 
-                tempsEntregaProveidor.getText(), informacioAddicionalVenedor.getText());
+            Proveidor prov= null;
+            //Proveidor prov= new Proveidor(Integer.parseInt(buscarProveidor.getText()), nomProveidor.getText(),                 
+                //especialitatProveidor.getText(), emailProveidor.getText(), 
+                //tempsEntregaProveidor.getText(), informacioAddicionalVenedor.getText());
             if(PopupAlerta.mostrarConfirmacio("Confirmar acció", "Vols salvar els canvis?")){
-                if(SQL.existeixProveidor(conexio, prov.getNum())) SQL.actualitzar(conexio, prov);
-                else SQL.afegir(conexio, prov);
+                if(SQL.existeixProveidor(conexio, prov.getNum())) SQL.actualitzarProveidor(conexio, prov);
+                else SQL.afegirProveidor(conexio, prov);
                 cancelarProveidor();
             }
         } catch(NumberFormatException e){
@@ -328,12 +329,13 @@ public class FXMLVenedorsProveidorsController implements Initializable {
     @FXML
     private void accioGuardarVenedor(ActionEvent event){
         try{
-            Venedor ven= new Venedor(Integer.parseInt(buscarVenedor.getText()), nomCompletVenedor.getText(), (String)tractamentVenedor.getSelectionModel().getSelectedItem(),
-                Integer.parseInt(telefonVenedor.getText()), emailVenedor.getText(), direccioVenedor.getText(), Integer.parseInt(codiPostalVenedor.getText()), 
-                poblacioVenedor.getText(), provinciaVenedor.getText(), codiPaisVenedor.getText(), nomPaisVenedor.getText(), informacioAddicionalVenedor.getText());
+            Venedor ven= null;
+            //Venedor ven= new Venedor(Integer.parseInt(buscarVenedor.getText()), nomCompletVenedor.getText(), (String)tractamentVenedor.getSelectionModel().getSelectedItem(),
+                //Integer.parseInt(telefonVenedor.getText()), emailVenedor.getText(), direccioVenedor.getText(), Integer.parseInt(codiPostalVenedor.getText()), 
+                //poblacioVenedor.getText(), provinciaVenedor.getText(), codiPaisVenedor.getText(), nomPaisVenedor.getText(), informacioAddicionalVenedor.getText());
             if(PopupAlerta.mostrarConfirmacio("Confirmar acció", "Vols salvar els canvis?")){
-                if(SQL.existeixVenedor(conexio, ven.getNum())) SQL.actualitzar(conexio, ven);
-                else SQL.afegir(conexio, ven);
+                if(SQL.existeixVenedor(conexio, ven.getNum())) SQL.actualitzarVenedor(conexio, ven);
+                else SQL.afegirVenedor(conexio, ven);
                 cancelarVenedor();
             }
         } catch(NumberFormatException e){

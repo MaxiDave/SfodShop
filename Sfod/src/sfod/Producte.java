@@ -3,42 +3,35 @@ package sfod;
 /*
     ESTRUCTURA SQL
 
-    CREATE TABLE producte (
-            codi varchar(10) not null, 
-            descripcio varchar(100), 
+    CREATE TABLE Productes (
+            codiElem varchar(10) not null,  
             eban int,
-            esElectronic varchar(1),
-            PRIMARY KEY ( codi ) 
+            stock int,
+            PRIMARY KEY ( codiElem ) 
     )
-
-    CREATE TABLE stock (
-            codiProducte varchar(10) not null,
-            quantitat int(4) not null,
-            PRIMARY KEY ( codiProducte )
-    )
-
+    ALTER TABLE Productes ADD FOREIGN KEY (codiElem) REFERENCES ElemsVendibles(codi) 
+ 
 */
 
-public class Producte {
+public class Producte extends ElemVendible{
     private final Integer EBAN;
-    private final String codi;
-    private final String descripcio;
+    private final Integer stock;
     
-    public Producte(String codi, Integer EBAN, String descripcio) {
+    public Producte(String codi, String descripcio, Integer EBAN, Integer stock) {
+        super(codi, descripcio);
         this.EBAN= EBAN;
-        this.codi= codi;
-        this.descripcio= descripcio;
-    }
-    
-    public String getCodi(){
-        return codi;
+        this.stock= stock;
     }
     
     public Integer getEBAN(){
         return EBAN;
     }
     
-    public String getDescripcio(){
-        return descripcio;
+    public Integer getStock(){
+        return stock;
+    }
+    
+    public Boolean valid(){
+        return(super.valid());
     }
 }

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -360,13 +361,17 @@ public class FXMLEntrarCompraController implements Initializable {
                             Double nouPVC= t.getNewValue();
                             LiniaCompra liniaActual= ((LiniaCompra) t.getTableView().getItems().get(t.getTablePosition().getRow()));
                             if(t.getNewValue().equals(t.getOldValue())) requestFocus(t.getTableView(), t.getTablePosition(), columnaDescompte);
-                            else{
+                            else if(liniaActual.valida()){
                                 liniaActual.setPVC(nouPVC);
                                 requestSelect(t.getTableView(), t.getTablePosition(), columnaPVC);
                                 requestSelect(t.getTableView(), t.getTablePosition(), columnaPFVC);
                                 requestSelect(t.getTableView(), t.getTablePosition(), columnaPF);
                                 requestFocus(t.getTableView(), t.getTablePosition(), columnaDescompte);
                                 actualitzaImportTotal();
+                            }
+                            else{
+                                PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "Error 404", "Nombre massa gran");
+                                requestFocus(t.getTableView(), t.getTablePosition(), columnaPVC);
                             }
                         } catch (NullPointerException ex) {
                             PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "Error 404", "Nombre introduït invàlid");
@@ -410,12 +415,18 @@ public class FXMLEntrarCompraController implements Initializable {
                             LiniaCompra liniaActual= ((LiniaCompra) t.getTableView().getItems().get(t.getTablePosition().getRow()));
                             Double nouDescompte= t.getNewValue();
                             if(nouDescompte < 0 || nouDescompte > 100) throw new NumberFormatException();
-                            liniaActual.setDescompte(nouDescompte);
-                            requestSelect(t.getTableView(), t.getTablePosition(), columnaDescompte);
-                            requestSelect(t.getTableView(), t.getTablePosition(), columnaPFVC);
-                            requestSelect(t.getTableView(), t.getTablePosition(), columnaPF);
-                            requestFocus(t.getTableView(), t.getTablePosition(), columnaUnitats);
-                            actualitzaImportTotal();
+                            else if(liniaActual.valida()){
+                                liniaActual.setDescompte(nouDescompte);
+                                requestSelect(t.getTableView(), t.getTablePosition(), columnaDescompte);
+                                requestSelect(t.getTableView(), t.getTablePosition(), columnaPFVC);
+                                requestSelect(t.getTableView(), t.getTablePosition(), columnaPF);
+                                requestFocus(t.getTableView(), t.getTablePosition(), columnaUnitats);
+                                actualitzaImportTotal();
+                            }
+                            else{
+                                PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "Error 404", "Nombre introduït invàlid");
+                                requestFocus(t.getTableView(), t.getTablePosition(), columnaDescompte);
+                            }
                         } catch (NullPointerException | NumberFormatException ex) {
                             PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "Error 404", "Nombre introduït invàlid");
                             requestFocus(t.getTableView(), t.getTablePosition(), columnaDescompte);
@@ -507,23 +518,47 @@ public class FXMLEntrarCompraController implements Initializable {
 
     @FXML
     private void accioConfirmarCompra(ActionEvent event) {
-        
+        try {
+            Compra nova= new Compra((String)proveidor.getSelectionModel().getSelectedItem(), (String)venedor.getSelectionModel().getSelectedItem(), LocalDate.now());
+            for(LiniaCompra linia : contingut) if(!linia.isEmpty()) nova.afegirLiniaCompra(linia);
+            
+            long numInsCompra= SQL.obtenirNumInsCompra(conexio);
+            nova.setNum(numInsCompra);
+            
+            numCompra.setText(String.valueOf(numInsCompra));
+            if(PopupAlerta.mostrarConfirmacio("Atenció", "Vol entrar aquesta compra amb ref. '"+numInsCompra+"'?")){
+                SQL.afegirCompra(conexio, nova);
+                PopupAlerta.mostraAlerta(Alert.AlertType.INFORMATION, "Acció Completada", "S'ha donat d'alta la compra correctament");
+                cancelarCompra();
+            }
+        } catch (SQLException ex) {
+            PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error de Connexió", ex.getMessage());
+        }
     }
     
-    @FXML
-    private void accioCancelarCompra(ActionEvent event) {
+    private void cancelarCompra(){
+        numCompra.clear();
         cancelar.setVisible(false);
         confirmar.setVisible(false);
         taulaLiniesCompra.setVisible(false);
         contingut.clear();
         contingut.add(new LiniaCompra());
+        venedor.setDisable(false);
         venedor.getSelectionModel().clearSelection();
         proveidor.getSelectionModel().clearSelection();
+        proveidor.setDisable(false);
         referenciesTotals.setText("0");
         importTotal.setText("0.00");
     }
     
+    @FXML
+    private void accioCancelarCompra(ActionEvent event) {
+        cancelarCompra();
+    }
+    
     private void desbloquejarCamps(){
+        venedor.setDisable(true);
+        proveidor.setDisable(true);
         cancelar.setVisible(true);
         confirmar.setVisible(true);
         taulaLiniesCompra.setVisible(true);

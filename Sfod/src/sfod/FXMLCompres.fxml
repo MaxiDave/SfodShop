@@ -6,48 +6,74 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane id="AnchorPane" fx:id="panell" prefHeight="695.0" prefWidth="1180.0" style="-fx-background-color: #f7db88;" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Label layoutX="112.0" layoutY="42.0" text="Venedor">
+      <Label layoutX="14.0" layoutY="14.0" text="Venedor">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <Label layoutX="106.0" layoutY="75.0" text="Proveidor">
+      <Label layoutX="267.0" layoutY="14.0" text="Proveidor">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <Label layoutX="74.0" layoutY="116.0" text="A partir de">
+      <Label layoutX="531.0" layoutY="14.0" text="A partir de">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <DatePicker fx:id="dataInici" editable="false" layoutX="183.0" layoutY="117.0" prefHeight="25.0" prefWidth="126.0" promptText="Data inici" />
-      <Label layoutX="320.0" layoutY="116.0" text="fins">
+      <DatePicker fx:id="dataInici" editable="false" layoutX="635.0" layoutY="15.0" prefHeight="25.0" prefWidth="126.0" promptText="Data inici" />
+      <Label layoutX="774.0" layoutY="14.0" text="fins">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <DatePicker fx:id="dataFi" editable="false" layoutX="366.0" layoutY="117.0" prefHeight="25.0" prefWidth="126.0" promptText="Data fi" />
-      <Button fx:id="cercar" layoutX="230.0" layoutY="164.0" mnemonicParsing="false" onAction="#accioBuscarCompres" text="Cercar">
+      <DatePicker fx:id="dataFi" editable="false" layoutX="815.0" layoutY="15.0" prefHeight="25.0" prefWidth="126.0" promptText="Data fi" />
+      <Button fx:id="cercar" layoutX="1005.0" layoutY="15.0" mnemonicParsing="false" onAction="#accioBuscarCompres" text="Cercar">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
       </Button>
-      <TableView fx:id="taulaCompres" layoutX="38.0" layoutY="237.0" prefHeight="426.0" prefWidth="1096.0">
-        <columns>
-          <TableColumn fx:id="columnaFactura" prefWidth="86.00003051757812" text="Nº Compra" />
-          <TableColumn fx:id="columnaProveidor" minWidth="0.0" prefWidth="239.0" text="Proveïdor" />
-            <TableColumn fx:id="columnaVenedor" minWidth="0.0" prefWidth="339.0" text="Venedor" />
-            <TableColumn fx:id="columnaImport" prefWidth="120.0" text="Import" />
-            <TableColumn fx:id="columnaDataCompra" prefWidth="287.0" text="Data Compra" />
-        </columns>
+      <ComboBox fx:id="venedor" layoutX="106.0" layoutY="15.0" prefWidth="150.0" />
+      <ComboBox fx:id="proveidor" layoutX="366.0" layoutY="15.0" prefWidth="150.0" />
+      <TableView fx:id="taulaLiniesCompra" editable="true" layoutX="30.0" layoutY="112.0" prefHeight="460.0" prefWidth="1122.0">
+         <columns>
+            <TableColumn fx:id="columnaProducte" prefWidth="83.0" text="Producte" />
+            <TableColumn fx:id="columnaDescripcio" prefWidth="605.0" text="Descripció" />
+            <TableColumn fx:id="columnaPVC" prefWidth="107.0" text="Preu Base (€)" />
+            <TableColumn fx:id="columnaDescompte" prefWidth="44.0" text="\% dte." />
+            <TableColumn fx:id="columnaPFVC" prefWidth="103.0" text="Preu Compra (€)" />
+            <TableColumn fx:id="columnaUnitats" prefWidth="57.0" text="Unitats" />
+            <TableColumn fx:id="columnaPF" prefWidth="122.0" text="Preu Línia (€)" />
+         </columns>
       </TableView>
-      <ComboBox fx:id="venedor" layoutX="245.0" layoutY="43.0" prefWidth="150.0" />
-      <ComboBox fx:id="proveidor" layoutX="245.0" layoutY="76.0" prefWidth="150.0" />
+      <Label fx:id="labelImportTotal" layoutX="888.0" layoutY="580.0" text="Import Total">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <TextField fx:id="importTotal" editable="false" layoutX="1040.0" layoutY="581.0" prefHeight="25.0" prefWidth="84.0" />
+      <Label fx:id="euroSymbol" layoutX="1133.0" layoutY="580.0" text="€">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <Label fx:id="labelNReferencies" layoutX="30.0" layoutY="580.0" text="Nº Referències">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <TextField fx:id="nReferencies" editable="false" layoutX="167.0" layoutY="581.0" prefHeight="25.0" prefWidth="24.0" />
+      <Label fx:id="labelNumCompra" layoutX="30.0" layoutY="75.0" text="Nº Compra ">
+         <font>
+            <Font name="System Bold" size="18.0" />
+         </font>
+      </Label>
+      <TextField fx:id="numCompra" editable="false" layoutX="143.0" layoutY="76.0" prefHeight="25.0" prefWidth="126.0" />
    </children>
 </AnchorPane>

@@ -20,15 +20,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.chart.PieChart.Data;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
-import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -37,11 +34,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 public class FXMLProductesController implements Initializable {
 
@@ -67,10 +62,16 @@ public class FXMLProductesController implements Initializable {
     private TextField ebanBuscar;
     
     @FXML
+    private TextField stock;
+    
+    @FXML
     private Button guardar;
     
     @FXML
     private Button cancelar;
+    
+    @FXML
+    private Button eliminar;
     
     @FXML
     private Label labelTipus;
@@ -102,17 +103,34 @@ public class FXMLProductesController implements Initializable {
         cancelar.setGraphic(new ImageView(cancelButon));
         Image guardarButon = new Image(getClass().getResourceAsStream("guardar.png"));
         guardar.setGraphic(new ImageView(guardarButon));
+        Image eliminarButon = new Image(getClass().getResourceAsStream("eliminar.png"));
+        eliminar.setGraphic(new ImageView(eliminarButon));
         
         tipusProducte.getSelectionModel().selectedIndexProperty().addListener(new
                 ChangeListener<Number>(){
                     public void changed(ObservableValue ov,
                             Number value, Number new_value){
                         if(new_value.intValue() == 0){
-                            dataElectronic.addAll(carregaSpecs());
+                            if(dataElectronic.isEmpty()) dataElectronic.addAll(carregaSpecs());
                             taulaSpecs.setItems(dataElectronic);
                             taulaSpecs.setVisible(true);
+                            ebanBuscar.setEditable(true);
+                            ebanBuscar.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
                         }
-                        else taulaSpecs.setVisible(false);
+                        else{
+                            dataElectronic.clear();
+                            dataElectronic.addAll(carregaSpecs());
+                            taulaSpecs.setVisible(false);
+                            if(new_value.intValue() == 2){
+                                ebanBuscar.setEditable(false);
+                                ebanBuscar.clear();
+                                ebanBuscar.setStyle("-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4");
+                            }
+                            else{
+                                ebanBuscar.setEditable(true);
+                                ebanBuscar.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
+                            }
+                        }
                     }
                 }
             );
@@ -122,6 +140,7 @@ public class FXMLProductesController implements Initializable {
         labelTipus.setVisible(false);
         opcionsTipus.add("Electrònic");
         opcionsTipus.add("Varis");
+        opcionsTipus.add("Servei");
         tipusProducte.setItems(opcionsTipus);
         taulaSpecs.setVisible(false);
         
@@ -149,7 +168,7 @@ public class FXMLProductesController implements Initializable {
                             TablePosition tp= t.getTableView().getFocusModel().getFocusedCell();
                             Platform.runLater(()->t.getTableView().edit(tp.getRow(), tp.getTableColumn()));
                         }
-                        else codiBuscar.requestFocus();
+                        else guardar.requestFocus();
                     }
                 }
         );
@@ -179,21 +198,31 @@ public class FXMLProductesController implements Initializable {
         return llistaAux;
     }
     
-    private void desocultarCamps(Producte aux){
-        if(aux != null){
-            descBuscar.setText(aux.getDescripcio());
-            ebanBuscar.setText(aux.getEBAN().toString());
+    private void desocultarCamps(ElemVendible eV){
+        if(eV != null){
+            descBuscar.setText(eV.getDescripcio());
+            if(eV instanceof Producte){
+                if(eV instanceof ProducteElectronic) tipusProducte.getSelectionModel().select(0);
+                else tipusProducte.getSelectionModel().select(1);
+                ebanBuscar.setText(((Producte)eV).getEBAN().toString());
+                ebanBuscar.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
+                ebanBuscar.setEditable(true);
+            }
+            else{
+                tipusProducte.getSelectionModel().select(2);
+                ebanBuscar.setEditable(false);
+            }
+            eliminar.setDisable(false);
+            dataElectronic.clear();
         }
         else{
             labelTipus.setVisible(true);
             tipusProducte.setVisible(true);
         }
+        
         descBuscar.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
         descBuscar.setEditable(true);
-                
-        ebanBuscar.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
-        ebanBuscar.setEditable(true);
-                
+        descBuscar.requestFocus();
         codiBuscar.setEditable(false);
         codiBuscar.setStyle("-fx-border-color: #CCC7BA; -fx-background-color: #CCC7BA; -fx-border-radius: 4");
                 
@@ -231,18 +260,19 @@ public class FXMLProductesController implements Initializable {
                 else if(list.size() > 1) aux= mostraPopup(list);
                 else aux= list.get(0);
                 if(aux != null){
-                    Producte prod= SQL.seleccionaProducte(conexio, aux.getPrincipal());
-                    codiBuscar.setText(prod.getCodi());
-                    desocultarCamps(prod);
-                    if(prod instanceof ProducteElectronic){
+                    ElemVendible eV= SQL.seleccionaElemVendible(conexio, aux.getPrincipal());
+                    codiBuscar.setText(eV.getCodi());
+                    desocultarCamps(eV);
+                    if(eV instanceof ProducteElectronic){
                         infoTipusProducte.setText("PRODUCTE ELECTRONIC");
-                        ProducteElectronic auxElect=(ProducteElectronic)prod;
+                        ProducteElectronic auxElect=(ProducteElectronic)eV;
                         Iterator<ItemProducteElectronic> it= auxElect.getItemsIterator();
                         while(it.hasNext()) dataElectronic.add(it.next());
                         taulaSpecs.setItems(dataElectronic);
                         taulaSpecs.setVisible(true);
                     }
-                    else infoTipusProducte.setText("PRODUCTE VARIS");
+                    else if(eV instanceof Producte) infoTipusProducte.setText("PRODUCTE VARIS");
+                    else infoTipusProducte.setText("SERVEI");
                     infoTipusProducte.setVisible(true);
                 }
                 else descBuscar.clear();
@@ -269,18 +299,19 @@ public class FXMLProductesController implements Initializable {
                 else if(list.size() > 1) aux= mostraPopup(list);
                 else aux= list.get(0);
                 if(aux != null){
-                    Producte prod= SQL.seleccionaProducte(conexio, aux.getPrincipal());
-                    codiBuscar.setText(prod.getCodi());
-                    desocultarCamps(prod);
-                    if(prod instanceof ProducteElectronic){
+                    ElemVendible eV= SQL.seleccionaElemVendible(conexio, aux.getPrincipal());
+                    codiBuscar.setText(eV.getCodi());
+                    desocultarCamps(eV);
+                    if(eV instanceof ProducteElectronic){
                         infoTipusProducte.setText("PRODUCTE ELECTRONIC");
-                        ProducteElectronic auxElect=(ProducteElectronic)prod;
+                        ProducteElectronic auxElect=(ProducteElectronic)eV;
                         Iterator<ItemProducteElectronic> it= auxElect.getItemsIterator();
                         while(it.hasNext()) dataElectronic.add(it.next());
                         taulaSpecs.setItems(dataElectronic);
                         taulaSpecs.setVisible(true);
                     }
-                    else infoTipusProducte.setText("PRODUCTE VARIS");
+                    else if(eV instanceof Producte) infoTipusProducte.setText("PRODUCTE VARIS");
+                    else infoTipusProducte.setText("SERVEI");
                     infoTipusProducte.setVisible(true);
                     descBuscar.requestFocus();
                 }
@@ -298,41 +329,45 @@ public class FXMLProductesController implements Initializable {
         }
     }
     
+    private void guardarElemVendible(ElemVendible eV) throws SQLException{
+        if(PopupAlerta.mostrarConfirmacio("Confirmar acció", "Vols salvar els canvis?")){
+            if(!SQL.existeixProducte(conexio, eV.getCodi())) SQL.afegirElemVendible(conexio, eV);
+            else SQL.actualitzarElemVendible(conexio, eV);
+        }
+    }
+    
     @FXML
     private void accioGuardar(ActionEvent event){
         try{
+            String tipusP= (String)tipusProducte.getSelectionModel().getSelectedItem();
             String novaDesc= descBuscar.getText();
-            String nouEban= ebanBuscar.getText();
-            if(novaDesc.length()>100) PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error 404", "Descripció massa llarga, revisa-la");
-            else{
-                Integer intEban;
-                if(nouEban.isEmpty()) intEban= 0;
-                else intEban= Integer.parseInt(nouEban);
-                Producte aux;
-                if(SQL.existeixProducte(conexio, codiBuscar.getText())){
-                    if(infoTipusProducte.getText().equals("SERVEI")){
-                        aux= new Producte(codiBuscar.getText(), intEban, novaDesc);
-                    }
-                    else aux= new ProducteElectronic(codiBuscar.getText(), intEban, novaDesc, dataElectronic);
-                }
-                else{
-                    if(tipusProducte.getSelectionModel().getSelectedItem().equals("Electrònic")){
-                        aux= new ProducteElectronic(codiBuscar.getText(), intEban, novaDesc, dataElectronic);
-                    }
-                    else aux= new Producte(codiBuscar.getText(), intEban, novaDesc);
-                }
-                if(PopupAlerta.mostrarConfirmacio("Confirmar acció", "Vols salvar els canvis?")){
-                    if(SQL.existeixProducte(conexio, aux.getCodi())) SQL.actualitzar(conexio, aux);
-                    else SQL.afegir(conexio, aux);
-                    cancelar();
-                }
+            String codi= codiBuscar.getText();
+            if(tipusP.equals("Electrònic")){
+                Integer eban;
+                if(ebanBuscar.getText().isEmpty()) eban= null; 
+                else eban= Integer.parseInt(ebanBuscar.getText());
+                ProducteElectronic pE= new ProducteElectronic(codi, novaDesc, eban, 0, dataElectronic);
+                guardarElemVendible(pE);
             }
+            else if(tipusP.equals("Varis")){
+                Integer eban;
+                if(ebanBuscar.getText().isEmpty()) eban= null; 
+                else eban= Integer.parseInt(ebanBuscar.getText());
+                Producte prod= new Producte(codi, novaDesc, eban, 0);
+                guardarElemVendible(prod);
+            }
+            else{
+                ElemVendible eV= new ElemVendible(codi, novaDesc);
+                guardarElemVendible(eV);
+            }
+            PopupAlerta.mostraAlerta(Alert.AlertType.INFORMATION, "Acció Completada", "S'ha guardat el producte correctament");
+            cancelar();
         } catch(NumberFormatException e){
             PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error 404", "Codi de barres invàlid, revisa'l");
         } catch (SQLException ex) {
-            PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error de Servidor 404", ex.getMessage());
+            PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error 404", "Revisi els camps");
         } catch(NullPointerException ex){
-            PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error 404", "Tipus de Producte invàlid");
+            PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error 404", "Si us plau, marqui de quin tipus és el producte");
         }
     }
     
@@ -342,6 +377,7 @@ public class FXMLProductesController implements Initializable {
         tipusProducte.setVisible(false);
         tipusProducte.getSelectionModel().clearSelection();
         guardar.setDisable(true);
+        eliminar.setDisable(true);
         taulaSpecs.setVisible(false);
         dataElectronic.clear();
         dataElectronic.addAll(carregaSpecs());
@@ -365,5 +401,17 @@ public class FXMLProductesController implements Initializable {
     @FXML
     private void accioCancelar(ActionEvent event){
         cancelar();
+    }
+    
+    @FXML
+    private void accioEliminar(ActionEvent event){
+        if(PopupAlerta.mostrarConfirmacio("Atenció!", "Segur que vols eliminar el producte '"+codiBuscar.getText()+"'?")){
+            try {
+                SQL.eliminarProducte(conexio, codiBuscar.getText());
+                cancelar();
+            } catch (SQLException ex) {
+                PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error de Servidor 404", ex.getMessage());
+            }
+        }
     }
 }

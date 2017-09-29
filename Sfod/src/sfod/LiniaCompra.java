@@ -1,5 +1,22 @@
 package sfod;
 
+/*
+    ESTRUCTURA SQL
+
+    CREATE TABLE LiniesCompra (
+        numC int not null,
+        codiElem varchar(10) not null,
+        PVC double(6,2),
+        desc double(4,2),
+        PFVC double(6,2),
+        unitats int,
+        PT double,
+        PRIMARY KEY ( numC, codiElem )
+    )
+    ALTER TABLE LiniesCompra ADD FOREIGN KEY (numC) REFERENCES Compres(numC) 
+    ALTER TABLE LiniesCompra ADD FOREIGN KEY (codiElem) REFERENCES ElemsVendibles(codi) 
+*/
+
 public class LiniaCompra {
     private String codiProducte;
     private String descripcio;
@@ -39,6 +56,10 @@ public class LiniaCompra {
         PFVC= 0.00;
         unitats= 0;
         PT= 0.00;
+    }
+    
+    public Boolean valida(){
+        return(Operacions.valid(codiProducte, 10) && descripcio.length() <= 35 && Operacions.valid(PVC, 4) && Operacions.valid(descompte, 2) && Operacions.valid(PFVC, 4) && Operacions.valid(PT, 12));
     }
     
     public Boolean isEmpty(){

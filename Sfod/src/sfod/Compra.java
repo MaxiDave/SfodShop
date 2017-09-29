@@ -2,23 +2,26 @@ package sfod;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /*
     ESTRUCTURA SQL
 
-    CREATE TABLE compra (
-        num int not null AUTO_INCREMENT,
-        proveidor varchar(25),
-        venedor varchar(55),
-        importTotal double(5,2),
+    CREATE TABLE Compres (
+        numC int not null,
+        numProv int(3),
+        numVen int(3),
+        impTotal double,
         data date,
-        PRIMARY KEY ( num )
+        PRIMARY KEY ( numC )
     )
-    ALTER TABLE compra AUTO_INCREMENT = 17000000;
+
+    ALTER TABLE Compres ADD FOREIGN KEY (numProv) REFERENCES Proveidors(numProv)
+    ALTER TABLE Compres ADD FOREIGN KEY (numVen) REFERENCES Venedors(numVen) 
 */
 public class Compra {
-    private Integer num;
+    private long num;
     private String proveidor;
     private String venedor;
     private Double importTotal;
@@ -33,7 +36,11 @@ public class Compra {
         this.data= data;
     }
     
-    public void setNum(Integer num){
+    public Boolean valida(){
+        return(Operacions.valid(proveidor, 25) && Operacions.valid(venedor, 55));
+    }
+    
+    public void setNum(long num){
         this.num= num;
     }
     
@@ -51,7 +58,7 @@ public class Compra {
         items.remove(item);
     }
     
-    public Integer getNum(){
+    public long getNum(){
         return num;
     }
     
@@ -69,6 +76,14 @@ public class Compra {
     
     public LocalDate getData(){
         return data;
+    }
+    
+    public Integer getNumRefs(){
+        return items.size();
+    }
+    
+    public Iterator<LiniaCompra> getIteradorLC(){
+        return items.iterator();
     }
 }
 /*

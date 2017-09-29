@@ -50,15 +50,26 @@
             <TableColumn fx:id="specInfo" prefWidth="412.0" sortable="false" text="Especificacions" />
          </columns>
       </TableView>
+      <Label layoutX="822.0" layoutY="202.0" text="Stock">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
       <Button fx:id="guardar" alignment="CENTER" disable="true" layoutX="880.0" layoutY="335.0" mnemonicParsing="false" onAction="#accioGuardar" style="-fx-background-color: #A6BBED;" text="Guardar" textAlignment="CENTER">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
       </Button>
-      <Button fx:id="cancelar" layoutX="879.0" layoutY="430.0" mnemonicParsing="false" onAction="#accioCancelar" style="-fx-background-color: #A6BBED;" text="Cancelar">
+      <Button fx:id="eliminar" disable="true" layoutX="879.0" layoutY="403.0" mnemonicParsing="false" onAction="#accioEliminar" style="-fx-background-color: #A6BBED;" text="Eliminar">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
       </Button>
+      <Button fx:id="cancelar" layoutX="879.0" layoutY="474.0" mnemonicParsing="false" onAction="#accioCancelar" style="-fx-background-color: #A6BBED;" text="Cancelar">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <TextField fx:id="stock" editable="false" layoutX="872.0" layoutY="199.0" prefHeight="27.0" prefWidth="38.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
    </children>
 </AnchorPane>

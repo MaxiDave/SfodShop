@@ -46,6 +46,12 @@ public class FXMLVenedorsProveidorsController implements Initializable {
     private TextField emailProveidor;
     
     @FXML
+    private TextField codiPaisProveidor;
+    
+    @FXML
+    private TextField nomPaisProveidor;
+    
+    @FXML
     private TextArea informacioAddicionalProveidor;
     
     @FXML
@@ -61,7 +67,13 @@ public class FXMLVenedorsProveidorsController implements Initializable {
     private TextField buscarVenedor;
     
     @FXML
-    private TextField nomCompletVenedor;
+    private TextField nomVenedor;
+    
+    @FXML
+    private TextField cog1Venedor;
+    
+    @FXML
+    private TextField cog2Venedor;
     
     @FXML
     private TextField telefonVenedor;
@@ -140,8 +152,12 @@ public class FXMLVenedorsProveidorsController implements Initializable {
     }
     
     private void desocultarCampsVenedor(){
-        nomCompletVenedor.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
-        nomCompletVenedor.setEditable(true);
+        nomVenedor.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
+        nomVenedor.setEditable(true);
+        cog1Venedor.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
+        cog1Venedor.setEditable(true);
+        cog2Venedor.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
+        cog2Venedor.setEditable(true);
         tractamentVenedor.setDisable(false);
         telefonVenedor.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
         telefonVenedor.setEditable(true);
@@ -158,14 +174,13 @@ public class FXMLVenedorsProveidorsController implements Initializable {
         codiPaisVenedor.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
         codiPaisVenedor.setEditable(true);
         nomPaisVenedor.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
-        nomPaisVenedor.setEditable(true);
         informacioAddicionalVenedor.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
         informacioAddicionalVenedor.setEditable(true);
                 
         buscarVenedor.setEditable(false);
         buscarVenedor.setStyle("-fx-border-color: #CCC7BA; -fx-background-color: #CCC7BA; -fx-border-radius: 4");
         
-        nomCompletVenedor.requestFocus();
+        nomVenedor.requestFocus();
         guardarVenedor.setDisable(false);
     }
     
@@ -180,6 +195,9 @@ public class FXMLVenedorsProveidorsController implements Initializable {
         tempsEntregaProveidor.setEditable(true);
         informacioAddicionalProveidor.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
         informacioAddicionalProveidor.setEditable(true);
+        codiPaisProveidor.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
+        codiPaisProveidor.setEditable(true);
+        nomPaisProveidor.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
                 
         buscarProveidor.setEditable(false);
         buscarProveidor.setStyle("-fx-border-color: #CCC7BA; -fx-background-color: #CCC7BA; -fx-border-radius: 4");
@@ -189,7 +207,9 @@ public class FXMLVenedorsProveidorsController implements Initializable {
     }
     
     private void desocultarCampsVenedor(Venedor aux){
-        //nomCompletVenedor.setText(aux.getNomComplet());
+        nomVenedor.setText(aux.getNom());
+        cog1Venedor.setText(aux.getCog1());
+        cog2Venedor.setText(aux.getCog2());
         if(aux.getTractament().equals("Sr.")) tractamentVenedor.getSelectionModel().select(0);
         else tractamentVenedor.getSelectionModel().select(1);
         telefonVenedor.setText(aux.getTelefon().toString());
@@ -210,6 +230,8 @@ public class FXMLVenedorsProveidorsController implements Initializable {
         especialitatProveidor.setText(aux.getEspecialitat());
         emailProveidor.setText(aux.getEmail());
         tempsEntregaProveidor.setText(aux.getTempsEntrega());
+        codiPaisProveidor.setText(aux.getCodiPais());
+        nomPaisProveidor.setText(aux.getNomPais());
         informacioAddicionalProveidor.setText(aux.getInformacioAddicional());
 
         eliminarProveidor.setDisable(false);
@@ -235,6 +257,40 @@ public class FXMLVenedorsProveidorsController implements Initializable {
         inputStage.setTitle("Buscador");
         inputStage.showAndWait();
         return controler.getElementCercable();
+    }
+    
+    @FXML
+    private void buscarCodiPaisProveidor(KeyEvent event){
+        try{
+            if(event.getCode() == KeyCode.ENTER){
+                String codiPais= codiPaisProveidor.getText();
+                if(codiPais.length() == 2){
+                    String nomPais= SQL.obtenirNomPais(conexio, codiPais);
+                    if(nomPais != null) nomPaisProveidor.setText(nomPais);
+                    else throw new Exception();
+                }
+                else throw new Exception();
+            }
+        } catch(Exception ex){
+            PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "Atenció", "No s'ha trobat el País");
+        }
+    }
+    
+    @FXML
+    private void buscarCodiPaisVenedor(KeyEvent event){
+        try{
+            if(event.getCode() == KeyCode.ENTER){
+                String codiPais= codiPaisVenedor.getText();
+                if(codiPais.length() == 2){
+                    String nomPais= SQL.obtenirNomPais(conexio, codiPais);
+                    if(nomPais != null) nomPaisVenedor.setText(nomPais);
+                    else throw new Exception();
+                }
+                else throw new Exception();
+            }
+        } catch(Exception ex){
+            PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "Atenció", "No s'ha trobat el País");
+        }
     }
     
     @FXML
@@ -359,9 +415,17 @@ public class FXMLVenedorsProveidorsController implements Initializable {
         buscarVenedor.setEditable(true);
         buscarVenedor.setStyle("-fx-background-color: #FFFFFF; -fx-border-color: #BDBAB3; -fx-border-radius: 4");
         
-        nomCompletVenedor.clear();
-        nomCompletVenedor.setEditable(false);
-        nomCompletVenedor.setStyle("-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4");
+        nomVenedor.clear();
+        nomVenedor.setEditable(false);
+        nomVenedor.setStyle("-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4");
+        
+        cog1Venedor.clear();
+        cog1Venedor.setEditable(false);
+        cog1Venedor.setStyle("-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4");
+        
+        cog2Venedor.clear();
+        cog2Venedor.setEditable(false);
+        cog2Venedor.setStyle("-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4");
         
         telefonVenedor.clear();
         telefonVenedor.setEditable(false);
@@ -426,6 +490,14 @@ public class FXMLVenedorsProveidorsController implements Initializable {
         tempsEntregaProveidor.setEditable(false);
         tempsEntregaProveidor.setStyle("-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4");
         
+        codiPaisProveidor.clear();
+        codiPaisProveidor.setEditable(false);
+        codiPaisProveidor.setStyle("-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4");
+        
+        nomPaisProveidor.clear();
+        nomPaisProveidor.setEditable(false);
+        nomPaisProveidor.setStyle("-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4");
+        
         informacioAddicionalProveidor.clear();
         informacioAddicionalProveidor.setEditable(false);
         informacioAddicionalProveidor.setStyle("-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4");
@@ -456,7 +528,7 @@ public class FXMLVenedorsProveidorsController implements Initializable {
                 sexeArticle= "la";
                 sexeVenedor= "venedora";
             }
-            if(PopupAlerta.mostrarConfirmacio("Eliminar Venedor/a", "Segur que vols eliminar "+sexeArticle+" "+sexeVenedor+" \""+buscarVenedor.getText()+": "+nomCompletVenedor.getText()+"\" ?")){
+            if(PopupAlerta.mostrarConfirmacio("Eliminar Venedor/a", "Segur que vols eliminar "+sexeArticle+" "+sexeVenedor+" \""+buscarVenedor.getText()+": "+nomVenedor.getText()+"\" ?")){
                 SQL.eliminarVenedor(conexio, Integer.parseInt(buscarVenedor.getText()));
                 cancelarVenedor();
                 PopupAlerta.mostrarConfirmacio("Eliminar Venedor/a", "S'ha eliminat "+sexeArticle+" "+sexeVenedor+" correctament");

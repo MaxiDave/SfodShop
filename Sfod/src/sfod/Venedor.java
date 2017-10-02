@@ -17,7 +17,8 @@ package sfod;
             provincia varchar(20),
             codiPais varchar(2),
             infoAdd varchar(100),
-            PRIMARY KEY ( numVen ) 
+            PRIMARY KEY ( numVen ),
+            FOREIGN KEY ( codiPais ) REFERENCES Paisos(codi)
     )
 
     ALTER TABLE Venedors ADD FOREIGN KEY (codiPais) REFERENCES paisos(codiPais) 

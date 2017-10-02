@@ -87,9 +87,9 @@ public class Compra {
     }
 }
 /*
-CREATE TABLE `paisos` (
-`id` int(11) NOT NULL auto_increment,
-`codiPais` varchar(2) NOT NULL default '',
-`nomPais` varchar(100) NOT NULL default '',
-PRIMARY KEY (`id`)
+CREATE TABLE Paisos (
+    codi varchar(2) NOT NULL default '',
+    nomPais varchar(100) NOT NULL default '',
+    PRIMARY KEY (codi)
+)
 */

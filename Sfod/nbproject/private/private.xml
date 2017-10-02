@@ -3,12 +3,12 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/David/Desktop/SfodShop/Sfod/src/sfod/FXMLVenedorsProveidorsController.java</file>
-            <file>file:/C:/Users/David/Desktop/SfodShop/Sfod/src/sfod/SQL.java</file>
-            <file>file:/C:/Users/David/Desktop/SfodShop/Sfod/src/sfod/Producte.java</file>
-            <file>file:/C:/Users/David/Desktop/SfodShop/Sfod/src/sfod/FXMLProductesController.java</file>
-            <file>file:/C:/Users/David/Desktop/SfodShop/Sfod/src/sfod/ElemVendible.java</file>
-            <file>file:/C:/Users/David/Desktop/SfodShop/Sfod/src/sfod/ProducteElectronic.java</file>
+            <file>file:/C:/Users/david/Desktop/SfodShop/Sfod/src/sfod/FXMLVenedorsProveidorsController.java</file>
+            <file>file:/C:/Users/david/Desktop/SfodShop/Sfod/src/sfod/Venedor.java</file>
+            <file>file:/C:/Users/david/Desktop/SfodShop/Sfod/src/sfod/Proveidor.java</file>
+            <file>file:/C:/Users/david/Desktop/SfodShop/Sfod/src/sfod/Compra.java</file>
+            <file>file:/C:/Users/david/Desktop/SfodShop/Sfod/src/sfod/Producte.java</file>
+            <file>file:/C:/Users/david/Desktop/SfodShop/Sfod/src/sfod/SQL.java</file>
         </group>
     </open-files>
 </project-private>

@@ -11,7 +11,8 @@ package sfod;
             tempsEntr varchar(25),
             infoAdd varchar(100),
             codiPais varchar(2),
-            PRIMARY KEY ( numProv ) 
+            PRIMARY KEY ( numProv ),
+            FOREIGN KEY ( codiPais ) REFERENCES Paisos(codi)
     )
     ALTER TABLE Proveidors ADD FOREIGN KEY (codiPais) REFERENCES paisos(codiPais) 
 

@@ -30,7 +30,9 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </Label>
-      <TextField fx:id="nomCompletVenedor" editable="false" layoutX="140.0" layoutY="102.0" prefHeight="27.0" prefWidth="341.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
+      <TextField fx:id="nomVenedor" editable="false" layoutX="140.0" layoutY="102.0" prefHeight="27.0" prefWidth="103.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
+      <TextField fx:id="cog1Venedor" editable="false" layoutX="253.0" layoutY="102.0" prefHeight="27.0" prefWidth="103.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
+      <TextField fx:id="cog2Venedor" editable="false" layoutX="368.0" layoutY="102.0" prefHeight="27.0" prefWidth="103.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
       <Label alignment="CENTER" layoutX="44.0" layoutY="149.0" text="Tractament">
          <font>
             <Font name="System Bold" size="14.0" />
@@ -73,7 +75,7 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </Label>
-      <TextField fx:id="codiPaisVenedor" editable="false" layoutX="140.0" layoutY="405.0" prefHeight="27.0" prefWidth="36.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
+      <TextField fx:id="codiPaisVenedor" editable="false" layoutX="140.0" layoutY="405.0" onKeyPressed="#buscarCodiPaisVenedor" prefHeight="27.0" prefWidth="36.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
       <TextField fx:id="nomPaisVenedor" editable="false" layoutX="188.0" layoutY="405.0" prefHeight="27.0" prefWidth="154.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
       <Label alignment="CENTER" layoutX="231.0" layoutY="448.0" text="Informació Addicional">
          <font>
@@ -140,6 +142,13 @@
          </font>
       </Label>
       <TextField fx:id="tempsEntregaProveidor" editable="false" layoutX="768.0" layoutY="267.0" prefHeight="27.0" prefWidth="341.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
+      <Label alignment="CENTER" layoutX="682.0" layoutY="315.0" text="País">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Label>
+      <TextField fx:id="codiPaisProveidor" editable="false" layoutX="766.0" layoutY="312.0" onKeyPressed="#buscarCodiPaisProveidor" prefHeight="27.0" prefWidth="36.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
+      <TextField fx:id="nomPaisProveidor" editable="false" layoutX="811.0" layoutY="312.0" prefHeight="27.0" prefWidth="154.0" style="-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4;" />
       <Label alignment="CENTER" layoutX="826.0" layoutY="373.0" text="Informació Addicional">
          <font>
             <Font name="System Bold" size="14.0" />

@@ -204,7 +204,9 @@ public class FXMLProductesController implements Initializable {
             if(eV instanceof Producte){
                 if(eV instanceof ProducteElectronic) tipusProducte.getSelectionModel().select(0);
                 else tipusProducte.getSelectionModel().select(1);
-                ebanBuscar.setText(((Producte)eV).getEBAN().toString());
+                Integer eban= ((Producte)eV).getEBAN();
+                if(eban == null) ebanBuscar.setText("");
+                else ebanBuscar.setText(((Producte)eV).getEBAN().toString());
                 ebanBuscar.setStyle("-fx-border-color: #EBD298; -fx-background-color: #F7E5BA; -fx-border-radius: 4");
                 ebanBuscar.setEditable(true);
             }
@@ -407,7 +409,8 @@ public class FXMLProductesController implements Initializable {
     private void accioEliminar(ActionEvent event){
         if(PopupAlerta.mostrarConfirmacio("Atenció!", "Segur que vols eliminar el producte '"+codiBuscar.getText()+"'?")){
             try {
-                SQL.eliminarProducte(conexio, codiBuscar.getText());
+                SQL.eliminarElemVendible(conexio, codiBuscar.getText(), (String)tipusProducte.getSelectionModel().getSelectedItem());
+                PopupAlerta.mostraAlerta(Alert.AlertType.INFORMATION, "Confirmació", "S'ha eliminat el producte correctament");
                 cancelar();
             } catch (SQLException ex) {
                 PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error de Servidor 404", ex.getMessage());

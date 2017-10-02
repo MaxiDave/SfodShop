@@ -77,7 +77,7 @@ public abstract class SQL {
             if(rs2.next()){
                 Integer eban= rs2.getInt("eban");
                 Integer stock= rs2.getInt("stock");
-                
+                if(eban == 0) eban= null;
                 String sql3= "SELECT * FROM ProductesElects WHERE codiP=\""+codi+"\"";
                 ResultSet rs3= stm.executeQuery(sql3);
                 if(rs3.next()){
@@ -180,19 +180,40 @@ public abstract class SQL {
         }
     }
     
-    public static void eliminarProducte(Connection conn, String codiProducte) throws SQLException{
-        Statement stm= conn.createStatement();
-        String sql= "DELETE FROM producte WHERE codi=\""+codiProducte+"\"";
+    private static void eliminarEV(Statement stm, String codiElem) throws SQLException{
+        String sql= "DELETE FROM ElemsVendibles WHERE codi=\""+codiElem+"\"";
         stm.executeUpdate(sql);
-        String sql2= "DELETE FROM stock WHERE codiProducte=\""+codiProducte+"\"";
-        stm.executeUpdate(sql2);
+    }
+    
+    private static void eliminarProducte(Statement stm, String codiElem) throws SQLException{
+        String sql= "DELETE FROM Productes WHERE codiElem=\""+codiElem+"\"";
+        stm.executeUpdate(sql);
+    }
+    
+    private static void eliminarProducteElectronic(Statement stm, String codiElem) throws SQLException{
+        String sql= "DELETE FROM ProductesElects WHERE codiP=\""+codiElem+"\"";
+        stm.executeUpdate(sql);
+    }
+    
+    public static void eliminarElemVendible(Connection conn, String codiElem, String tipusProducte) throws SQLException{
+        Statement stm= conn.createStatement();
+        if(tipusProducte.equals("Electrònic")){
+            eliminarProducteElectronic(stm, codiElem);
+            eliminarProducte(stm, codiElem);
+            eliminarEV(stm, codiElem);
+        }
+        else if(tipusProducte.equals("Varis")){
+            eliminarProducte(stm, codiElem);
+            eliminarEV(stm, codiElem);
+        }
+        else eliminarEV(stm, codiElem);
     }
     
     //Consultes Venedor
     
     public static boolean existeixVenedor(Connection conn, Integer num) throws SQLException{
         Statement stm= conn.createStatement();
-	ResultSet rs1= stm.executeQuery("SELECT * FROM venedor WHERE num="+num);
+	ResultSet rs1= stm.executeQuery("SELECT * FROM Venedors WHERE numVen="+num);
         if(rs1.next()) return true;
         else return false;
     }
@@ -202,40 +223,43 @@ public abstract class SQL {
         Statement stm= conn.createStatement();
         String sql;
         if(stringVenedor.equals("*")){
-            sql= "SELECT num, nomComplet FROM venedor";
+            sql= "SELECT numVen, nom, cog1, cog2 FROM Venedors";
         }
         else{
             Integer numVenedor= Integer.parseInt(stringVenedor);
-            sql= "SELECT num, nomComplet FROM venedor WHERE num="+numVenedor;
+            sql= "SELECT numVen, nom, cog1, cog2 FROM Venedors WHERE numVen="+numVenedor;
         }
 	ResultSet rs1= stm.executeQuery(sql);
         while(rs1.next()){
-            Integer num= rs1.getInt("num");
-            String nomComplet= rs1.getString("nomComplet");
-            list.add(new ElementCercable(num.toString(), nomComplet));
+            Integer num= rs1.getInt("numVenedor");
+            String nom= rs1.getString("nom");
+            String cog1= rs1.getString("cog1");
+            String cog2= rs1.getString("cog2");
+            list.add(new ElementCercable(num.toString(), nom+" "+cog1+" "+cog2));
         }
         return list;
     }
     
     public static Venedor seleccionaVenedor(Connection conn, String codi) throws SQLException{
         Statement stm= conn.createStatement();
-        String sql= "SELECT * FROM venedor WHERE num="+Integer.parseInt(codi);
+        String sql= "SELECT * FROM Venedors v INNER JOIN Paisos WHERE Venedors.numVen="+Integer.parseInt(codi);
         ResultSet rs1= stm.executeQuery(sql);
         if(rs1.next()){
-            Integer numVenedor= rs1.getInt("num");
-            String nomComplet= rs1.getString("nomComplet");
-            String tractament= rs1.getString("tractament");
-            Integer telefon= rs1.getInt("telefon");
-            String email= rs1.getString("email");
-            String direccio= rs1.getString("direccio");
-            Integer codiPostal= rs1.getInt("codiPostal");
-            String poblacio= rs1.getString("poblacio");
-            String provincia= rs1.getString("provincia");
-            String codiPais= rs1.getString("codiPais");
-            String nomPais= rs1.getString("nomPais");
-            String informacioAddicional= rs1.getString("informacioAddicional");
-            return null;
-            //return new Venedor(numVenedor, nomComplet, tractament, telefon, email, direccio, codiPostal, poblacio, provincia, codiPais, nomPais, informacioAddicional);
+            Integer numVenedor= rs1.getInt("v.numVen");
+            String nom= rs1.getString("v.nom");
+            String cog1= rs1.getString("v.cog1");
+            String cog2= rs1.getString("v.cog2");
+            String tractament= rs1.getString("v.tractament");
+            Integer telefon= rs1.getInt("v.telefon");
+            String email= rs1.getString("v.email");
+            String direccio= rs1.getString("v.direccio");
+            Integer codiPostal= rs1.getInt("v.codiPostal");
+            String poblacio= rs1.getString("v.poblacio");
+            String provincia= rs1.getString("v.provincia");
+            String codiPais= rs1.getString("v.codiPais");
+            String nomPais= rs1.getString("paisos.nomPais");
+            String infoAdd= rs1.getString("v.infoAdd");
+            return new Venedor(numVenedor, nom, cog1, cog2, tractament, telefon, email, direccio, codiPostal, poblacio, provincia, codiPais, nomPais, infoAdd);
         }
         else throw new SQLException();
     }
@@ -244,12 +268,14 @@ public abstract class SQL {
     
     public static Map<Integer, String> carregarVenedors(Connection conn) throws SQLException{
         Statement stm= conn.createStatement();
-        ResultSet rs1= stm.executeQuery("SELECT num, nomComplet FROM venedor");
+        ResultSet rs1= stm.executeQuery("SELECT numVen, nom, cog1, cog2 FROM Venedors");
         Map<Integer, String> venedors= new HashMap<>();
         while(rs1.next()){
             Integer num= rs1.getInt("num");
-            String nom= rs1.getString("nomComplet");
-            venedors.put(num, nom);
+            String nom= rs1.getString("nom");
+            String cog1= rs1.getString("cog1");
+            String cog2= rs1.getString("cog2");
+            venedors.put(num, nom+" "+cog1+" "+cog2);
         }
         return venedors;
     }
@@ -257,23 +283,21 @@ public abstract class SQL {
     //Modificadors Venedor
     
     public static void afegirVenedor(Connection conn, Venedor ven) throws SQLException{
-        if(ven.valid()){
+        if(ven.valid() && existeixPais(conn, ven.getCodiPais(), ven.getNomPais())){
             Statement stm= conn.createStatement();
-            String sql= null;
-            //String sql= "INSERT INTO venedor VALUES("+ven.getNum()+",\""+ven.getNomComplet()+"\",\""+ven.getTractament()+"\","+ven.getTelefon()+",\""+ven.getEmail()+"\",\""+ven.getDireccio()
-                   // +"\","+ven.getCodiPostal().toString()+",\""+ven.getPoblacio()+"\",\""+ven.getProvincia()+"\",\""+ven.getCodiPais()+"\",\""+ven.getNomPais()+"\",\""+ven.getInformacioAddicional()+"\")";
+            String sql= "INSERT INTO Venedors VALUES("+ven.getNum()+",\""+ven.getNom()+"\",\""+ven.getCog1()+"\",\""+ven.getCog2()+"\",\""+ven.getTractament()+"\","+ven.getTelefon()+",\""+ven.getEmail()+"\",\""+ven.getDireccio()
+                    +"\","+ven.getCodiPostal().toString()+",\""+ven.getPoblacio()+"\",\""+ven.getProvincia()+"\",\""+ven.getCodiPais()+"\",\""+ven.getInformacioAddicional()+"\")";
             stm.executeUpdate(sql);
         }
         else throw new SQLException();
     }
     
     public static void actualitzarVenedor(Connection conn, Venedor ven) throws SQLException{
-        if(ven.valid()){
+        if(ven.valid() && existeixPais(conn, ven.getCodiPais(), ven.getNomPais())){
             Statement stm= conn.createStatement();
-            String sql= null;
-            //String sql= "UPDATE venedor SET nomComplet=\""+ven.getNomComplet()+"\", tractament=\""+ven.getTractament()+"\", telefon="+ven.getTelefon().toString()+", email=\""+ven.getEmail()+"\", direccio=\""+ven.getDireccio()
-                    //+"\", codiPostal="+ven.getCodiPostal().toString()+", poblacio=\""+ven.getPoblacio()+"\", provincia=\""+ven.getProvincia()+"\", codiPais=\""+ven.getCodiPais()+"\", nomPais=\""+ven.getNomPais()
-                    //+"\", informacioAddicional=\""+ven.getInformacioAddicional()+"\" WHERE num="+ven.getNum().toString();
+            String sql= "UPDATE Venedors SET nom=\""+ven.getNom()+"\", cog1=\""+ven.getCog1()+"\", cog2=\""+ven.getCog2()+"\", tractament=\""+ven.getTractament()+"\", telefon="+ven.getTelefon().toString()+", email=\""+ven.getEmail()+"\", direccio=\""+ven.getDireccio()
+                    +"\", codiPostal="+ven.getCodiPostal().toString()+", poblacio=\""+ven.getPoblacio()+"\", provincia=\""+ven.getProvincia()+"\", codiPais=\""+ven.getCodiPais()
+                    +"\", infoAdd=\""+ven.getInformacioAddicional()+"\" WHERE numVen="+ven.getNum().toString();
             stm.executeUpdate(sql);
         }
         else throw new SQLException();
@@ -281,7 +305,7 @@ public abstract class SQL {
     
     public static void eliminarVenedor(Connection conn, Integer numVenedor) throws SQLException{
         Statement stm= conn.createStatement();
-        String sql= "DELETE FROM venedor WHERE num="+numVenedor;
+        String sql= "DELETE FROM Venedors WHERE numVen="+numVenedor;
         stm.executeUpdate(sql);
     }
     
@@ -289,7 +313,7 @@ public abstract class SQL {
     
     public static boolean existeixProveidor(Connection conn, Integer num) throws SQLException{
         Statement stm= conn.createStatement();
-	ResultSet rs1= stm.executeQuery("SELECT * FROM proveidor WHERE num="+num);
+	ResultSet rs1= stm.executeQuery("SELECT * FROM Proveidors WHERE numProv="+num);
         if(rs1.next()) return true;
         else return false;
     }
@@ -299,16 +323,16 @@ public abstract class SQL {
         Statement stm= conn.createStatement();
         String sql;
         if(stringProveidor.equals("*")){
-            sql= "SELECT num, nom FROM proveidor";
+            sql= "SELECT numProv, nomProv FROM Proveidors";
         }
         else{
             Integer numProveidor= Integer.parseInt(stringProveidor);
-            sql= "SELECT num, nom FROM proveidor WHERE num="+numProveidor;
+            sql= "SELECT numProv, nomProv FROM Proveidors WHERE numProv="+numProveidor;
         }
 	ResultSet rs1= stm.executeQuery(sql);
         while(rs1.next()){
-            Integer num= rs1.getInt("num");
-            String nom= rs1.getString("nom");
+            Integer num= rs1.getInt("numProv");
+            String nom= rs1.getString("nomProv");
             list.add(new ElementCercable(num.toString(), nom));
         }
         return list;
@@ -316,17 +340,18 @@ public abstract class SQL {
     
     public static Proveidor seleccionaProveidor(Connection conn, String codi) throws SQLException{
         Statement stm= conn.createStatement();
-        String sql= "SELECT * FROM proveidor WHERE num="+Integer.parseInt(codi);
+        String sql= "SELECT * FROM Proveidors p INNER JOIN Paisos WHERE p.numProv="+Integer.parseInt(codi);
         ResultSet rs1= stm.executeQuery(sql);
         if(rs1.next()){
-            Integer numProveidor= rs1.getInt("num");
-            String nom= rs1.getString("nom");
-            String especialitat= rs1.getString("especialitat");
-            String email= rs1.getString("email");
-            String tempsEntrega= rs1.getString("tempsEntrega");
-            String informacioAddicional= rs1.getString("informacioAddicional");
-            return null;
-            //return new Proveidor(numProveidor, nom, especialitat, email, tempsEntrega, informacioAddicional);
+            Integer numProveidor= rs1.getInt("p.numProv");
+            String nom= rs1.getString("p.nomProv");
+            String especialitat= rs1.getString("p.esp");
+            String email= rs1.getString("p.email");
+            String tempsEntrega= rs1.getString("p.tempsEntr");
+            String codiPais= rs1.getString("p.codiPais");
+            String nomPais= rs1.getString("paisos.nomPais");
+            String informacioAddicional= rs1.getString("p.infoAdd");
+            return new Proveidor(numProveidor, nom, especialitat, email, tempsEntrega, codiPais, nomPais, informacioAddicional);
         }
         else throw new SQLException();
     }
@@ -335,11 +360,11 @@ public abstract class SQL {
     
     public static Map<Integer, String> carregarProveidors(Connection conn) throws SQLException{
         Statement stm= conn.createStatement();
-        ResultSet rs1= stm.executeQuery("SELECT num, nom FROM proveidor");
+        ResultSet rs1= stm.executeQuery("SELECT numProv, nomProv FROM Proveidors");
         Map<Integer, String> proveidors= new HashMap<>();
         while(rs1.next()){
-            Integer num= rs1.getInt("num");
-            String nom= rs1.getString("nom");
+            Integer num= rs1.getInt("numProv");
+            String nom= rs1.getString("nomProv");
             proveidors.put(num, nom);
         }
         return proveidors;
@@ -348,20 +373,20 @@ public abstract class SQL {
     //Modificadors Proveidor
     
     public static void afegirProveidor(Connection conn, Proveidor prov) throws SQLException{
-        if(prov.valid()){
+        if(prov.valid() && existeixPais(conn, prov.getCodiPais(), prov.getNomPais())){
             Statement stm= conn.createStatement();
-            String sql= "INSERT INTO proveidor VALUES(\""+prov.getNum()+"\",\""+prov.getNom()+"\",\""+prov.getEspecialitat()+"\",\""+prov.getEmail()+"\",\""+prov.getTempsEntrega()+"\",\""+prov.getInformacioAddicional()+"\")";
+            String sql= "INSERT INTO Proveidors VALUES(\""+prov.getNum()+"\",\""+prov.getNom()+"\",\""+prov.getEspecialitat()+"\",\""+prov.getEmail()+"\",\""+prov.getTempsEntrega()+"\",\""+prov.getInformacioAddicional()+"\", \""+prov.getCodiPais()+"\")";
             stm.executeUpdate(sql);
         }
         else throw new SQLException();
     }
     
     public static void actualitzarProveidor(Connection conn, Proveidor prov) throws SQLException{
-        if(prov.valid()){
+        if(prov.valid() && existeixPais(conn, prov.getCodiPais(), prov.getNomPais())){
             Statement stm= conn.createStatement();
-            String sql= "UPDATE proveidor SET nom=\""+prov.getNom()+"\", especialitat=\""+prov.getEspecialitat()
-                    +"\", email=\""+prov.getEmail()+"\", tempsEntrega=\""+prov.getTempsEntrega()
-                    +"\", informacioAddicional=\""+prov.getInformacioAddicional()+"\" WHERE num="+prov.getNum().toString();
+            String sql= "UPDATE Proveidors SET nomProv=\""+prov.getNom()+"\", esp=\""+prov.getEspecialitat()
+                    +"\", email=\""+prov.getEmail()+"\", tempsEntr=\""+prov.getTempsEntrega()
+                    +"\", infoAdd=\""+prov.getInformacioAddicional()+"\", codiPais=\""+prov.getCodiPais()+"\" WHERE numProv="+prov.getNum();
             stm.executeUpdate(sql);
         }
         else throw new SQLException();
@@ -369,7 +394,7 @@ public abstract class SQL {
     
     public static void eliminarProveidor(Connection conn, Integer numProveidor) throws SQLException{
         Statement stm= conn.createStatement();
-        String sql= "DELETE FROM proveidor WHERE num="+numProveidor;
+        String sql= "DELETE FROM Proveidors WHERE numProv="+numProveidor;
         stm.executeUpdate(sql);
     }
     
@@ -440,5 +465,26 @@ public abstract class SQL {
             }
         }
         else throw new SQLException();
+    }
+    
+    //Consultes Paisos
+    
+    public static String obtenirNomPais(Connection conn, String codiPais) throws SQLException{
+        String nomPais;
+        Statement stm= conn.createStatement();
+        String sql= "SELECT nomPais FROM Paisos WHERE codi=\""+codiPais+"\"";
+        ResultSet rs1= stm.executeQuery(sql);
+        if(rs1.next()){
+            nomPais= rs1.getString("nomPais");
+        }
+        else nomPais= null;
+        return nomPais;
+    }
+    
+    public static Boolean existeixPais(Connection conn, String codiPais, String nomPais) throws SQLException{
+        Statement stm= conn.createStatement();
+	ResultSet rs1= stm.executeQuery("SELECT codi FROM Paisos WHERE codi=\""+codiPais+"\" AND nomPais=\""+nomPais+"\"");
+        if(rs1.next()) return true;
+        else return false;
     }
 }

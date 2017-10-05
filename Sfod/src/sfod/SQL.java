@@ -37,9 +37,16 @@ public abstract class SQL {
     
     //Consultes Producte
 
-    public static boolean existeixProducte(Connection conn, String codi) throws SQLException{
+    public static boolean existeixElementVendible(Connection conn, String codi) throws SQLException{
         Statement stm= conn.createStatement();
 	ResultSet rs1= stm.executeQuery("SELECT codi FROM ElemsVendibles WHERE codi=\""+codi+"\"");
+        if(rs1.next()) return true;
+        else return false;
+    }
+    
+    public static boolean existeixProducte(Connection conn, String codi) throws SQLException{
+        Statement stm= conn.createStatement();
+	ResultSet rs1= stm.executeQuery("SELECT codiElem FROM Productes WHERE codiElem=\""+codi+"\"");
         if(rs1.next()) return true;
         else return false;
     }
@@ -105,7 +112,7 @@ public abstract class SQL {
     
     private static void afegirProducte(Connection conn, Producte prod) throws SQLException{
         Statement stm= conn.createStatement();
-        String sql= "INSERT INTO Productes VALUES (\""+prod.getCodi()+"\", "+prod.getEBAN()+", "+prod.getStock()+")";
+        String sql= "INSERT INTO Productes VALUES (\""+prod.getCodi()+"\", "+prod.getEBAN()+", 0)";
         stm.executeUpdate(sql);
     }
     
@@ -231,7 +238,7 @@ public abstract class SQL {
         }
 	ResultSet rs1= stm.executeQuery(sql);
         while(rs1.next()){
-            Integer num= rs1.getInt("numVenedor");
+            Integer num= rs1.getInt("numVen");
             String nom= rs1.getString("nom");
             String cog1= rs1.getString("cog1");
             String cog2= rs1.getString("cog2");
@@ -242,7 +249,7 @@ public abstract class SQL {
     
     public static Venedor seleccionaVenedor(Connection conn, String codi) throws SQLException{
         Statement stm= conn.createStatement();
-        String sql= "SELECT * FROM Venedors v INNER JOIN Paisos WHERE Venedors.numVen="+Integer.parseInt(codi);
+        String sql= "SELECT * FROM Venedors v INNER JOIN Paisos pa ON v.codiPais = pa.codi WHERE v.numVen="+Integer.parseInt(codi);
         ResultSet rs1= stm.executeQuery(sql);
         if(rs1.next()){
             Integer numVenedor= rs1.getInt("v.numVen");
@@ -257,7 +264,7 @@ public abstract class SQL {
             String poblacio= rs1.getString("v.poblacio");
             String provincia= rs1.getString("v.provincia");
             String codiPais= rs1.getString("v.codiPais");
-            String nomPais= rs1.getString("paisos.nomPais");
+            String nomPais= rs1.getString("pa.nomPais");
             String infoAdd= rs1.getString("v.infoAdd");
             return new Venedor(numVenedor, nom, cog1, cog2, tractament, telefon, email, direccio, codiPostal, poblacio, provincia, codiPais, nomPais, infoAdd);
         }
@@ -271,7 +278,7 @@ public abstract class SQL {
         ResultSet rs1= stm.executeQuery("SELECT numVen, nom, cog1, cog2 FROM Venedors");
         Map<Integer, String> venedors= new HashMap<>();
         while(rs1.next()){
-            Integer num= rs1.getInt("num");
+            Integer num= rs1.getInt("numVen");
             String nom= rs1.getString("nom");
             String cog1= rs1.getString("cog1");
             String cog2= rs1.getString("cog2");
@@ -340,7 +347,7 @@ public abstract class SQL {
     
     public static Proveidor seleccionaProveidor(Connection conn, String codi) throws SQLException{
         Statement stm= conn.createStatement();
-        String sql= "SELECT * FROM Proveidors p INNER JOIN Paisos WHERE p.numProv="+Integer.parseInt(codi);
+        String sql= "SELECT * FROM Proveidors p INNER JOIN Paisos pa ON p.codiPais = pa.codi WHERE p.numProv="+Integer.parseInt(codi);
         ResultSet rs1= stm.executeQuery(sql);
         if(rs1.next()){
             Integer numProveidor= rs1.getInt("p.numProv");
@@ -349,7 +356,7 @@ public abstract class SQL {
             String email= rs1.getString("p.email");
             String tempsEntrega= rs1.getString("p.tempsEntr");
             String codiPais= rs1.getString("p.codiPais");
-            String nomPais= rs1.getString("paisos.nomPais");
+            String nomPais= rs1.getString("pa.nomPais");
             String informacioAddicional= rs1.getString("p.infoAdd");
             return new Proveidor(numProveidor, nom, especialitat, email, tempsEntrega, codiPais, nomPais, informacioAddicional);
         }
@@ -401,24 +408,31 @@ public abstract class SQL {
     //Consultes Compra
     
     public static ObservableList<Compra> obtenirCompres(Connection conn, String infoVenedor, String infoProveidor, LocalDate inici, LocalDate fi) throws SQLException{
+        Integer venedor= null;
+        if(infoVenedor != null) venedor= Integer.parseInt(infoVenedor.substring(0,1));
+        Integer proveidor= null;
+        if(infoProveidor != null) proveidor= Integer.parseInt(infoProveidor.substring(0,1));
         ObservableList<Compra> contingut= FXCollections.observableArrayList();
         Statement stm= conn.createStatement();
         Date dataInici= Date.valueOf(inici);
         Date dataFi= Date.valueOf(fi);
         String sql;
-        if(infoVenedor == null && infoProveidor == null) sql= "SELECT * FROM compra WHERE data BETWEEN '"+dataInici+"' AND '"+dataFi+"'";
-        else if(infoVenedor == null) sql= "SELECT * FROM compra WHERE proveidor = \""+infoProveidor+"\" AND data BETWEEN '"+dataInici+"' AND '"+dataFi+"'";
-        else sql= "SELECT * FROM compra WHERE venedor = \""+infoVenedor+"\" AND proveidor = \""+infoProveidor+"\" AND data BETWEEN '"+dataInici+"' AND '"+dataFi+"'";
+        if(venedor == null && proveidor == null) sql= "SELECT c.numC, p.numProv, p.nomProv, v.numVen, v.nom, v.cog1, v.cog2, c.data FROM Compres c INNER JOIN Proveidors p ON c.numProv = p.numProv INNER JOIN Venedors v ON c.numVen = v.numVen WHERE data BETWEEN '"+dataInici+"' AND '"+dataFi+"'";
+        else if(venedor == null) sql= "SELECT c.numC, p.numProv, p.nomProv, v.numVen, v.nom, v.cog1, v.cog2, c.data FROM Compres c INNER JOIN Proveidors p ON c.numProv = p.numProv AND p.numProv="+proveidor+" INNER JOIN Venedors v ON c.numVen = v.numVen WHERE data BETWEEN '"+dataInici+"' AND '"+dataFi+"'";
+        else if(proveidor == null) sql= "SELECT c.numC, p.numProv, p.nomProv, v.numVen, v.nom, v.cog1, v.cog2, c.data FROM Compres c INNER JOIN Proveidors p ON c.numProv = p.numProv INNER JOIN Venedors v ON c.numVen = v.numVen AND v.numVen="+venedor+" WHERE data BETWEEN '"+dataInici+"' AND '"+dataFi+"'";
+        else sql= "SELECT c.numC, p.numProv, p.nomProv, v.numVen, v.nom, v.cog1, v.cog2, c.data FROM Compres c INNER JOIN Proveidors p ON c.numProv = p.numProv AND p.numProv="+proveidor+" INNER JOIN Venedors v ON c.numVen = v.numVen AND v.numVen="+venedor+" WHERE data BETWEEN '"+dataInici+"' AND '"+dataFi+"'";
         ResultSet rs1= stm.executeQuery(sql);
         while(rs1.next()){
-            Integer num= rs1.getInt("num");
-            String proveidor= rs1.getString("proveidor");
-            String venedor= rs1.getString("venedor");
-            Double importTotal= rs1.getDouble("importTotal");
+            Integer num= rs1.getInt("c.numC");
+            Integer numProv= rs1.getInt("p.numProv");
+            String nomProv= rs1.getString("p.nomProv");
+            Integer numVen= rs1.getInt("v.numVen");
+            String nomVen= rs1.getString("v.nom");
+            String cog1Ven= rs1.getString("v.cog1");
+            String cog2Ven= rs1.getString("v.cog2");
             Date data= rs1.getDate("data");
-            Compra aux= new Compra(proveidor, venedor, data.toLocalDate());
+            Compra aux= new Compra(numProv+". "+nomProv, numVen+". "+nomVen+" "+cog1Ven+" "+cog2Ven, data.toLocalDate());
             aux.setNum(num);
-            aux.setImportTotal(importTotal);
             contingut.add(aux);
         }
         return contingut;
@@ -427,7 +441,7 @@ public abstract class SQL {
     public static long obtenirNumInsCompra(Connection conn) throws SQLException{
         long resultat= 0;
         Statement stm= conn.createStatement();
-        String sql= "SELECT MAX(num) FROM compra";
+        String sql= "SELECT MAX(numC) FROM Compres";
         ResultSet rs1= stm.executeQuery(sql);
         if(rs1.next()){
             resultat= rs1.getLong(1);
@@ -447,21 +461,34 @@ public abstract class SQL {
         return resultat;
     }
     
+    public static void obtenirLiniesCompra(Connection conn, Compra compra) throws SQLException{
+        Statement stm= conn.createStatement();
+        String sql= "SELECT lC.codiElem, lC.PVC, lC.des, lC.unitats, eV.descripcio FROM LiniesCompra lC INNER JOIN Compres c ON lC.numC = c.numC AND c.numC="+compra.getNum()+" INNER JOIN ElemsVendibles eV ON lC.codiElem=eV.codi";
+        ResultSet rs1= stm.executeQuery(sql);
+        while(rs1.next()){
+            LiniaCompra lC= new LiniaCompra(rs1.getString("lC.codiElem"), rs1.getString("eV.descripcio"), rs1.getDouble("lC.PVC"), rs1.getInt("lC.unitats"), rs1.getDouble("lC.des"));
+            compra.afegirLiniaCompra(lC);
+        }
+    }
+    
     //Modificacions Compra
     
     public static void afegirCompra(Connection conn, Compra compra) throws SQLException{
         if(compra.valida()){
             Statement stm= conn.createStatement();
             LocalDate data= compra.getData();
-            String sql= "INSERT INTO compra (num, proveidor, venedor, importTotal, data) VALUES("+compra.getNum()+",\""+compra.getProveidor()+"\",\""+compra.getVenedor()+"\","+compra.getImportTotal()+", '"+data.getYear()+"-"+data.getMonthValue()+"-"+data.getDayOfMonth()+"')";
+            String sql= "INSERT INTO Compres VALUES("+compra.getNum()+","+compra.getNumProv()+","+compra.getNumVen()+","+compra.getImportTotal()+", '"+data.getYear()+"-"+data.getMonthValue()+"-"+data.getDayOfMonth()+"')";
             stm.executeUpdate(sql);
 
             Iterator<LiniaCompra> it= compra.getIteradorLC();
             while(it.hasNext()){
                 LiniaCompra aux= it.next();
-                Statement stm2= conn.createStatement();
-                String sql2= "UPDATE stock SET quantitat = quantitat + "+aux.getUnitats()+" WHERE codiProducte=\""+aux.getCodiProducte()+"\"";
-                stm2.executeUpdate(sql2);
+                if(existeixProducte(conn, aux.getCodiProducte())){
+                    String sql2= "UPDATE Productes SET stock = stock + "+aux.getUnitats()+" WHERE codiElem=\""+aux.getCodiProducte()+"\"";
+                    stm.executeUpdate(sql2);
+                }
+                String sql3= "INSERT INTO LiniesCompra VALUES ("+compra.getNum()+", \""+aux.getCodiProducte()+"\", "+aux.getPVC()+", "+aux.getDescompte()+", "+aux.getPFVC()+", "+aux.getUnitats()+", "+aux.getPT()+")";
+                stm.executeUpdate(sql3);
             }
         }
         else throw new SQLException();

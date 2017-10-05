@@ -88,7 +88,7 @@ public class FXMLPrincipalController implements Initializable {
     }
     
     @FXML
-    public void accioObrirVeureCompres(ActionEvent event) throws IOException{
+    public void accioObrirCompres(ActionEvent event) throws IOException{
         FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLCompres.fxml"));
         FXMLCompresController controller= new FXMLCompresController(conexio, panell);
         loader.setController(controller);
@@ -100,23 +100,6 @@ public class FXMLPrincipalController implements Initializable {
         inputStage.setScene(new Scene(newScene));
         inputStage.getIcons().add(new Image(getClass().getResourceAsStream("logo.png")));
         inputStage.setTitle("Llista de Compres");
-        inputStage.setResizable(false);
-        inputStage.showAndWait();
-    }
-    
-    @FXML
-    public void accioObrirEntrarCompra(ActionEvent event) throws IOException{
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLEntrarCompra.fxml"));
-        FXMLEntrarCompraController controller= new FXMLEntrarCompraController(conexio);
-        loader.setController(controller);
-        Parent newScene;
-        newScene = loader.load();
-        Stage inputStage = new Stage();
-        inputStage.initModality(Modality.NONE);
-        inputStage.initOwner(panell.getScene().getWindow());
-        inputStage.setScene(new Scene(newScene));
-        inputStage.getIcons().add(new Image(getClass().getResourceAsStream("logo.png")));
-        inputStage.setTitle("Entrar Compra");
         inputStage.setResizable(false);
         inputStage.showAndWait();
     }

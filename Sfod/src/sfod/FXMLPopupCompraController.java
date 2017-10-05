@@ -1,6 +1,8 @@
 package sfod;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -13,7 +15,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.paint.Color;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -67,14 +68,14 @@ public class FXMLPopupCompraController implements Initializable {
         columnaDataCompra.setStyle("-fx-background-color: #abe6fc;");
 
         columnaFactura.setCellValueFactory(
-                new PropertyValueFactory<Compra,Integer>("num")
+                new PropertyValueFactory<Compra,Long>("num")
         );
         columnaFactura.setCellFactory(new Callback<TableColumn, TableCell>() {
                 public TableCell call(TableColumn param) {
-                    return new TableCell<Compra, Integer>() {
+                    return new TableCell<Compra, Long>() {
 
                         @Override
-                        public void updateItem(Integer item, boolean empty) {
+                        public void updateItem(Long item, boolean empty) {
                             super.updateItem(item, empty);
                             if (!isEmpty()) {
                                 this.setTextAlignment(TextAlignment.CENTER);
@@ -130,7 +131,7 @@ public class FXMLPopupCompraController implements Initializable {
             });
         
         columnaImport.setCellValueFactory(
-                new PropertyValueFactory<Compra,Double>("import")
+                new PropertyValueFactory<Compra,Double>("importTotal")
         );
         columnaImport.setCellFactory(new Callback<TableColumn, TableCell>() {
                 public TableCell call(TableColumn param) {
@@ -151,20 +152,20 @@ public class FXMLPopupCompraController implements Initializable {
             });
         
         columnaDataCompra.setCellValueFactory(
-                new PropertyValueFactory<Compra,String>("data")
+                new PropertyValueFactory<Compra,LocalDate>("data")
         );
         columnaDataCompra.setCellFactory(new Callback<TableColumn, TableCell>() {
                 public TableCell call(TableColumn param) {
-                    return new TableCell<Compra, String>() {
+                    return new TableCell<Compra, LocalDate>() {
 
                         @Override
-                        public void updateItem(String item, boolean empty) {
+                        public void updateItem(LocalDate item, boolean empty) {
                             super.updateItem(item, empty);
                             if (!isEmpty()) {
                                 this.setTextAlignment(TextAlignment.CENTER);
                                 // Get fancy and change color based on data
                                 // if(item.contains("@")) this.setTextFill(Color.BLUEVIOLET);
-                                setText(item);
+                                setText(item.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
                             }
                         }
                     };

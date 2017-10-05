@@ -6,12 +6,14 @@ package sfod;
     CREATE TABLE LiniesCompra (
         numC int not null,
         codiElem varchar(10) not null,
-        PVC double(6,2),
-        desc double(4,2),
-        PFVC double(6,2),
+        PVC double,
+        des double,
+        PFVC double,
         unitats int,
         PT double,
-        PRIMARY KEY ( numC, codiElem )
+        PRIMARY KEY ( numC ),
+        FOREIGN KEY (numC) REFERENCES Compres(numC),
+        FOREIGN KEY (codiElem) REFERENCES ElemsVendibles(codi)
     )
     ALTER TABLE LiniesCompra ADD FOREIGN KEY (numC) REFERENCES Compres(numC) 
     ALTER TABLE LiniesCompra ADD FOREIGN KEY (codiElem) REFERENCES ElemsVendibles(codi) 

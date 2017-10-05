@@ -17,7 +17,7 @@
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <Label layoutX="267.0" layoutY="14.0" text="Proveidor">
+      <Label layoutX="267.0" layoutY="14.0" text="Proveïdor">
          <font>
             <Font name="System Bold" size="18.0" />
          </font>
@@ -34,7 +34,12 @@
          </font>
       </Label>
       <DatePicker fx:id="dataFi" editable="false" layoutX="815.0" layoutY="15.0" prefHeight="25.0" prefWidth="126.0" promptText="Data fi" />
-      <Button fx:id="cercar" layoutX="1005.0" layoutY="15.0" mnemonicParsing="false" onAction="#accioBuscarCompres" text="Cercar">
+      <Button fx:id="cercar" layoutX="982.0" layoutY="15.0" mnemonicParsing="false" onAction="#accioBuscarCompres" text="Cercar">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
+      <Button fx:id="cancelar" layoutX="1082.0" layoutY="15.0" mnemonicParsing="false" onAction="#accioCancelar" text="Cancelar">
          <font>
             <Font name="System Bold" size="12.0" />
          </font>
@@ -74,6 +79,49 @@
             <Font name="System Bold" size="18.0" />
          </font>
       </Label>
-      <TextField fx:id="numCompra" editable="false" layoutX="143.0" layoutY="76.0" prefHeight="25.0" prefWidth="126.0" />
+      <TextField fx:id="numCompra" editable="false" layoutX="143.0" layoutY="76.0" prefHeight="25.0" prefWidth="126.0">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font></TextField>
+      <Label fx:id="labelVenedor" layoutX="542.0" layoutY="77.0" text="Venedor:">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+      </Label>
+      <TextField fx:id="ven" editable="false" layoutX="622.0" layoutY="77.0" prefHeight="25.0" prefWidth="213.0" visible="false" />
+      <Label fx:id="labelProveidor" layoutX="849.0" layoutY="77.0" text="Proveïdor:">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+      </Label>
+      <TextField fx:id="prov" editable="false" layoutX="934.0" layoutY="77.0" prefHeight="25.0" prefWidth="213.0" visible="false" />
+      <TextField fx:id="buscarVenedor" layoutX="617.0" layoutY="76.0" onKeyPressed="#accioBuscarVenedor" prefHeight="27.0" prefWidth="36.0" style="-fx-border-color: #BDBAB3; -fx-border-radius: 4;">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="buscarProveidor" layoutX="934.0" layoutY="75.0" onKeyPressed="#accioBuscarProveidor" prefHeight="27.0" prefWidth="36.0" style="-fx-border-color: #BDBAB3; -fx-border-radius: 4;">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </TextField>
+      <TextField fx:id="venEntrar" editable="false" layoutX="666.0" layoutY="76.0" prefHeight="25.0" prefWidth="165.0" />
+      <TextField fx:id="provEntrar" editable="false" layoutX="982.0" layoutY="76.0" prefHeight="25.0" prefWidth="165.0" />
+      <TableView fx:id="taulaEntrarCompra" editable="true" layoutX="30.0" layoutY="112.0" prefHeight="460.0" prefWidth="1122.0" visible="false">
+         <columns>
+            <TableColumn fx:id="columnaProducteC" prefWidth="83.0" text="Producte" />
+            <TableColumn fx:id="columnaDescripcioC" prefWidth="605.0" text="Descripció" />
+            <TableColumn fx:id="columnaPVCC" prefWidth="107.0" text="Preu Base (€)" />
+            <TableColumn fx:id="columnaDescompteC" prefWidth="44.0" text="\% dte." />
+            <TableColumn fx:id="columnaPFVCC" prefWidth="103.0" text="Preu Compra (€)" />
+            <TableColumn fx:id="columnaUnitatsC" prefWidth="57.0" text="Unitats" />
+            <TableColumn fx:id="columnaPFC" prefWidth="122.0" text="Preu Línia (€)" />
+         </columns>
+      </TableView>
+      <Button fx:id="confirmar" layoutX="531.0" layoutY="594.0" mnemonicParsing="false" onAction="#accioGuardar" text="Guardar" visible="false">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font>
+      </Button>
    </children>
 </AnchorPane>

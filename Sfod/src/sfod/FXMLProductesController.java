@@ -204,6 +204,8 @@ public class FXMLProductesController implements Initializable {
             if(eV instanceof Producte){
                 if(eV instanceof ProducteElectronic) tipusProducte.getSelectionModel().select(0);
                 else tipusProducte.getSelectionModel().select(1);
+                Integer stock= ((Producte)eV).getStock();
+                this.stock.setText(stock.toString());
                 Integer eban= ((Producte)eV).getEBAN();
                 if(eban == null) ebanBuscar.setText("");
                 else ebanBuscar.setText(((Producte)eV).getEBAN().toString());
@@ -333,7 +335,7 @@ public class FXMLProductesController implements Initializable {
     
     private void guardarElemVendible(ElemVendible eV) throws SQLException{
         if(PopupAlerta.mostrarConfirmacio("Confirmar acció", "Vols salvar els canvis?")){
-            if(!SQL.existeixProducte(conexio, eV.getCodi())) SQL.afegirElemVendible(conexio, eV);
+            if(!SQL.existeixElementVendible(conexio, eV.getCodi())) SQL.afegirElemVendible(conexio, eV);
             else SQL.actualitzarElemVendible(conexio, eV);
         }
     }
@@ -396,6 +398,8 @@ public class FXMLProductesController implements Initializable {
         ebanBuscar.clear();
         ebanBuscar.setEditable(false);
         ebanBuscar.setStyle("-fx-background-color: #CCC7BA; -fx-border-color: #CCC7BA; -fx-border-radius: 4");
+        
+        stock.clear();
         
         codiBuscar.requestFocus();
     }

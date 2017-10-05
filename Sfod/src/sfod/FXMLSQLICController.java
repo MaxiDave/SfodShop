@@ -45,7 +45,7 @@ public class FXMLSQLICController implements Initializable {
         try {
             Statement stmt = conexio.createStatement();
             stmt.executeUpdate(sqlComanda.getText());
-            PopupAlerta.mostraAlerta(Alert.AlertType.CONFIRMATION, "Comanda Executada Correctament", "");
+            PopupAlerta.mostraAlerta(Alert.AlertType.INFORMATION, "Comanda Executada Correctament", "");
         } catch (SQLException ex) {
             PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "ERROR 404", ex.getMessage());
         }

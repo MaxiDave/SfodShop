@@ -266,13 +266,18 @@ public class FXMLVenedorsProveidorsController implements Initializable {
                 String codiPais= codiPaisProveidor.getText();
                 if(codiPais.length() == 2){
                     String nomPais= SQL.obtenirNomPais(conexio, codiPais);
-                    if(nomPais != null) nomPaisProveidor.setText(nomPais);
+                    if(nomPais != null){
+                        nomPaisProveidor.setText(nomPais);
+                        informacioAddicionalProveidor.requestFocus();
+                    }
                     else throw new Exception();
                 }
                 else throw new Exception();
             }
         } catch(Exception ex){
             PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "Atenció", "No s'ha trobat el País");
+            codiPaisProveidor.clear();
+            codiPaisProveidor.requestFocus();
         }
     }
     
@@ -283,13 +288,18 @@ public class FXMLVenedorsProveidorsController implements Initializable {
                 String codiPais= codiPaisVenedor.getText();
                 if(codiPais.length() == 2){
                     String nomPais= SQL.obtenirNomPais(conexio, codiPais);
-                    if(nomPais != null) nomPaisVenedor.setText(nomPais);
+                    if(nomPais != null){
+                        nomPaisVenedor.setText(nomPais);
+                        informacioAddicionalVenedor.requestFocus();
+                    }
                     else throw new Exception();
                 }
                 else throw new Exception();
             }
         } catch(Exception ex){
             PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "Atenció", "No s'ha trobat el País");
+            codiPaisVenedor.clear();
+            codiPaisVenedor.requestFocus();
         }
     }
     
@@ -350,27 +360,27 @@ public class FXMLVenedorsProveidorsController implements Initializable {
         } catch(NumberFormatException ex){
             PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error al cercar Venedor", "Introdueixi un nombre vàlid");
         } catch (Exception ex) {
-                if(ex.getMessage().equals("si")){
-                    if(PopupAlerta.mostrarConfirmacio("Venedor no trobat", "Vols donar d'alta al venedor número \""+buscarVenedor.getText()+"\"?")) desocultarCampsVenedor();
-                    else buscarVenedor.clear();
-                }
-                else{
-                    PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "No hi ha venedors", "No s'ha trobat cap referència");
-                    buscarVenedor.clear();
-                }
+            if(ex.getMessage().equals("si")){
+                if(PopupAlerta.mostrarConfirmacio("Venedor no trobat", "Vols donar d'alta al venedor número \""+buscarVenedor.getText()+"\"?")) desocultarCampsVenedor();
+                else buscarVenedor.clear();
+            }
+            else{
+                PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "No hi ha venedors", "No s'ha trobat cap referència");
+                buscarVenedor.clear();
+            }
         }
     }
     
     @FXML
     private void accioGuardarProveidor(ActionEvent event){
         try{
-            Proveidor prov= null;
-            //Proveidor prov= new Proveidor(Integer.parseInt(buscarProveidor.getText()), nomProveidor.getText(),                 
-                //especialitatProveidor.getText(), emailProveidor.getText(), 
-                //tempsEntregaProveidor.getText(), informacioAddicionalVenedor.getText());
+            Proveidor prov= new Proveidor(Integer.parseInt(buscarProveidor.getText()), nomProveidor.getText(),                 
+                especialitatProveidor.getText(), emailProveidor.getText(), 
+                tempsEntregaProveidor.getText(), codiPaisProveidor.getText(), nomPaisProveidor.getText(), informacioAddicionalProveidor.getText());
             if(PopupAlerta.mostrarConfirmacio("Confirmar acció", "Vols salvar els canvis?")){
                 if(SQL.existeixProveidor(conexio, prov.getNum())) SQL.actualitzarProveidor(conexio, prov);
                 else SQL.afegirProveidor(conexio, prov);
+                PopupAlerta.mostraAlerta(Alert.AlertType.INFORMATION, "Acció realitzada", "S'ha guardat correctament");
                 cancelarProveidor();
             }
         } catch(NumberFormatException e){
@@ -385,23 +395,21 @@ public class FXMLVenedorsProveidorsController implements Initializable {
     @FXML
     private void accioGuardarVenedor(ActionEvent event){
         try{
-            Venedor ven= null;
-            //Venedor ven= new Venedor(Integer.parseInt(buscarVenedor.getText()), nomCompletVenedor.getText(), (String)tractamentVenedor.getSelectionModel().getSelectedItem(),
-                //Integer.parseInt(telefonVenedor.getText()), emailVenedor.getText(), direccioVenedor.getText(), Integer.parseInt(codiPostalVenedor.getText()), 
-                //poblacioVenedor.getText(), provinciaVenedor.getText(), codiPaisVenedor.getText(), nomPaisVenedor.getText(), informacioAddicionalVenedor.getText());
+            Venedor ven= new Venedor(Integer.parseInt(buscarVenedor.getText()), nomVenedor.getText(), cog1Venedor.getText(), cog2Venedor.getText(), (String)tractamentVenedor.getSelectionModel().getSelectedItem(),
+                Integer.parseInt(telefonVenedor.getText()), emailVenedor.getText(), direccioVenedor.getText(), Integer.parseInt(codiPostalVenedor.getText()), 
+                poblacioVenedor.getText(), provinciaVenedor.getText(), codiPaisVenedor.getText(), nomPaisVenedor.getText(), informacioAddicionalVenedor.getText());
             if(PopupAlerta.mostrarConfirmacio("Confirmar acció", "Vols salvar els canvis?")){
                 if(SQL.existeixVenedor(conexio, ven.getNum())) SQL.actualitzarVenedor(conexio, ven);
                 else SQL.afegirVenedor(conexio, ven);
+                PopupAlerta.mostraAlerta(Alert.AlertType.INFORMATION, "Acció realitzada", "S'ha guardat correctament");
                 cancelarVenedor();
             }
         } catch(NumberFormatException e){
             PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error 404", "Alguns camps està omplerts incorrectament, si us plau revisa'ls");
         } catch (SQLException ex) {
-            PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error de Servidor 404", ex.getMessage());
+            PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error 404", "Camps incorrectes, revisa'ls");
         } catch(NullPointerException ex){
             PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error 404", "No ha seleccionat el tractament del Venedor");
-        } catch(Exception ex){
-            PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error 404", "Algún dels camps introduits és massa llarg");
         }
     }
     
@@ -531,7 +539,7 @@ public class FXMLVenedorsProveidorsController implements Initializable {
             if(PopupAlerta.mostrarConfirmacio("Eliminar Venedor/a", "Segur que vols eliminar "+sexeArticle+" "+sexeVenedor+" \""+buscarVenedor.getText()+": "+nomVenedor.getText()+"\" ?")){
                 SQL.eliminarVenedor(conexio, Integer.parseInt(buscarVenedor.getText()));
                 cancelarVenedor();
-                PopupAlerta.mostrarConfirmacio("Eliminar Venedor/a", "S'ha eliminat "+sexeArticle+" "+sexeVenedor+" correctament");
+                PopupAlerta.mostraAlerta(Alert.AlertType.INFORMATION, "Eliminar Venedor/a", "S'ha eliminat "+sexeArticle+" "+sexeVenedor+" correctament");
             }
         }
         catch(SQLException ex){
@@ -545,7 +553,7 @@ public class FXMLVenedorsProveidorsController implements Initializable {
             if(PopupAlerta.mostrarConfirmacio("Eliminar Proveïdor", "Segur que vols eliminar el proveïdor "+buscarProveidor.getText()+": "+nomProveidor.getText()+"\" ?")){
                 SQL.eliminarProveidor(conexio, Integer.parseInt(buscarProveidor.getText()));
                 cancelarProveidor();
-                PopupAlerta.mostrarConfirmacio("Eliminar Proveïdor", "S'ha eliminat el proveïdor correctament");
+                PopupAlerta.mostraAlerta(Alert.AlertType.INFORMATION, "Eliminar Proveïdor", "S'ha eliminat el proveïdor correctament");
             }
         }
         catch(SQLException ex){

@@ -33,8 +33,7 @@
           </Menu>
             <Menu mnemonicParsing="false" text="Compres">
                <items>
-                  <MenuItem mnemonicParsing="false" onAction="#accioObrirVeureCompres" text="Historial de Compres" />
-                  <MenuItem mnemonicParsing="false" onAction="#accioObrirEntrarCompra" text="Entrar Compra" />
+                  <MenuItem mnemonicParsing="false" onAction="#accioObrirCompres" text="Gestionar Compres" />
                </items></Menu>
             <Menu mnemonicParsing="false" text="Email Sender">
               <items>

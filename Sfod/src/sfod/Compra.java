@@ -14,7 +14,9 @@ import java.util.List;
         numVen int(3),
         impTotal double,
         data date,
-        PRIMARY KEY ( numC )
+        PRIMARY KEY ( numC ),
+        FOREIGN KEY (numProv) REFERENCES Proveidors(numProv),
+        FOREIGN KEY (numVen) REFERENCES Venedors(numVen)
     )
 
     ALTER TABLE Compres ADD FOREIGN KEY (numProv) REFERENCES Proveidors(numProv)
@@ -40,6 +42,10 @@ public class Compra {
         return(Operacions.valid(proveidor, 25) && Operacions.valid(venedor, 55));
     }
     
+    public Boolean teLiniesCompra(){
+        return !items.isEmpty();
+    }
+    
     public void setNum(long num){
         this.num= num;
     }
@@ -62,8 +68,16 @@ public class Compra {
         return num;
     }
     
+    public Integer getNumProv(){
+        return Integer.parseInt(proveidor.substring(0, 1));
+    }
+    
     public String getProveidor(){
         return proveidor;
+    }
+    
+    public Integer getNumVen(){
+        return Integer.parseInt(venedor.substring(0, 1));
     }
     
     public String getVenedor(){

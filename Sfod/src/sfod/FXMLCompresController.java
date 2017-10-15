@@ -1,6 +1,16 @@
+//sfod
+
+/**
+ * @file FXMLCompresController.java
+ * @author David Martínez, MaxiDave13
+ * @version 1.0 Alpha
+ * @date 9-2017
+ * @warning --
+ * @brief Classe FXMLCompresController: Controlador FXML per al control de les Compres
+ * @copyright Public License
+ */
 package sfod;
 
-import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -15,10 +25,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -35,11 +42,16 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
+/**
+ * DESCRIPCIÓ GENERAL
+ * @brief Controlador FXML per a les Compres
+ */
+
 public class FXMLCompresController implements Initializable {
+    
+    //ATRIBUTS-------------------------------------------------------------------------
     
     @FXML
     private TextField numCompra;
@@ -132,13 +144,7 @@ public class FXMLCompresController implements Initializable {
     private TableColumn columnaPFC;
     
     @FXML
-    private Label labelVenedor;
-    
-    @FXML
     private TextField ven;
-    
-    @FXML
-    private Label labelProveidor;
     
     @FXML
     private TextField prov;
@@ -155,17 +161,27 @@ public class FXMLCompresController implements Initializable {
     @FXML
     private TextField provEntrar;
     
-    private Connection conexio;
-    private AnchorPane panellPare;
+    private final Connection conexio;
+    private final AnchorPane panellPare;
     private Map<Integer, String> mapaProveidors;
     private Map<Integer, String> mapaVenedors;
     private ObservableList<LiniaCompra> contingut= FXCollections.observableArrayList();
     
+    //MÈTODES PÚBLICS------------------------------------------------------------------
+    
+    /**
+     * @pre --
+     * @post Constructor per defecte, amb una connexió per a fer les consultes SQL i el panell pare per a calcular la mida de la finestra
+     */
     public FXMLCompresController(Connection conn, AnchorPane pare){
         conexio= conn;
         panellPare= pare;
     }
     
+    /**
+     * @pre --
+     * @post Obté la informació dels proveidors de l'aplicació per a mostrar-los en els ComboBox
+     */
     public void configuraComboProveidors(){
         ObservableList<String> contingut= FXCollections.observableArrayList();
         for(Map.Entry<Integer, String> entry: mapaProveidors.entrySet()){
@@ -175,6 +191,10 @@ public class FXMLCompresController implements Initializable {
         proveidor.setItems(contingut);
     }
     
+    /**
+     * @pre --
+     * @post Obté la informació dels proveidors de l'aplicació per a mostrar-los en els ComboBox
+     */
     public void configuraComboVenedors(){
         ObservableList<String> contingut= FXCollections.observableArrayList();
         for(Map.Entry<Integer, String> entry: mapaVenedors.entrySet()){
@@ -184,54 +204,10 @@ public class FXMLCompresController implements Initializable {
         venedor.setItems(contingut);
     }
     
-    private void requestFocus(TableView<LiniaCompra> tV, TablePosition origen, TableColumn col){
-        tV.requestFocus();
-        tV.getSelectionModel().select(origen.getRow(), col);
-        TablePosition nova= tV.getFocusModel().getFocusedCell();
-        Platform.runLater(()->tV.edit(nova.getRow(), nova.getTableColumn()));
-    }
-    
-    private void requestSelect(TableView<LiniaCompra> tV, TablePosition origen, TableColumn col){
-        tV.requestFocus();
-        tV.getSelectionModel().select(origen.getRow(), col);
-        TablePosition nova= tV.getFocusModel().getFocusedCell();
-        tV.edit(nova.getRow(), nova.getTableColumn());
-    }
-    
-    private void requestFocusSeguent(TableView<LiniaCompra> tV, TablePosition origen, TableColumn col){
-        tV.requestFocus();
-        tV.getSelectionModel().select(origen.getRow(), col);
-        TablePosition nova= tV.getFocusModel().getFocusedCell();
-        Platform.runLater(()->tV.edit(nova.getRow()+1, nova.getTableColumn()));
-    }
-    
-    private void clearLine(TableView t, TablePosition tP, LiniaCompra linia){
-        linia.clear();
-        requestSelect(t, tP, columnaProducte);
-        requestSelect(t, tP, columnaPVC);
-        requestSelect(t, tP, columnaDescompte);
-        requestSelect(t, tP, columnaPFVC);
-        requestSelect(t, tP, columnaUnitats);
-        requestSelect(t, tP, columnaPF);
-        requestSelect(t, tP, columnaDescripcio);
-    }
-    
-    void incRef(){
-        Integer novesRefs= Integer.parseInt(nReferencies.getText())+1;
-        nReferencies.setText(novesRefs.toString());
-    }
-    
-    void decRef(){
-        Integer novesRefs= Integer.parseInt(nReferencies.getText())-1;
-        nReferencies.setText(novesRefs.toString());
-    }
-    
-    void actualitzaImportTotal(){
-        Double total= 0.00;
-        for(LiniaCompra aux : contingut) total+= aux.getPT();
-        importTotal.setText(total.toString());
-    }
-
+    /**
+     * @pre --
+     * @post Sobrecàrrega del mètode inicilize per tal de dur a terme la configuració pre-finestra
+     */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         try {
@@ -255,12 +231,15 @@ public class FXMLCompresController implements Initializable {
             Image guardarButton = new Image(getClass().getResourceAsStream("guardar.png"));
             confirmar.setGraphic(new ImageView(guardarButton));
 
+            //Màxim de 5 elements visibles als ComboBox de sel·lecció de venedors i proveidors
             venedor.setVisibleRowCount(5);
             proveidor.setVisibleRowCount(5);
             
+            //Pre-fixem els valors de cerca de compres desde fa 2 anys a la data actual
             dataInici.setValue(LocalDate.now().minusYears(2));
             dataFi.setValue(LocalDate.now());
             
+            //Amaguem la taula de LiniaCompra no editable (Consulta) i configurem els colors de les columnes
             taulaLiniesCompra.setVisible(false);
             columnaProducte.setStyle("-fx-alignment: center; -fx-background-color: #b2cfff;");
             columnaDescripcio.setStyle("-fx-background-color: #abe6fc;");
@@ -277,6 +256,7 @@ public class FXMLCompresController implements Initializable {
             columnaUnitatsC.setStyle("-fx-background-color: #abe6fc;");
             columnaPFC.setStyle("-fx-background-color: #abe6fc;");
             
+            //Configuració de les columnes de la taula de LiniaCompra no editable (Consulta)
             columnaProducte.setCellValueFactory(
                     new PropertyValueFactory<LiniaCompra,String>("codiProducte")
             );
@@ -299,6 +279,7 @@ public class FXMLCompresController implements Initializable {
                     new PropertyValueFactory<LiniaCompra,Double>("PT")
             );
             
+            //Configuració de les columnes de la taula de LiniaCompra editable (Entrada)
             columnaProducteC.setCellValueFactory(
                     new PropertyValueFactory<LiniaCompra,String>("codiProducte")
             );
@@ -314,32 +295,32 @@ public class FXMLCompresController implements Initializable {
                                 clearLine(t.getTableView(), t.getTablePosition(), liniaActual);
                                 actualitzaImportTotal();
                             }
-                            requestFocus(t.getTableView(), t.getTablePosition(), columnaDescripcioC);
+                            Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaDescripcioC);
                         }
                         else if(!t.getNewValue().equals(t.getOldValue())){
                             try {
                                 List<ElementCercable> list= SQL.seleccionaProductesCercables(conexio, "codi", t.getNewValue());
                                 ElementCercable aux;
                                 if(list.isEmpty()) throw new Exception();
-                                else if(list.size() > 1) aux= mostraPopup(list);
+                                else if(list.size() > 1) aux= Operacions.mostraPopupEC(list, cercar.getScene().getWindow(), "Codi", "Descripció");
                                 else aux= list.get(0);
                                 if(aux != null){
                                     if(aux.getPrincipal().equals(liniaActual.getCodiProducte())){
-                                        requestFocus(t.getTableView(), t.getTablePosition(), columnaProducteC);
-                                        requestFocus(t.getTableView(), t.getTablePosition(), columnaDescripcioC);
+                                        Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaProducteC);
+                                        Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaDescripcioC);
                                     }
                                     else{
                                         incRef();
                                         clearLine(t.getTableView(), t.getTablePosition(), liniaActual);
                                         liniaActual.setCodiProducte(aux.getPrincipal());
                                         liniaActual.setDescripcio(aux.getSecundari());
-                                        requestFocus(t.getTableView(), t.getTablePosition(), columnaDescripcioC);
-                                        requestSelect(t.getTableView(), t.getTablePosition(), columnaDescompteC);
-                                        requestSelect(t.getTableView(), t.getTablePosition(), columnaPFVCC);
-                                        requestSelect(t.getTableView(), t.getTablePosition(), columnaUnitatsC);
-                                        requestSelect(t.getTableView(), t.getTablePosition(), columnaPFC);
-                                        requestSelect(t.getTableView(), t.getTablePosition(), columnaProducteC);
-                                        requestFocus(t.getTableView(), t.getTablePosition(), columnaPVCC);
+                                        Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaDescripcioC);
+                                        Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaDescompteC);
+                                        Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaPFVCC);
+                                        Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaUnitatsC);
+                                        Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaPFC);
+                                        Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaProducteC);
+                                        Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaPVCC);
                                         actualitzaImportTotal();
                                     }
                                 }
@@ -348,11 +329,11 @@ public class FXMLCompresController implements Initializable {
                                 if(!liniaActual.isEmpty()) decRef();
                                 PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "Producte no trobat", "No s'ha trobat cap referència");
                                 clearLine(t.getTableView(), t.getTablePosition(), liniaActual);
-                                requestFocus(t.getTableView(), t.getTablePosition(), columnaProducteC);
+                                Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaProducteC);
                                 actualitzaImportTotal();
                             }
                         }
-                        else requestFocus(t.getTableView(), t.getTablePosition(), columnaDescripcioC);
+                        else Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaDescripcioC);
                     }
                 }
             );
@@ -372,33 +353,33 @@ public class FXMLCompresController implements Initializable {
                                 clearLine(t.getTableView(), t.getTablePosition(), liniaActual);
                                 actualitzaImportTotal();
                             }
-                            requestFocus(t.getTableView(), t.getTablePosition(), columnaPVCC);
+                            Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaPVCC);
                         }
                         else if(!t.getNewValue().equals(t.getOldValue())){
                             try {
                                 List<ElementCercable> list= SQL.seleccionaProductesCercables(conexio, "descripcio", t.getNewValue());
                                 ElementCercable aux;
                                 if(list.isEmpty()) throw new Exception();
-                                else if(list.size() > 1) aux= mostraPopup(list);
+                                else if(list.size() > 1) aux= Operacions.mostraPopupEC(list, cercar.getScene().getWindow(), "Codi", "Descripció");
                                 else aux= list.get(0);
                                 if(aux != null){
                                     if(aux.getPrincipal().equals(liniaActual.getCodiProducte())){
                                         liniaActual.setDescripcio(aux.getSecundari());
-                                        requestFocus(t.getTableView(), t.getTablePosition(), columnaDescripcioC);
-                                        requestFocus(t.getTableView(), t.getTablePosition(), columnaPVCC);
+                                        Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaDescripcioC);
+                                        Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaPVCC);
                                     }
                                     else{
                                         incRef();
                                         clearLine(t.getTableView(), t.getTablePosition(), liniaActual);
                                         liniaActual.setCodiProducte(aux.getPrincipal());
                                         liniaActual.setDescripcio(aux.getSecundari());
-                                        requestFocus(t.getTableView(), t.getTablePosition(), columnaDescripcioC);
-                                        requestSelect(t.getTableView(), t.getTablePosition(), columnaDescompteC);
-                                        requestSelect(t.getTableView(), t.getTablePosition(), columnaPFVCC);
-                                        requestSelect(t.getTableView(), t.getTablePosition(), columnaUnitatsC);
-                                        requestSelect(t.getTableView(), t.getTablePosition(), columnaPFC);
-                                        requestSelect(t.getTableView(), t.getTablePosition(), columnaProducteC);
-                                        requestFocus(t.getTableView(), t.getTablePosition(), columnaPVCC);
+                                        Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaDescripcioC);
+                                        Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaDescompteC);
+                                        Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaPFVCC);
+                                        Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaUnitatsC);
+                                        Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaPFC);
+                                        Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaProducteC);
+                                        Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaPVCC);
                                         actualitzaImportTotal();
                                     }
                                 }
@@ -408,18 +389,18 @@ public class FXMLCompresController implements Initializable {
                                 if(!liniaActual.isEmpty()){
                                     decRef();
                                     clearLine(t.getTableView(), t.getTablePosition(), liniaActual);
-                                    requestSelect(t.getTableView(), t.getTablePosition(), columnaDescompteC);
-                                    requestSelect(t.getTableView(), t.getTablePosition(), columnaPVCC);
-                                    requestSelect(t.getTableView(), t.getTablePosition(), columnaPFVCC);
-                                    requestSelect(t.getTableView(), t.getTablePosition(), columnaUnitatsC);
-                                    requestSelect(t.getTableView(), t.getTablePosition(), columnaPFC);
-                                    requestSelect(t.getTableView(), t.getTablePosition(), columnaProducteC);
+                                    Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaDescompteC);
+                                    Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaPVCC);
+                                    Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaPFVCC);
+                                    Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaUnitatsC);
+                                    Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaPFC);
+                                    Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaProducteC);
                                     actualitzaImportTotal();
                                 }
-                                requestFocus(t.getTableView(), t.getTablePosition(), columnaDescripcioC);
+                                Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaDescripcioC);
                             }
                         }
-                        else requestFocus(t.getTableView(), t.getTablePosition(), columnaPVCC);
+                        else Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaPVCC);
                     }
                 }
             );
@@ -457,22 +438,22 @@ public class FXMLCompresController implements Initializable {
                         try{
                             Double nouPVC= t.getNewValue();
                             LiniaCompra liniaActual= ((LiniaCompra) t.getTableView().getItems().get(t.getTablePosition().getRow()));
-                            if(t.getNewValue().equals(t.getOldValue())) requestFocus(t.getTableView(), t.getTablePosition(), columnaDescompteC);
+                            if(t.getNewValue().equals(t.getOldValue())) Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaDescompteC);
                             else if(liniaActual.valida()){
                                 liniaActual.setPVC(nouPVC);
-                                requestSelect(t.getTableView(), t.getTablePosition(), columnaPVCC);
-                                requestSelect(t.getTableView(), t.getTablePosition(), columnaPFVCC);
-                                requestSelect(t.getTableView(), t.getTablePosition(), columnaPFC);
-                                requestFocus(t.getTableView(), t.getTablePosition(), columnaDescompteC);
+                                Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaPVCC);
+                                Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaPFVCC);
+                                Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaPFC);
+                                Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaDescompteC);
                                 actualitzaImportTotal();
                             }
                             else{
                                 PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "Error 404", "Nombre massa gran");
-                                requestFocus(t.getTableView(), t.getTablePosition(), columnaPVCC);
+                                Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaPVCC);
                             }
                         } catch (NullPointerException ex) {
                             PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "Error 404", "Nombre introduït invàlid");
-                            requestFocus(t.getTableView(), t.getTablePosition(), columnaPVCC);
+                            Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaPVCC);
                         }
                     }
                 }
@@ -514,19 +495,19 @@ public class FXMLCompresController implements Initializable {
                             if(nouDescompte < 0 || nouDescompte > 100) throw new NumberFormatException();
                             else if(liniaActual.valida()){
                                 liniaActual.setDescompte(nouDescompte);
-                                requestSelect(t.getTableView(), t.getTablePosition(), columnaDescompteC);
-                                requestSelect(t.getTableView(), t.getTablePosition(), columnaPFVCC);
-                                requestSelect(t.getTableView(), t.getTablePosition(), columnaPFC);
-                                requestFocus(t.getTableView(), t.getTablePosition(), columnaUnitatsC);
+                                Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaDescompteC);
+                                Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaPFVCC);
+                                Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaPFC);
+                                Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaUnitatsC);
                                 actualitzaImportTotal();
                             }
                             else{
                                 PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "Error 404", "Nombre introduït invàlid");
-                                requestFocus(t.getTableView(), t.getTablePosition(), columnaDescompteC);
+                                Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaDescompteC);
                             }
                         } catch (NullPointerException | NumberFormatException ex) {
                             PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "Error 404", "Nombre introduït invàlid");
-                            requestFocus(t.getTableView(), t.getTablePosition(), columnaDescompteC);
+                            Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaDescompteC);
                         }
                     }
                 }
@@ -571,24 +552,24 @@ public class FXMLCompresController implements Initializable {
                             Integer novesUnitats= t.getNewValue();
                             if(novesUnitats < 0) throw new NumberFormatException();
                             if(novesUnitats > 1000 && !PopupAlerta.mostrarConfirmacio("Atenció!", "Has introduït una quantitat molt gran. Estàs segur?")){
-                                requestFocus(t.getTableView(), t.getTablePosition(), columnaUnitatsC);
+                                Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaUnitatsC);
                             }
                             else{
                                 if(liniaActual.isEmpty()){
-                                    requestFocus(t.getTableView(), t.getTablePosition(), columnaProducteC);
+                                    Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaProducteC);
                                 }
                                 else{
                                     liniaActual.setUnitats(novesUnitats);
-                                    requestSelect(t.getTableView(), t.getTablePosition(), columnaPFC);
+                                    Operacions.requestSelect(t.getTableView(), t.getTablePosition(), columnaPFC);
                                     
                                     if(contingut.size() == (t.getTablePosition().getRow()+1)) contingut.add(new LiniaCompra());
-                                    requestFocusSeguent(t.getTableView(), t.getTablePosition(), columnaProducteC);
+                                    Operacions.requestFocusSeguent(t.getTableView(), t.getTablePosition(), columnaProducteC);
                                     actualitzaImportTotal();
                                 }
                             }
                         } catch (NullPointerException ex) {
                             PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "Error 404", "Nombre introduït invàlid");
-                            requestFocus(t.getTableView(), t.getTablePosition(), columnaUnitatsC);
+                            Operacions.requestFocus(t.getTableView(), t.getTablePosition(), columnaUnitatsC);
                         }
                     }
                 }
@@ -598,57 +579,77 @@ public class FXMLCompresController implements Initializable {
                     new PropertyValueFactory<Compra,Double>("PT")
             );
             
+            // Posem contingut com a items de les taules
             taulaLiniesCompra.setItems(contingut);
             taulaEntrarCompra.setItems(contingut);
             
+            // Amaguem camps
             nReferencies.setVisible(false);
             importTotal.setVisible(false);
             labelNReferencies.setVisible(false);
             labelImportTotal.setVisible(false);
             euroSymbol.setVisible(false);
             
+            //Request focus inicial
             Platform.runLater(()->buscarVenedor.requestFocus());
         } catch (SQLException ex) {
             PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error de Connexió", "Comprovi la seva connexió a Internet");
         }
     }
     
-    private ElementCercable mostraPopup(List<ElementCercable> list) throws IOException{
-        ObservableList<ElementCercable> listObs= FXCollections.observableArrayList();
-        listObs.addAll(list);
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLPopup.fxml"));
-        FXMLPopupControler controler= new FXMLPopupControler(listObs, "Codi", "Descripció");
-        loader.setController(controler);
-        Parent newScene;
-        newScene = loader.load();
-
-        Stage inputStage = new Stage();
-        inputStage.initModality(Modality.WINDOW_MODAL);
-        inputStage.initOwner(importTotal.getScene().getWindow());
-        inputStage.setScene(new Scene(newScene));
-        inputStage.getIcons().add(new Image(getClass().getResourceAsStream("logo.png")));
-        inputStage.setTitle("Buscador");
-        inputStage.showAndWait();
-        return controler.getElementCercable();
+    //MÈTODES PRIVATS------------------------------------------------------------------
+    
+    /**
+     * @pre --
+     * @post Esborra els elements de la línia a la posició tP
+     */
+    private void clearLine(TableView t, TablePosition tP, LiniaCompra linia){
+        linia.clear();
+        Operacions.requestSelect(t, tP, columnaProducte);
+        Operacions.requestSelect(t, tP, columnaPVC);
+        Operacions.requestSelect(t, tP, columnaDescompte);
+        Operacions.requestSelect(t, tP, columnaPFVC);
+        Operacions.requestSelect(t, tP, columnaUnitats);
+        Operacions.requestSelect(t, tP, columnaPF);
+        Operacions.requestSelect(t, tP, columnaDescripcio);
     }
     
-    private Compra mostraPopup(ObservableList<Compra> list) throws IOException{
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLPopupCompra.fxml"));
-        FXMLPopupCompraController controler= new FXMLPopupCompraController(list);
-        loader.setController(controler);
-        Parent newScene;
-        newScene = loader.load();
-
-        Stage inputStage = new Stage();
-        inputStage.initModality(Modality.WINDOW_MODAL);
-        inputStage.initOwner(venedor.getScene().getWindow());
-        inputStage.setScene(new Scene(newScene));
-        inputStage.getIcons().add(new Image(getClass().getResourceAsStream("logo.png")));
-        inputStage.setTitle("Buscador");
-        inputStage.showAndWait();
-        return controler.getCompra();
+    /**
+     * @pre --
+     * @post Incrementa el nombre de referències de la llista de LiniaCompra 
+     */
+    private void incRef(){
+        Integer novesRefs= Integer.parseInt(nReferencies.getText())+1;
+        nReferencies.setText(novesRefs.toString());
     }
     
+    /**
+     * @pre --
+     * @post Decrementa el nombre de referències de la llista de LiniaCompra
+     */
+    private void decRef(){
+        Integer novesRefs= Integer.parseInt(nReferencies.getText())-1;
+        nReferencies.setText(novesRefs.toString());
+    }
+    
+    /**
+     * @pre --
+     * @post Actuaitza l'import total de la llista de LiniaCompra
+     */
+    private void actualitzaImportTotal(){
+        Double total= 0.00;
+        for(LiniaCompra aux : contingut) total+= aux.getPT();
+        importTotal.setText(total.toString());
+    }
+    
+    private void configurarConsulta(){
+        
+    }
+
+    /**
+     * @pre --
+     * @post Mostra els camps inicialment invisibles del panell i amaga els necessaris
+     */
     private void mostraCamps(){
         buscarVenedor.setVisible(false);
         buscarProveidor.setVisible(false);
@@ -664,6 +665,10 @@ public class FXMLCompresController implements Initializable {
         taulaLiniesCompra.setVisible(true);
     }
     
+    /**
+     * @pre --
+     * @post Configura els camps del panell a partir de les dades de la Compra compra
+     */
     private void configuraCamps(Compra compra){
         numCompra.setText(String.valueOf(compra.getNum()));
         nReferencies.setText(compra.getNumRefs().toString());
@@ -677,31 +682,10 @@ public class FXMLCompresController implements Initializable {
         }
     }
     
-    @FXML
-    private void accioBuscarCompres(ActionEvent event){
-        try {
-            String infoVenedor= (String)venedor.getSelectionModel().getSelectedItem();
-            String infoProveidor= (String)proveidor.getSelectionModel().getSelectedItem();
-            LocalDate inici= dataInici.getValue();
-            LocalDate fi= dataFi.getValue();
-            ObservableList<Compra> llista= SQL.obtenirCompres(conexio, infoVenedor, infoProveidor, inici, fi);
-            Compra aux;
-            if(llista.isEmpty()) throw new Exception();
-            else if(llista.size() > 1) aux= mostraPopup(llista);
-            else aux= llista.get(0);
-            if(aux != null){
-                SQL.obtenirLiniesCompra(conexio, aux);
-                configuraCamps(aux);
-                mostraCamps();
-            }
-            else throw new Exception();
-        } catch (SQLException ex) {
-            PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error de Servidor", ex.getMessage());
-        } catch(Exception ex) {
-            PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "Atenció", "No s'ha trobat cap compra");
-        }
-    }
-    
+    /**
+     * @pre --
+     * @post Cancela la visió actual
+     */
     private void cancelar(){
         buscarVenedor.clear();
         buscarProveidor.clear();
@@ -737,32 +721,10 @@ public class FXMLCompresController implements Initializable {
         proveidor.getSelectionModel().clearSelection();
     }
     
-    @FXML
-    private void accioCancelar(ActionEvent event){
-        cancelar();
-    }
-    
-    private ElementCercable mostraPopup(List<ElementCercable> list, String opt) throws IOException{
-        ObservableList<ElementCercable> listObs= FXCollections.observableArrayList();
-        listObs.addAll(list);
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("FXMLPopup.fxml"));
-        FXMLPopupControler controler;
-        if(opt.equals("v")) controler= new FXMLPopupControler(listObs, "Número", "Nom Complet");
-        else controler= new FXMLPopupControler(listObs, "Número", "Nom");
-        loader.setController(controler);
-        Parent newScene;
-        newScene = loader.load();
-
-        Stage inputStage = new Stage();
-        inputStage.initModality(Modality.WINDOW_MODAL);
-        inputStage.initOwner(buscarVenedor.getScene().getWindow());
-        inputStage.setScene(new Scene(newScene));
-        inputStage.getIcons().add(new Image(getClass().getResourceAsStream("logo.png")));
-        inputStage.setTitle("Buscador");
-        inputStage.showAndWait();
-        return controler.getElementCercable();
-    }
-    
+    /**
+     * @pre --
+     * @post Desbloqueja els camps per tal d'entrar/visualitzar compres
+     */
     private void desbloquejarCamps(){
         venEntrar.setDisable(true);
         provEntrar.setDisable(true);
@@ -787,12 +749,61 @@ public class FXMLCompresController implements Initializable {
         importTotal.setVisible(true);
     }
     
+    /**
+     * @pre --
+     * @post En cas de haver introduït el número del venedor i el número de proveidor, desbloqueja els camps per tal d'entrar una nova compra
+     * @throws NumberFormatException si venedor o proveidor és buit
+     */
     private void entrarCompra(){
         Integer numVen= Integer.parseInt(buscarVenedor.getText());
         Integer numProv= Integer.parseInt(buscarProveidor.getText());
         desbloquejarCamps();
     }
     
+    //MÈTODES PRIVATS FXML-------------------------------------------------------------
+    
+    /**
+     * @pre --
+     * @post Acció de Buscar les compres
+     */
+    @FXML
+    private void accioBuscarCompres(ActionEvent event){
+        try {
+            String infoVenedor= (String)venedor.getSelectionModel().getSelectedItem();
+            String infoProveidor= (String)proveidor.getSelectionModel().getSelectedItem();
+            LocalDate inici= dataInici.getValue();
+            LocalDate fi= dataFi.getValue();
+            ObservableList<Compra> llista= SQL.obtenirCompres(conexio, infoVenedor, infoProveidor, inici, fi);
+            Compra aux;
+            if(llista.isEmpty()) throw new Exception();
+            else if(llista.size() > 1) aux= Operacions.mostraPopupCompra(llista, cercar.getScene().getWindow());
+            else aux= llista.get(0);
+            if(aux != null){
+                SQL.obtenirLiniesCompra(conexio, aux);
+                configuraCamps(aux);
+                mostraCamps();
+            }
+            else throw new Exception();
+        } catch (SQLException ex) {
+            PopupAlerta.mostraAlerta(Alert.AlertType.ERROR, "Error de Servidor", ex.getMessage());
+        } catch(Exception ex) {
+            PopupAlerta.mostraAlerta(Alert.AlertType.WARNING, "Atenció", "No s'ha trobat cap compra");
+        }
+    }
+    
+    /**
+     * @pre --
+     * @post Acció de cancelar la visió actual
+     */
+    @FXML
+    private void accioCancelar(ActionEvent event){
+        cancelar();
+    }
+    
+    /**
+     * @pre --
+     * @post Acció de buscar el venedor entrat
+     */
     @FXML
     private void accioBuscarVenedor(KeyEvent event){
         try{
@@ -801,7 +812,7 @@ public class FXMLCompresController implements Initializable {
                 List<ElementCercable> list= SQL.seleccionaVenedorsCercables(conexio, codi);
                 ElementCercable aux;
                 if(list.isEmpty()) throw new Exception();
-                else if(list.size() > 1) aux= mostraPopup(list, "v");
+                else if(list.size() > 1) aux= Operacions.mostraPopupEC(list, cercar.getScene().getWindow(), "Número", "Nom Complet");
                 else aux= list.get(0);
                 if(aux != null){
                     buscarVenedor.setText(aux.getPrincipal().toString());
@@ -819,6 +830,10 @@ public class FXMLCompresController implements Initializable {
         }
     }
     
+    /**
+     * @pre --
+     * @post Acció de buscar el proveïdor entrat
+     */
     @FXML
     private void accioBuscarProveidor(KeyEvent event){
         try{
@@ -827,7 +842,7 @@ public class FXMLCompresController implements Initializable {
                 List<ElementCercable> list= SQL.seleccionaProveidorsCercables(conexio, codi);
                 ElementCercable aux;
                 if(list.isEmpty()) throw new Exception();
-                else if(list.size() > 1) aux= mostraPopup(list, "p");
+                else if(list.size() > 1) aux= Operacions.mostraPopupEC(list, cercar.getScene().getWindow(), "Número", "Nom");
                 else aux= list.get(0);
                 if(aux != null){
                     buscarProveidor.setText(aux.getPrincipal().toString());
@@ -845,6 +860,10 @@ public class FXMLCompresController implements Initializable {
         }
     }
     
+    /**
+     * @pre --
+     * @post Acció de guardar la Compra entrada
+     */
     @FXML
     private void accioGuardar(ActionEvent event){
         try {
